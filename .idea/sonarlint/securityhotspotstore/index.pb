@@ -67,3 +67,6 @@ F
 src/pages/HomePage.jsx,1/3/1317dfcb0036542dbcd58e5e1f0c6ff9d3b33828
 H
 src/pages/DetailPage.jsx,5/7/57eaa4d93d761f5ffd242adbdc5ff76523fce0d1
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
