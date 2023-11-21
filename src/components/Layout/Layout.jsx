@@ -19,7 +19,6 @@ const Layout = () => {
 const Main = styled.main`
   width: 100vw;
   height: 100vh;
-  background: black;
 `;
 
 const Content = styled.section`
