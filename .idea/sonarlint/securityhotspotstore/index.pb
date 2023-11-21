@@ -17,3 +17,14 @@ P
  src/components/Layout/Footer.jsx,2/d/2da09daaca0f656ad7fecaa518578eaaa64f39ca
 P
  src/components/Layout/Header.jsx,2/8/284198396b75ca7e1b45a8859e43fb94ab12afa5
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+O
+src/shared/helper/validation.js,7/8/785bf92337ca8685b63428225d46fc863c85c9e5
+M
+src/assets/img/down-arrow.svg,1/8/182810cb8f04b205a538109ae0677463e43b4579
+L
+src/pages/UserDetailPage.jsx,5/8/58780819a59bef3bf5abf90b928d1d1c9c28efe1
+H
+src/shared/AppRouter.jsx,d/5/d5cf1f134b9c71cde7ddee60f0fe7011b5c358c7

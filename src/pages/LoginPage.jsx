@@ -2,10 +2,11 @@ import React, {useRef, useState} from 'react';
 import {Button, Container, Form, Input, Section, ValidationMessage} from '../components/Auth/Auth.styled';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
-import {signInWithEmailAndPassword} from 'firebase/auth';
+import {signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
 import {auth} from '../shared/firebase';
 import {useDispatch} from 'react-redux';
 import {changeAuth} from '../redux/modules/userAuth';
+import googleIcon from '../assets/img/google-icon.png';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -39,6 +40,20 @@ const LoginPage = () => {
     }
   };
 
+  const onClickGoogleLoginButton = async e => {
+    e.preventDefault();
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      dispatch(changeAuth(result.user));
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Container>
       <Form>
@@ -48,7 +63,7 @@ const LoginPage = () => {
           <div>
             <Section>
               <div>
-                <Input placeholder="이메일을 입력하세요." type="email" ref={emailRef} />
+                <Input placeholder="이메일을 입력하세요." type="email" name="email" ref={emailRef} />
               </div>
               {emailValidationMessage && (
                 <ValidationMessage $isValid={false}>{emailValidationMessage}</ValidationMessage>
@@ -62,6 +77,10 @@ const LoginPage = () => {
           </div>
         </div>
         <LoginButton onClick={onClickLoginButton}>로그인</LoginButton>
+        <SocialLoginButton onClick={onClickGoogleLoginButton}>
+          <img src={googleIcon} alt="googleIcon" />
+          <span>구글로 로그인</span>
+        </SocialLoginButton>
         <SignUpButton onClick={onClickSignUpButton}>회원가입</SignUpButton>
       </Form>
     </Container>
@@ -72,6 +91,20 @@ const SignUpButton = styled(Button)`
   margin-top: 10px;
   height: 40px;
   background-color: #190482;
+`;
+
+const SocialLoginButton = styled(Button)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #8e8ffa;
+  margin-top: 10px;
+  height: 40px;
+
+  img {
+    height: 1.1rem;
+    margin-right: 10px;
+  }
 `;
 
 const LoginButton = styled(Button)`

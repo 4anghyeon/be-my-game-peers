@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {
   validationEmail,
@@ -22,19 +22,15 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [, setRePassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [introduction, setIntroduction] = useState('');
-  const [favoriteGame, setFavoriteGame] = useState(0);
-
-  useEffect(() => {
-    // 로그인되어 있으면 다시 메인으로..
-    if (getAuth().currentUser) navigate('/');
-  }, []);
+  const [, setIntroduction] = useState('');
+  const [, setFavoriteGame] = useState(0);
+  const emailRef = useRef(null);
 
   // form의 전체 validation 여부를 결정하는 state
   const [validation, setValidation] = useState({
     email: {
       isValid: false,
-      isDuplicate: true,
+      isDuplicate: false,
       message: '이메일이 올바른 형식이 아닙니다.',
     },
     password: {
@@ -52,10 +48,12 @@ const SignUpPage = () => {
   });
 
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
 
-  const userCollectionRef = collection(db, 'users');
+  useEffect(() => {
+    // 로그인되어 있으면 다시 메인으로..
+    if (getAuth().currentUser) navigate('/');
+  }, []);
 
   // input 변화시 항목마다 validation!
   const handleInputChange = e => {
@@ -66,7 +64,7 @@ const SignUpPage = () => {
         {
           const {isValid, message} = validationEmail(value, validation.email);
           setValidation(prev => {
-            return {...prev, email: {isValid, message, isDuplicate: true}};
+            return {...prev, email: {isValid, message, isDuplicate: false}};
           });
           setEmail(value);
         }
@@ -108,32 +106,6 @@ const SignUpPage = () => {
     }
   };
 
-  // 이메일 중복확인 체크
-  const handleCheckDuplicate = async e => {
-    e.preventDefault();
-    if (email.trim() === '') {
-      alert('이메일을 입력해주세요.');
-      return;
-    }
-
-    let {isValid, message} = validationEmail(email, {...validation.email, isDuplicate: false});
-    let isDuplicate = true;
-
-    // firestore의 user정보에서 email이 같은 유저를 찾음
-    const selectUserByEmailQuery = query(userCollectionRef, where('email', '==', email));
-    const querySnapshot = await getDocs(selectUserByEmailQuery);
-
-    // 쿼리 결과에 값이 있다면 중복!
-    if (querySnapshot.docs.length > 0) {
-      message = '이미 사용중인 이메일입니다.';
-      isValid = false;
-      isDuplicate = false;
-    }
-    setValidation(prev => {
-      return {...prev, email: {isValid: isValid, message: message, isDuplicate: isDuplicate}};
-    });
-  };
-
   // 회원 가입 버튼 클릭
   const handleSignUp = async e => {
     e.preventDefault();
@@ -152,21 +124,19 @@ const SignUpPage = () => {
         // user displayname을 nickname으로 업데이트
         await updateProfile(userCredential.user, {displayName: nickname});
 
-        // authentication이 아닌 firestore에도 저장 (메일 중복 검사용)
-        const newUser = {email, nickname, introduction, favoriteGame};
-        await addDoc(userCollectionRef, newUser);
-        dispatch(addUser(newUser));
-
         // 성공하면 로그인까지 됨.. (막을 수 없음)
         alert('성공적으로 가입 되었습니다!');
         dispatch(changeAuth(getAuth().currentUser));
         navigate('/');
       } catch (error) {
-        alert(error);
         const errorCode = error.code;
 
         if (errorCode === ERROR_EMAIL_DUPLICATED) {
-          alert('이미 사용 중인 이메일입니다.');
+          let message = '이미 사용 중인 이메일입니다.';
+          setValidation(prev => {
+            return {...prev, email: {isValid: false, message, isDuplicate: true}};
+          });
+          emailRef.current.focus();
         }
       } finally {
         hideLoading(document.getElementById('form'));
@@ -184,10 +154,9 @@ const SignUpPage = () => {
         <div>
           <Section>
             <div>
-              <Input type="email" name="email" placeholder="이메일 입력" onChange={handleInputChange} />
-              <CheckDuplicateButton onClick={handleCheckDuplicate}>중복 확인</CheckDuplicateButton>
+              <Input type="email" name="email" placeholder="이메일 입력" onChange={handleInputChange} ref={emailRef} />
             </div>
-            {email && (
+            {email && validation.email.message && (
               <ValidationMessage $isValid={validation.email.isValid}>{validation.email.message}</ValidationMessage>
             )}
           </Section>
