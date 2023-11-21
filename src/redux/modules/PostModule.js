@@ -2,6 +2,7 @@ import PostFakeData from './PostFakeData.json';
 
 // action values
 const ADD_POST = 'post/ADD_POST';
+const ADD_COMMENT = 'post/ADD_COMMENT';
 
 const initialState = PostFakeData;
 
@@ -9,6 +10,13 @@ const initialState = PostFakeData;
 export const addPost = payload => {
   return {
     type: ADD_POST,
+    payload,
+  };
+};
+
+export const addComment = payload => {
+  return {
+    type: ADD_COMMENT,
     payload,
   };
 };
@@ -21,6 +29,14 @@ const PostModule = (state = initialState, action) => {
       console.log(action.payload);
       console.log(state);
       return [...state, action.payload];
+    case ADD_COMMENT:
+      console.log(action.payload);
+      console.log(action.payload.id);
+      console.log(action.payload.newComment);
+      console.log(state.comments);
+      return state.map(item =>
+        item.postId === action.payload.id ? {...item, comments: [...item.comments, action.payload.newComment]} : item,
+      );
 
     default:
       return state;

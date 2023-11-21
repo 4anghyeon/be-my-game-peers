@@ -27,6 +27,7 @@ const AppRouter = () => {
 
           {/* 게시글 */}
           <Route path="detail/:id" element={<DetailPage />}></Route>
+          {/* <Route path="detail" element={<DetailPage />}></Route> */}
 
           {/* 글쓰기 */}
           <Route path="write" element={<WritePage />}></Route>

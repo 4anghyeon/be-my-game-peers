@@ -15,13 +15,14 @@ const WritePage = () => {
   const submitForm = e => {
     e.preventDefault();
     const newPost = {
-      postNumber: 1,
+      postId: '',
       postTitle: inputs.postTitle,
       postContent: inputs.postContent,
       author: '겜돌이',
       postDate: new Date(),
       category: inputs.category,
       currentParticipants: inputs.currentParticipants,
+      comment: [],
     };
     dispatch(addPost(newPost));
     setInputs({
