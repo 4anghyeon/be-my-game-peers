@@ -7,12 +7,10 @@ import {
   validationRePassword,
 } from '../shared/helper/validation';
 import {createUserWithEmailAndPassword, getAuth, updateProfile} from 'firebase/auth';
-import {auth, db} from '../shared/firebase';
+import {auth} from '../shared/firebase';
 import {useNavigate} from 'react-router-dom';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {useDispatch} from 'react-redux';
-import {addUser} from '../redux/modules/users';
-import {addDoc, collection, getDocs, query, where} from 'firebase/firestore';
 import {ERROR_EMAIL_DUPLICATED} from '../shared/helper/errorCode';
 import {Button, Container, Form, Input, Section, ValidationMessage} from '../components/Auth/Auth.styled';
 import {changeAuth} from '../redux/modules/userAuth';
@@ -256,13 +254,6 @@ const Select = styled.select`
     color: inherit;
     background-color: var(--option-bg);
   }
-`;
-
-const CheckDuplicateButton = styled(Button)`
-  border-radius: 5px;
-  margin-left: 10px;
-  width: 20%;
-  padding: 15px;
 `;
 
 const SignUpButton = styled(Button)`
