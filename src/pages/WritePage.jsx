@@ -15,7 +15,7 @@ const WritePage = () => {
   const submitForm = e => {
     e.preventDefault();
     const newPost = {
-      postId: '',
+      postId: '135',
       postTitle: inputs.postTitle,
       postContent: inputs.postContent,
       author: '겜돌이',
