@@ -12,6 +12,7 @@ const WritePage = () => {
     currentParticipants: '1',
   });
 
+  // 게시글 추가
   const submitForm = e => {
     e.preventDefault();
     const newPost = {
@@ -32,6 +33,7 @@ const WritePage = () => {
     });
   };
 
+  // 입력창 변경
   const changeInput = e => {
     setInputs({
       ...inputs,
