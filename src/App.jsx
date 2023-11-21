@@ -1,11 +1,15 @@
+import {GlobalStyle} from './shared/GlobalStyle';
+import {Provider} from 'react-redux';
+import AppRouter from './shared/AppRouter';
+
 function App() {
   return (
-    <React.Fragment>
-      <div>
-        <GlobalStyle />
-      </div>
-    </React.Fragment>
-
+    <>
+      <GlobalStyle />
+      <Provider store={store}>
+        <AppRouter />
+      </Provider>
+    </>
   );
 }
 
