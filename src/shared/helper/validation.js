@@ -11,6 +11,7 @@ export const validationEmail = (email, validation) => {
     message = '중복 확인을 해주세요.';
   } else {
     isValid = true;
+    message = '가능한 메일 입니다.';
   }
 
   return {message, isValid};

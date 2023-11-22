@@ -16,10 +16,6 @@ const DetailPage = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
 
-  useEffect(() => {
-    console.log(getAuth().currentUser);
-  }, []);
-
   const changeCommentText = e => {
     setComment(e.target.value);
   };
