@@ -9,24 +9,27 @@ export const findUserByEmail = async email => {
   const selectUserByEmailQuery = await query(userCollectionRef, where('email', '==', email));
   const querySnapshot = await getDocs(selectUserByEmailQuery);
 
-  if (querySnapshot.docs.length > 0) {
-    return querySnapshot.docs[0];
-  }
-
-  return null
-}
+  let user = null;
+  await new Promise(res => {
+    if (querySnapshot.docs.length > 0) {
+      res();
+      user = querySnapshot.docs[0].data();
+    }
+  });
+  return user;
+};
 
 export const updateUser = async (email, updateInfo) => {
   const find = await findUserByEmail(email);
-  const userRef = doc(db, "users", find.id);
+  const userRef = doc(db, 'users', find.id);
 
   // auth 내용 업데이트
   await updateProfile(getAuth().currentUser, {displayName: updateInfo.nickname, photoURL: updateInfo.profileImg});
 
   // firebase 내용 업데이트
-  await updateDoc(userRef, updateInfo)
-}
+  await updateDoc(userRef, updateInfo);
+};
 
 export const createUser = async user => {
   await addDoc(userCollectionRef, user);
-}
+};
