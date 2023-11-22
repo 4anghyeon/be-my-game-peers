@@ -25,13 +25,8 @@ const categoriState = [
   },
   {
     id: 4,
-    game: 'ROLLTOCHES',
-    players: 8,
-  },
-  {
-    id: 5,
-    game: 'VALLOLANT',
-    players: 6,
+    game: 'VALLORANT',
+    players: 5,
   },
 ];
 

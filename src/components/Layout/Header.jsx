@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {changeAuth} from '../../redux/modules/userAuth';
 import downArrow from 'assets/img/down-arrow.svg';
 import {Button} from '../Common/Common.styled';
+import {useAlert} from '../../redux/modules/alert/alertHook';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -13,6 +14,8 @@ const Header = () => {
   const userAuth = useSelector(state => state.userAuth);
   const dispatch = useDispatch();
   const [showContextMenu, setShowContextMenu] = useState(false);
+
+  const alert = useAlert();
 
   useEffect(() => {
     // 현재 로그인 유저 정보 가져옴
@@ -33,7 +36,7 @@ const Header = () => {
     await signOut(getAuth());
     dispatch(changeAuth(null));
     setShowContextMenu(prev => false);
-    alert('로그아웃 되었습니다.');
+    alert.twinkle('로그아웃 되었습니다.');
   };
 
   // 설정 버튼 클릭시
@@ -53,22 +56,22 @@ const Header = () => {
   };
 
   return (
-    <Container $pathname={pathname}>
+    <ScContainer $pathname={pathname}>
       {pathname !== '/' ? <button onClick={onClickHome}>홈으로</button> : <div></div>}
       <div>
         {pathname !== '/signup' && pathname !== '/login' && (
           <>
             {userAuth ? (
-              <ProfileContainer>
-                <Profile onClick={onClickOpenContextMenu}></Profile>
+              <ScProfileContainer>
+                <ScProfile onClick={onClickOpenContextMenu}></ScProfile>
                 <img src={downArrow} alt="화살표" onClick={onClickOpenContextMenu} />
                 {showContextMenu && (
-                  <ProfileMenuContainer>
-                    <ProfileMenuButton onClick={onClickProfileSetting}>설정</ProfileMenuButton>
-                    <ProfileMenuButton onClick={onClickSignOut}>로그아웃</ProfileMenuButton>
-                  </ProfileMenuContainer>
+                  <ScProfileMenuContainer>
+                    <ScProfileMenuButton onClick={onClickProfileSetting}>설정</ScProfileMenuButton>
+                    <ScProfileMenuButton onClick={onClickSignOut}>로그아웃</ScProfileMenuButton>
+                  </ScProfileMenuContainer>
                 )}
-              </ProfileContainer>
+              </ScProfileContainer>
             ) : (
               <>
                 <button onClick={onClickSingUp}>회원가입</button>
@@ -78,11 +81,11 @@ const Header = () => {
           </>
         )}
       </div>
-    </Container>
+    </ScContainer>
   );
 };
 
-const Container = styled.header`
+const ScContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -103,7 +106,7 @@ const Container = styled.header`
   }
 `;
 
-const ProfileContainer = styled.div`
+const ScProfileContainer = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
@@ -120,7 +123,7 @@ const ProfileContainer = styled.div`
   }
 `;
 
-const Profile = styled.div`
+const ScProfile = styled.div`
   width: 40px;
   height: 40px;
   background-color: #8e8ffa;
@@ -128,7 +131,7 @@ const Profile = styled.div`
   border: 2px solid black;
 `;
 
-const ProfileMenuContainer = styled.div`
+const ScProfileMenuContainer = styled.div`
   position: absolute;
   width: 100px;
   top: 50px;
@@ -138,7 +141,7 @@ const ProfileMenuContainer = styled.div`
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 `;
 
-const ProfileMenuButton = styled(Button)`
+const ScProfileMenuButton = styled(Button)`
   width: 100% !important;
   background: transparent !important;
   color: black !important;

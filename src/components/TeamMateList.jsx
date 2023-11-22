@@ -52,15 +52,13 @@ const TeamMateList = ({filterCategory, isUserLoggedIn}) => {
           ))}
           {currentPage < totalPage && <ScPageButton onClick={() => setCurrentPage(currentPage + 1)}>다음</ScPageButton>}
         </ScPageNation>
-        {isUserLoggedIn && (
-          <ScWirteButton
-            onClick={() => {
-              navigate(`/DetailPage`);
-            }}
-          >
-            글쓰기
-          </ScWirteButton>
-        )}
+        <ScWirteButton
+          onClick={() => {
+            navigate(`/write`);
+          }}
+        >
+          글쓰기
+        </ScWirteButton>
       </ScTeammateSearchBox>
     </>
   );

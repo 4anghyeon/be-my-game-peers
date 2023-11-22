@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import commonStyle from 'components/Common/Common.styled';
 import fakeData from 'db/fakeData.json';
 import avatar from 'assets/avatar.png';
 import uuid from '../../node_modules/react-uuid/uuid';
 import {useState, useEffect} from 'react';
 import {getAuth} from 'firebase/auth';
+import CenterContainer from 'components/Common/Common.styled';
 
 const UserDetailPage = () => {
   const [userInfo, setUserInfo] = useState(fakeData);

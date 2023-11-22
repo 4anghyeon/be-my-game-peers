@@ -53,7 +53,7 @@ const PostModule = (state = initialState, action) => {
 
     case ADD_COMMENT:
       return state.map(item =>
-        item.postId === action.payload.id ? {...item, comments: [...item.comments, action.payload.newComment]} : item,
+        item.postId === action.payload.id ? {...item, comments: [action.payload.newComment, ...item.comments]} : item,
       );
 
     default:
