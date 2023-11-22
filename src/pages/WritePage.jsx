@@ -3,6 +3,8 @@ import {useDispatch} from '../../node_modules/react-redux/es/exports';
 import {addPost} from 'redux/modules/PostModule';
 import {getAuth} from 'firebase/auth';
 
+import styled from 'styled-components';
+
 const WritePage = () => {
   const dispatch = useDispatch();
 
@@ -23,7 +25,7 @@ const WritePage = () => {
       postId: '135',
       postTitle: inputs.postTitle,
       postContent: inputs.postContent,
-      author: '겜돌이',
+      author: getAuth().currentUser.displayName,
       postDate: new Date(),
       category: inputs.category,
       currentParticipants: inputs.currentParticipants,
