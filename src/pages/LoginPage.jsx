@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {Button, Container, Form, Input, Section, ValidationMessage} from '../components/Auth/Auth.styled';
+import {Container, Form, Section, ValidationMessage} from '../components/Auth/Auth.styled';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import {signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
@@ -7,6 +7,9 @@ import {auth} from '../shared/firebase';
 import {useDispatch} from 'react-redux';
 import {changeAuth} from '../redux/modules/userAuth';
 import googleIcon from '../assets/img/google-icon.png';
+import {createUser, findUserByEmail} from '../shared/firebase/query';
+import {addUser} from '../redux/modules/users';
+import {Button, Input} from '../components/Common/Common.styled';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -48,6 +51,14 @@ const LoginPage = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       dispatch(changeAuth(result.user));
+
+      const user = await findUserByEmail(result.user.email);
+      if (!user) {
+        const newUser = {email: result.user.email, introduction: '', favoriteGame: 0};
+        await createUser(newUser);
+        dispatch(addUser(newUser));
+      }
+
       navigate('/');
     } catch (error) {
       console.error(error);

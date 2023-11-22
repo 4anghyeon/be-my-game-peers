@@ -12,23 +12,26 @@ import {useNavigate} from 'react-router-dom';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {useDispatch} from 'react-redux';
 import {ERROR_EMAIL_DUPLICATED} from '../shared/helper/errorCode';
-import {Button, Container, Form, Input, Section, ValidationMessage} from '../components/Auth/Auth.styled';
+import {Container, Form, Section, ValidationMessage} from '../components/Auth/Auth.styled';
 import {changeAuth} from '../redux/modules/userAuth';
+import {addUser} from '../redux/modules/users';
+import {createUser, findUserByEmail} from '../shared/firebase/query';
+import {Button, Input} from '../components/Common/Common.styled';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [, setRePassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [, setIntroduction] = useState('');
-  const [, setFavoriteGame] = useState(0);
+  const [introduction, setIntroduction] = useState('');
+  const [favoriteGame, setFavoriteGame] = useState(0);
   const emailRef = useRef(null);
 
   // form의 전체 validation 여부를 결정하는 state
   const [validation, setValidation] = useState({
     email: {
       isValid: false,
-      isDuplicate: false,
+      isDuplicate: true,
       message: '이메일이 올바른 형식이 아닙니다.',
     },
     password: {
@@ -50,6 +53,8 @@ const SignUpPage = () => {
 
   useEffect(() => {
     // 로그인되어 있으면 다시 메인으로..
+
+
     if (getAuth().currentUser) navigate('/');
   }, []);
 
@@ -60,9 +65,9 @@ const SignUpPage = () => {
     switch (name) {
       case 'email':
         {
-          const {isValid, message} = validationEmail(value, validation.email);
+          const {isValid, message} = validationEmail(value, {...validation.email, isDuplicate: true});
           setValidation(prev => {
-            return {...prev, email: {isValid, message, isDuplicate: false}};
+            return {...prev, email: {isValid, message, isDuplicate: true}};
           });
           setEmail(value);
         }
@@ -104,6 +109,30 @@ const SignUpPage = () => {
     }
   };
 
+  // 이메일 중복확인 체크
+  const handleCheckDuplicate = async e => {
+    e.preventDefault();
+    if (email.trim() === '') {
+      alert('이메일을 입력해주세요.');
+      return;
+    }
+
+    let {isValid, message} = validationEmail(email, {...validation.email, isDuplicate: false});
+    let isDuplicate = true;
+
+    // firestore의 user정보에서 email이 같은 유저를 찾음
+    const find = await findUserByEmail(email);
+    if (find) {
+      message = '이미 사용중인 이메일입니다.';
+      isValid = false;
+      isDuplicate = false;
+    }
+
+    setValidation(prev => {
+      return {...prev, email: {isValid: isValid, message: message, isDuplicate: isDuplicate}};
+    });
+  };
+
   // 회원 가입 버튼 클릭
   const handleSignUp = async e => {
     e.preventDefault();
@@ -121,6 +150,11 @@ const SignUpPage = () => {
 
         // user displayname을 nickname으로 업데이트
         await updateProfile(userCredential.user, {displayName: nickname});
+
+        // authentication이 아닌 firestore에도 저장
+        const newUser = {email, introduction, favoriteGame};
+        await createUser(newUser);
+        dispatch(addUser(newUser));
 
         // 성공하면 로그인까지 됨.. (막을 수 없음)
         alert('성공적으로 가입 되었습니다!');
@@ -153,6 +187,7 @@ const SignUpPage = () => {
           <Section>
             <div>
               <Input type="email" name="email" placeholder="이메일 입력" onChange={handleInputChange} ref={emailRef} />
+              <CheckDuplicateButton onClick={handleCheckDuplicate}>중복 확인</CheckDuplicateButton>
             </div>
             {email && validation.email.message && (
               <ValidationMessage $isValid={validation.email.isValid}>{validation.email.message}</ValidationMessage>
@@ -254,6 +289,13 @@ const Select = styled.select`
     color: inherit;
     background-color: var(--option-bg);
   }
+`;
+
+const CheckDuplicateButton = styled(Button)`
+  border-radius: 5px;
+  margin-left: 10px;
+  width: 20%;
+  padding: 15px;
 `;
 
 const SignUpButton = styled(Button)`
