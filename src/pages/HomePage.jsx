@@ -19,9 +19,8 @@ const HomePage = () => {
   const [filterCategory, setfilterCategory] = useState([]);
 
   const postCategory = selectCategory => {
-    const filteringCategory = categoris.filter(category => category.game === selectCategory);
-    dispatch(seartchCategori(filteringCategory));
-    console.log(seartchCategori);
+    setfilterCategory(selectCategory);
+    console.log(selectCategory);
   };
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const HomePage = () => {
       </ScSearchBox>
 
       <ScTeammateSearchBox>
-        <TeamMateList />
+        <TeamMateList filterCategory={filterCategory} />
       </ScTeammateSearchBox>
       <Footer />
     </div>

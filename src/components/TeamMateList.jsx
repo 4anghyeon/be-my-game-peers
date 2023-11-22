@@ -4,7 +4,7 @@ import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 
-const TeamMateList = () => {
+const TeamMateList = ({filterCategory}) => {
   const postparty = useSelector(state => state.PostModule);
   const navigate = useNavigate();
   const partypage = 5;
@@ -15,26 +15,28 @@ const TeamMateList = () => {
 
   const totalPage = Math.ceil(postparty.length / partypage);
   const currentPageList = postparty.slice(startPageIndex, endPageIndex);
-
+  console.log(filterCategory);
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
   return (
     <>
       <ScTeammateSearchBox>
-        {currentPageList.map(post => (
-          <ScGameParty key={post.postId}>
-            <ScPostBox>
-              <span>[{post.postId}]</span>
-              <div>
-                ({post.category}) {truncate(post.postTitle, 5)}
-              </div>
-              <div>{post.currentParticipants}</div>
-              <span>{post.author}</span>
-              <time>{post.postDate}</time>
-            </ScPostBox>
-          </ScGameParty>
-        ))}
+        {currentPageList
+          .filter(item => item.category === filterCategory)
+          .map(post => (
+            <ScGameParty key={post.postId}>
+              <ScPostBox>
+                <span>[{post.postId}]</span>
+                <div>
+                  ({post.category}) {truncate(post.postTitle, 5)}
+                </div>
+                <div>{post.currentParticipants}</div>
+                <span>{post.author}</span>
+                <time>{post.postDate}</time>
+              </ScPostBox>
+            </ScGameParty>
+          ))}
         <ScPageNation>
           {Array.from({length: totalPage}, (_, index) => (
             <ScPageButton key={index} onClick={() => setCurrentPage(index + 1)} isActive={currentPage === index + 1}>
