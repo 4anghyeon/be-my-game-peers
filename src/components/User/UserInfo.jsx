@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import fakeData from 'db/fakeData.json';
 import avatar from 'assets/avatar.png';
 import uuid from '../../../node_modules/react-uuid/uuid';
+import {useEffect} from 'react';
+import {getAuth} from 'firebase/auth';
 
 export default function UserInfo() {
   const [userInfo, setUserInfo] = useState(fakeData);
@@ -34,6 +36,10 @@ export default function UserInfo() {
     setAbout('');
     setFavoriteGame('');
   };
+
+  useEffect(() => {
+    console.log(getAuth().currentUser);
+  }, []);
 
   const choosePhoto = () => {};
 
