@@ -14,8 +14,11 @@ const UserDetailPage = () => {
 
 const Container = styled.div`
   display: flex;
-  align-items: center;
   flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+  align-items: center;
 `;
 
 export default UserDetailPage;
