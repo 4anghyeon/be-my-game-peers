@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import image from 'assets/img/404.png';
-import {Button} from '../components/Auth/Auth.styled';
 import {useNavigate} from 'react-router-dom';
-import CenterContainer from '../components/Common/Common.styled';
+import CenterContainer, {Button} from '../components/Common/Common.styled';
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
