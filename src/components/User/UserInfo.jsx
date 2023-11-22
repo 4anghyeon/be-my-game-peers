@@ -1,12 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import fakeData from 'db/fakeData.json';
 import avatar from 'assets/avatar.png';
 import uuid from '../../../node_modules/react-uuid/uuid';
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
 import {getAuth} from 'firebase/auth';
 
-const UserDetailPage = () => {
+export default function UserInfo() {
   const [userInfo, setUserInfo] = useState(fakeData);
   const [nickname, setNickName] = useState('');
   const [about, setAbout] = useState('');
@@ -45,44 +45,44 @@ const UserDetailPage = () => {
 
   return (
     <>
-      <ScContainer>
-        <ScSelectImg>
-          <ScProfileImg src={avatar} alt="프로필 이미지" />
-          {isEdit ? <ScSelectPictureBtn>사진 선택</ScSelectPictureBtn> : null}
-        </ScSelectImg>
-        <ScInfoBox>
+      <Container>
+        <SelectImg>
+          <ProfileImg src={avatar} alt="프로필 이미지" />
+          {isEdit ? <SelectPictureBtn>사진 선택</SelectPictureBtn> : null}
+        </SelectImg>
+        <InfoBox>
           {isEdit ? (
-            <ScInput type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
+            <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
           ) : (
-            <ScUserName>{userInfo[0].nickname}님</ScUserName>
+            <UserName>{userInfo[0].nickname}님</UserName>
           )}
-        </ScInfoBox>
-        <ScInfoBox>
-          <ScLabel>About</ScLabel>
+        </InfoBox>
+        <InfoBox>
+          <Label>About</Label>
           {isEdit ? (
-            <ScInput type="text" value={about} onChange={EDIT_ABOUT} placeholder="한줄 소개" />
+            <Input type="text" value={about} onChange={EDIT_ABOUT} placeholder="한줄 소개" />
           ) : (
-            <ScAbout>{userInfo[0].about}</ScAbout>
+            <About>{userInfo[0].about}</About>
           )}
-        </ScInfoBox>
-        <ScInfoBox>
-          <ScLabel>Favorite Game</ScLabel>
+        </InfoBox>
+        <InfoBox>
+          <Label>Favorite Game</Label>
           {isEdit ? (
-            <ScInput type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
+            <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
           ) : (
-            <ScAbout>{userInfo[0].favoriteGame}</ScAbout>
+            <About>{userInfo[0].favoriteGame}</About>
           )}
-        </ScInfoBox>
-        <ScBtnBox>
-          <ScButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScButton>
-          <ScButton>내 게시물</ScButton>
-        </ScBtnBox>
-      </ScContainer>
+        </InfoBox>
+        <BtnBox>
+          <Button onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</Button>
+          <Button>내 게시물</Button>
+        </BtnBox>
+      </Container>
     </>
   );
-};
+}
 
-const ScContainer = styled.div`
+const Container = styled.div`
   color: white;
   display: flex;
   flex-direction: column;
@@ -92,7 +92,7 @@ const ScContainer = styled.div`
   padding: 12px;
 `;
 
-const ScSelectImg = styled.div`
+const SelectImg = styled.div`
   width: 600px;
   display: flex;
   flex-direction: row;
@@ -102,13 +102,13 @@ const ScSelectImg = styled.div`
   padding: 12px 6px;
 `;
 
-const ScProfileImg = styled.img`
+const ProfileImg = styled.img`
   width: 180px;
   height: 180px;
   border-radius: 50%;
 `;
 
-const ScSelectPictureBtn = styled.button`
+const SelectPictureBtn = styled.button`
   background-color: #7752fe;
   color: white;
   width: 100px;
@@ -117,7 +117,7 @@ const ScSelectPictureBtn = styled.button`
   border: none;
 `;
 
-const ScInfoBox = styled.div`
+const InfoBox = styled.div`
   width: 600px;
   margin: 20px auto;
   display: flex;
@@ -128,12 +128,12 @@ const ScInfoBox = styled.div`
   gap: 10px;
 `;
 
-const ScUserName = styled.h2`
+const UserName = styled.h2`
   font-size: 2rem;
   font-weight: 700;
 `;
 
-const ScAbout = styled.p`
+const About = styled.p`
   display: flex;
   align-items: center;
   font-size: 1rem;
@@ -145,13 +145,23 @@ const ScAbout = styled.p`
   height: 36px;
 `;
 
-const ScLabel = styled.label`
+const Label = styled.label`
   font-size: 0.9rem;
   color: #7752fe;
   font-weight: 700;
 `;
 
-const ScInput = styled.input`
+const Info = styled.p`
+  color: black;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 36px;
+  border: 1px solid #eee;
+  background-color: white;
+`;
+
+const Input = styled.input`
   width: 600px;
   height: 30px;
   border-radius: 10px;
@@ -160,7 +170,7 @@ const ScInput = styled.input`
   padding: 4px;
 `;
 
-const ScBtnBox = styled.div`
+const BtnBox = styled.div`
   width: 600px;
   display: flex;
   margin: 0 auto;
@@ -169,7 +179,7 @@ const ScBtnBox = styled.div`
   justify-content: flex-end;
 `;
 
-const ScButton = styled.button`
+const Button = styled.button`
   background-color: white;
   font-weight: 600;
   color: black;
@@ -183,5 +193,3 @@ const ScButton = styled.button`
     color: white;
   }
 `;
-
-export default UserDetailPage;
