@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useDispatch} from '../../node_modules/react-redux/es/exports';
 import {addPost} from 'redux/modules/PostModule';
 import {getAuth} from 'firebase/auth';
+import {v4 as uuid} from 'uuid';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
@@ -19,7 +20,7 @@ const WritePage = () => {
   const submitForm = e => {
     e.preventDefault();
     const newPost = {
-      postId: '135',
+      postId: uuid(),
       postTitle: inputs.postTitle,
       postContent: inputs.postContent,
       author: getAuth().currentUser.displayName,
@@ -147,8 +148,6 @@ const ScWriteElementGroup = styled.div`
 
 const ScBtnGroup = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
 `;
 
 const ScRegisterBtn = styled(Button)`
