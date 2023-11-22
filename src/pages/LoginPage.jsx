@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {Button, Container, Form, Input, Section, ValidationMessage} from '../components/Auth/Auth.styled';
+import {Container, Form, Section, ValidationMessage} from '../components/Auth/Auth.styled';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import {signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
@@ -9,6 +9,7 @@ import {changeAuth} from '../redux/modules/userAuth';
 import googleIcon from '../assets/img/google-icon.png';
 import {createUser, findUserByEmail} from '../shared/firebase/query';
 import {addUser} from '../redux/modules/users';
+import {Button, Input} from '../components/Common/Common.styled';
 
 const LoginPage = () => {
   const navigate = useNavigate();

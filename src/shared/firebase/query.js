@@ -6,7 +6,7 @@ const userCollectionRef = collection(db, 'users');
 
 export const findUserByEmail = async email => {
   // firestore의 user정보에서 email이 같은 유저를 찾음
-  const selectUserByEmailQuery = query(userCollectionRef, where('email', '==', email));
+  const selectUserByEmailQuery = await query(userCollectionRef, where('email', '==', email));
   const querySnapshot = await getDocs(selectUserByEmailQuery);
 
   if (querySnapshot.docs.length > 0) {
