@@ -31,14 +31,15 @@ const categoriState = [
   {
     id: 5,
     game: 'VALLOLANT',
-    players: 8,
+    players: 6,
   },
 ];
 
 const categori = (state = categoriState, action) => {
   switch (action.type) {
     case CLICK_CATEGORI:
-      const gameFilter = state.filter(categori => categori.game === PostFakeData.category);
+      const selectedGame = state.find(categori => categori.id === action.payload);
+      const gameFilter = PostFakeData.filter(post => post.category === selectedGame.game);
       return gameFilter;
 
     default:

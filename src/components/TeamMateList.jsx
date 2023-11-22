@@ -2,10 +2,11 @@ import React from 'react';
 import {useState} from 'react';
 import {useSelector} from 'react-redux';
 import styled from 'styled-components';
+import {useNavigate} from 'react-router-dom';
 
 const TeamMateList = () => {
   const postparty = useSelector(state => state.PostModule);
-
+  const navigate = useNavigate();
   const partypage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -41,7 +42,13 @@ const TeamMateList = () => {
             </ScPageButton>
           ))}
         </ScPageNation>
-        <ScWirteButton>글쓰기</ScWirteButton>
+        <ScWirteButton
+          onClick={() => {
+            navigate(`/DetailPage`);
+          }}
+        >
+          글쓰기
+        </ScWirteButton>
       </ScTeammateSearchBox>
     </>
   );
@@ -51,7 +58,7 @@ const ScTeammateSearchBox = styled.div`
   width: 800px;
   height: 650px;
   margin: 0 auto;
-  background-color: #c2d9ff;
+  border: 3px solid #190482;
 
   border-radius: 5px;
   text-align: center;
@@ -62,7 +69,7 @@ const ScGameParty = styled.div`
   width: 650px;
   height: 100px;
   background-color: white;
-  border: 2px solid black;
+  border: 2px solid #7752fe;
   border-radius: 5px;
   display: flex;
   flex-direction: column;
@@ -98,9 +105,9 @@ const ScPageButton = styled.button`
   cursor: pointer;
   border: none;
   border-radius: 3px;
-  background-color: #ddd;
+  background-color: #8e8ffa;
   &:hover {
-    background-color: #bbb;
+    background-color: #7752fe;
   }
 `;
 const ScWirteButton = styled.button`
@@ -109,9 +116,9 @@ const ScWirteButton = styled.button`
   cursor: pointer;
   border: none;
   border-radius: 5px;
-  background-color: #ddd;
+  background-color: #7752fe;
   &:hover {
-    background-color: #bbb;
+    background-color: #8e8ffa;
   }
   margin-left: 600px;
 `;

@@ -1,7 +1,8 @@
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useSelector, useDispatch} from 'react-redux';
-
+import Header from 'components/Layout/Header';
+import Footer from 'components/Layout/Footer';
 import PostModule from 'redux/modules/PostModule';
 import categori, {seartchCategori} from 'redux/modules/categoriModule';
 import {Link} from '../../node_modules/react-router-dom/dist/index';
@@ -12,14 +13,15 @@ import {useState} from 'react';
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
   const postparty = useSelector(state => state.PostModule);
-  // console.log(postparty);
+  const dispatch = useDispatch();
   const gameNames = categoris.map(category => category.game);
+
   const [filterCategory, setfilterCategory] = useState([]);
 
   const postCategory = selectCategory => {
     const filteringCategory = categoris.filter(category => category.game === selectCategory);
-    setfilterCategory(filteringCategory);
-    console.log(filteringCategory);
+    dispatch(seartchCategori(filteringCategory));
+    console.log(seartchCategori);
   };
 
   useEffect(() => {
@@ -27,7 +29,6 @@ const HomePage = () => {
   }, []);
   return (
     <div>
-      <header>header</header>
       <ScCategoriSection>
         {gameNames.map((gameName, index) => (
           <ScCategoriList key={index} onClick={() => postCategory(gameName)}>
@@ -43,7 +44,7 @@ const HomePage = () => {
       <ScTeammateSearchBox>
         <TeamMateList />
       </ScTeammateSearchBox>
-      <footer>footer.</footer>
+      <Footer />
     </div>
   );
 };
@@ -72,6 +73,7 @@ const ScCategoriList = styled(Link)`
   }
 `;
 const ScCategoriSection = styled.section`
+  margin-top: 20px;
   width: 100%;
   height: 150px;
   text-align: center;
