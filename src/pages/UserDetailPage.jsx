@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import CenterContainer from 'components/Common/Common.styled';
 import fakeData from 'db/fakeData.json';
 import avatar from 'assets/avatar.png';
 import uuid from '../../node_modules/react-uuid/uuid';
