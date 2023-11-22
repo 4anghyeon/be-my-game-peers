@@ -16,12 +16,11 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const gameNames = categoris.map(category => category.game);
 
-  const [filterCategory, setfilterCategory] = useState([]);
+  const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
 
   const postCategory = selectCategory => {
-    const filteringCategory = categoris.filter(category => category.game === selectCategory);
-    dispatch(seartchCategori(filteringCategory));
-    console.log(seartchCategori);
+    setfilterCategory(selectCategory);
+    console.log(selectCategory);
   };
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const HomePage = () => {
       </ScSearchBox>
 
       <ScTeammateSearchBox>
-        <TeamMateList />
+        <TeamMateList filterCategory={filterCategory} />
       </ScTeammateSearchBox>
       <Footer />
     </div>
@@ -108,7 +107,7 @@ const ScSearchButton = styled.button`
   }
 `;
 const ScTeammateSearchBox = styled.div`
-  width: 700px;
+  width: 800px;
   height: 700px;
   margin: 0 auto;
   display: flex;
