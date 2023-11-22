@@ -53,7 +53,6 @@ const SignUpPage = () => {
 
   useEffect(() => {
     // 로그인되어 있으면 다시 메인으로..
-
     if (getAuth().currentUser) navigate('/');
   }, []);
 
