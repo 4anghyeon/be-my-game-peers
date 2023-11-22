@@ -13,7 +13,7 @@ export const findUserByEmail = async email => {
   await new Promise(res => {
     if (querySnapshot.docs.length > 0) {
       res();
-      user = querySnapshot.docs[0].data();
+      user = {id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data()};
     }
   });
   return user;
