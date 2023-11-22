@@ -1,16 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useSelector, useDispatch} from 'react-redux';
 import categori from 'redux/modules/categoriModule';
 import {seartchCategori} from 'redux/modules/categoriModule';
 import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
+import {getAuth} from 'firebase/auth';
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
-  //const categoriList = categoris.map();
   console.log(categoris);
   const gameNames = categoris.map(category => category.game);
   console.log(gameNames);
+  useEffect(() => {
+    // 로그인되어 있으면 다시 메인으로..
+    console.log(getAuth().currentUser);
+  }, []);
   return (
     <div>
       <header>header</header>
