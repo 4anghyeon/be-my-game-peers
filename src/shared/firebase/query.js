@@ -12,9 +12,9 @@ export const findUserByEmail = async email => {
   let user = null;
   await new Promise(res => {
     if (querySnapshot.docs.length > 0) {
-      res();
       user = {id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data()};
     }
+    res();
   });
   return user;
 };
