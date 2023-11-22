@@ -15,10 +15,6 @@ const WritePage = () => {
     currentParticipants: '1',
   });
 
-  useEffect(() => {
-    console.log(getAuth().currentUser);
-  }, []);
-
   const submitForm = e => {
     e.preventDefault();
     const newPost = {

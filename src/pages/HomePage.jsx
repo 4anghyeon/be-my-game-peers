@@ -1,6 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {getAuth} from 'firebase/auth';
 
 const HomePage = () => {
+  useEffect(() => {
+    // 로그인되어 있으면 다시 메인으로..
+  }, []);
   return <div></div>;
 };
 
