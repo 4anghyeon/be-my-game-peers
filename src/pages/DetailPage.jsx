@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
 import {useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
+import {getAuth} from 'firebase/auth';
 
 const DetailPage = () => {
   const posts = useSelector(state => state.PostModule);
@@ -14,6 +15,10 @@ const DetailPage = () => {
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
+
+  useEffect(() => {
+    console.log(getAuth().currentUser);
+  }, []);
 
   const changeCommentText = e => {
     setComment(e.target.value);

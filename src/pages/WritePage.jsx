@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from '../../node_modules/react-redux/es/exports';
 import {addPost} from 'redux/modules/PostModule';
+import {getAuth} from 'firebase/auth';
 
 const WritePage = () => {
   const dispatch = useDispatch();
@@ -11,6 +12,10 @@ const WritePage = () => {
     category: 'select',
     currentParticipants: '1',
   });
+
+  useEffect(() => {
+    console.log(getAuth().currentUser);
+  }, []);
 
   const submitForm = e => {
     e.preventDefault();
