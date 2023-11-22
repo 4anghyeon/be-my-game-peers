@@ -26,10 +26,11 @@ const AppRouter = () => {
           <Route path="user/:userid" element={<UserDetailPage />}></Route>
 
           {/* 게시글 */}
-          <Route path="write" element={<DetailPage />}></Route>
+          <Route path="detail/:id" element={<DetailPage />}></Route>
+          {/* <Route path="detail" element={<DetailPage />}></Route> */}
 
           {/* 글쓰기 */}
-          <Route path="detail/:id" element={<WritePage />}></Route>
+          <Route path="write" element={<WritePage />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>
