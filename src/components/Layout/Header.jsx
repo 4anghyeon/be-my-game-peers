@@ -16,7 +16,6 @@ const Header = () => {
 
   useEffect(() => {
     // 현재 로그인 유저 정보 가져옴
-    console.log(userAuth);
     dispatch(changeAuth(getAuth().currentUser));
   }, []);
 

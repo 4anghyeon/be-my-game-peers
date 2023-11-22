@@ -7,6 +7,8 @@ import {auth} from '../shared/firebase';
 import {useDispatch} from 'react-redux';
 import {changeAuth} from '../redux/modules/userAuth';
 import googleIcon from '../assets/img/google-icon.png';
+import {createUser, findUserByEmail} from '../shared/firebase/query';
+import {addUser} from '../redux/modules/users';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -48,6 +50,14 @@ const LoginPage = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       dispatch(changeAuth(result.user));
+
+      const user = await findUserByEmail(result.user.email);
+      if (!user) {
+        const newUser = {email: result.user.email, introduction: '', favoriteGame: 0};
+        await createUser(newUser);
+        dispatch(addUser(newUser));
+      }
+
       navigate('/');
     } catch (error) {
       console.error(error);
