@@ -13,7 +13,6 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="*" element={<NotFoundPage />}></Route>
         <Route path="/" element={<Layout />}>
           {/* 메인 */}
           <Route path="/" element={<HomePage />}></Route>
@@ -27,6 +26,7 @@ const AppRouter = () => {
           <Route path="detail/:id" element={<DetailPage />}></Route>
           {/* 글쓰기 */}
           <Route path="write" element={<WritePage />}></Route>
+          {/* <Route path="*" element={<NotFoundPage />}></Route> */}
         </Route>
       </Routes>
     </BrowserRouter>

@@ -70,7 +70,7 @@ const DetailPage = () => {
         <h1>{selectedPost.postTitle}</h1>
         <ScPostDetailGroup>
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
-          {!isEdit && <ScTextarea disabled>{selectedPost.postContent}</ScTextarea>}
+          {!isEdit && <ScTextarea disabled defaultValue={selectedPost.postContent} />}
           <ScBtnGroup>
             <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
             <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
@@ -85,7 +85,7 @@ const DetailPage = () => {
 
         <SCCommentGroup>
           {selectedPost.comments.map(item => (
-            <div>
+            <div key={item.postId}>
               <span>{item.userId}</span>
               <p>{item.content}</p>
             </div>
