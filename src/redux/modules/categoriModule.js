@@ -1,3 +1,5 @@
+import PostFakeData from './PostFakeData.json';
+
 const CLICK_CATEGORI = 'categoriModule/CLICK_CATEGORI';
 
 export const seartchCategori = payload => ({
@@ -26,12 +28,18 @@ const categoriState = [
     game: 'ROLLTOCHES',
     players: 8,
   },
+  {
+    id: 5,
+    game: 'VALLOLANT',
+    players: 8,
+  },
 ];
 
 const categori = (state = categoriState, action) => {
   switch (action.type) {
     case CLICK_CATEGORI:
-      return state;
+      const gameFilter = state.filter(categori => categori.game === PostFakeData.category);
+      return gameFilter;
 
     default:
       return state;

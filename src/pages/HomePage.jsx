@@ -1,16 +1,27 @@
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useSelector, useDispatch} from 'react-redux';
-import categori from 'redux/modules/categoriModule';
-import {seartchCategori} from 'redux/modules/categoriModule';
+
+import PostModule from 'redux/modules/PostModule';
+import categori, {seartchCategori} from 'redux/modules/categoriModule';
 import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
+import {useState} from 'react';
+
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
-  console.log(categoris);
+  const postparty = useSelector(state => state.PostModule);
+  // console.log(postparty);
   const gameNames = categoris.map(category => category.game);
-  console.log(gameNames);
+  const [filterCategory, setfilterCategory] = useState([]);
+
+  const postCategory = selectCategory => {
+    const filteringCategory = categoris.filter(category => category.game === selectCategory);
+    setfilterCategory(filteringCategory);
+    console.log(filteringCategory);
+  };
+
   useEffect(() => {
     // 로그인되어 있으면 다시 메인으로..
     console.log(getAuth().currentUser);
@@ -18,25 +29,27 @@ const HomePage = () => {
   return (
     <div>
       <header>header</header>
-      <CategoriSection>
+      <ScCategoriSection>
         {gameNames.map((gameName, index) => (
-          <CategoriList key={index}>{gameName}</CategoriList>
+          <ScCategoriList key={index} onClick={() => postCategory(gameName)}>
+            {gameName}
+          </ScCategoriList>
         ))}
-      </CategoriSection>
-      <SearchBox>
-        <SearchInput placeholder="원하는 파티를 검색하세오" />
-        <SearchButton>검색</SearchButton>
-      </SearchBox>
+      </ScCategoriSection>
+      <ScSearchBox>
+        <ScSearchInput placeholder="원하는 파티를 검색하세오" />
+        <ScSearchButton>검색</ScSearchButton>
+      </ScSearchBox>
 
-      <TeammateSearchBox>
+      <ScTeammateSearchBox>
         <TeamMateList />
-      </TeammateSearchBox>
+      </ScTeammateSearchBox>
       <footer>footer.</footer>
     </div>
   );
 };
 
-const CategoriList = styled(Link)`
+const ScCategoriList = styled(Link)`
   color: black;
   margin: 50px;
   text-decoration: none;
@@ -59,17 +72,17 @@ const CategoriList = styled(Link)`
     width: 100%;
   }
 `;
-const CategoriSection = styled.section`
+const ScCategoriSection = styled.section`
   width: 100%;
   height: 150px;
   text-align: center;
 `;
-const SearchBox = styled.form`
+const ScSearchBox = styled.form`
   width: 100%;
   height: 150px;
   text-align: center;
 `;
-const SearchInput = styled.input`
+const ScSearchInput = styled.input`
   width: 350px;
   height: 50px;
   border-top: none;
@@ -79,7 +92,7 @@ const SearchInput = styled.input`
   font-size: 20px;
   font-family: arial;
 `;
-const SearchButton = styled.button`
+const ScSearchButton = styled.button`
   width: 80px;
   height: 50px;
   margin-left: 15px;
@@ -93,11 +106,10 @@ const SearchButton = styled.button`
     transition: background-color 0.5s;
   }
 `;
-const TeammateSearchBox = styled.div`
+const ScTeammateSearchBox = styled.div`
   width: 700px;
   height: 700px;
   margin: 0 auto;
-  background-color: #c2d9ff;
   display: flex;
   align-items: center;
   justify-content: center;
