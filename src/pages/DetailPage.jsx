@@ -200,6 +200,7 @@ const SCCommentGroup = styled.div`
     border-radius: 10px;
     max-height: 100px;
     overflow: auto;
+    margin-right: 10px;
   }
 `;
 

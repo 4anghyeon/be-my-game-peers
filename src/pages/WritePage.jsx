@@ -1,21 +1,33 @@
-import React, {useState} from 'react';
-import {useDispatch} from '../../node_modules/react-redux/es/exports';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
 import {addPost} from 'redux/modules/PostModule';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
+import {useNavigate} from '../../node_modules/react-router-dom/dist/index';
 
 const WritePage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const categoryInfo = useSelector(state => state.categoriModule);
+
+  const [needPlayers, setNeedPlayers] = useState(0);
 
   const [inputs, setInputs] = useState({
     postTitle: '',
     postContent: '',
     category: 'select',
-    currentParticipants: '1',
+    currentParticipants: 1,
   });
+
+  useEffect(() => {
+    let selectedCategory = categoryInfo.find(item => item.game === inputs.category);
+    if (selectedCategory) {
+      setNeedPlayers(selectedCategory.players - inputs.currentParticipants);
+    }
+  }, [inputs.category, inputs.currentParticipants]);
 
   const submitForm = e => {
     e.preventDefault();
@@ -44,6 +56,11 @@ const WritePage = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+  const canclePost = () => {
+    navigate('/');
+  };
+
   return (
     <CenterContainer>
       <ScFormGroup onSubmit={submitForm}>
@@ -60,15 +77,19 @@ const WritePage = () => {
         </ScWriteElementGroup>
         <ScSelect name="category" id="category" value={inputs.category} onChange={changeInput}>
           <option value="select">게임선택</option>
-          <option value="lol">리그오브레전드</option>
-          <option value="overwatch">오버워치</option>
-          <option value="starcraft">스타크래프트</option>
-          <option value="lolchess">롤토체스</option>
-          <option value="valorant">발로란트</option>
+          <option value="LEAGUE OF LEGENDS">리그오브레전드</option>
+          <option value="OVERWATCH">오버워치</option>
+          <option value="STARCRAFT">스타크래프트</option>
+          <option value="VALLORANT">발로란트</option>
         </ScSelect>
         <ScWriteElementGroup>
           <label htmlFor="Participants">현재 인원수</label>
-          <ScSelect name="Participants" id="Participants" value={inputs.currentParticipants} onChange={changeInput}>
+          <ScSelect
+            name="currentParticipants"
+            id="currentParticipants"
+            value={inputs.currentParticipants}
+            onChange={changeInput}
+          >
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -77,7 +98,7 @@ const WritePage = () => {
           </ScSelect>
         </ScWriteElementGroup>
         <ScWriteElementGroup>
-          <p>필요인원수 : 2</p>
+          <p>필요인원수 : {needPlayers}</p>
         </ScWriteElementGroup>
         <ScWriteElementGroup>
           <ScTextarea
@@ -90,7 +111,7 @@ const WritePage = () => {
         </ScWriteElementGroup>
         <ScBtnGroup>
           <ScRegisterBtn>게시글 등록</ScRegisterBtn>
-          <ScCancelBtn>취소</ScCancelBtn>
+          <ScCancelBtn onClick={canclePost}>취소</ScCancelBtn>
         </ScBtnGroup>
       </ScFormGroup>
     </CenterContainer>
