@@ -5,7 +5,7 @@ import {getAuth, signOut} from 'firebase/auth';
 import {useDispatch, useSelector} from 'react-redux';
 import {changeAuth} from '../../redux/modules/userAuth';
 import downArrow from 'assets/img/down-arrow.svg';
-import {Button} from '../Auth/Auth.styled';
+import {Button} from '../Common/Common.styled';
 
 const Header = () => {
   const {pathname} = useLocation();

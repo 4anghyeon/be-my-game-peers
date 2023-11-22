@@ -12,10 +12,11 @@ import {useNavigate} from 'react-router-dom';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {useDispatch} from 'react-redux';
 import {ERROR_EMAIL_DUPLICATED} from '../shared/helper/errorCode';
-import {Button, Container, Form, Input, Section, ValidationMessage} from '../components/Auth/Auth.styled';
+import {Container, Form, Section, ValidationMessage} from '../components/Auth/Auth.styled';
 import {changeAuth} from '../redux/modules/userAuth';
 import {addUser} from '../redux/modules/users';
-import {createUser, findUserByEmail} from '../shared/firebase/query';
+import {createUser, findUserByEmail, updateUser} from '../shared/firebase/query';
+import {Button, Input} from '../components/Common/Common.styled';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -167,7 +168,6 @@ const SignUpPage = () => {
           });
           emailRef.current.focus();
         }
-      } finally {
         hideLoading(document.getElementById('form'));
       }
     }
