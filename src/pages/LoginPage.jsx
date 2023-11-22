@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {ScContainer, ScForm, ScSection, ValidationMessage} from '../components/Auth/Auth.styled';
+import {ScContainer, ScForm, ScSection, ScWrapper, ValidationMessage} from '../components/Auth/Auth.styled';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import {signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
@@ -66,35 +66,37 @@ const LoginPage = () => {
   };
 
   return (
-    <ScContainer>
-      <ScForm>
-        <div>
-          <h1>로그인</h1>
-          <p>동료들이 당신을 기다립니다.</p>
+    <ScWrapper>
+      <ScContainer>
+        <ScForm>
           <div>
-            <ScSection>
-              <div>
-                <Input placeholder="이메일을 입력하세요." type="email" name="email" ref={emailRef} />
-              </div>
-              {emailValidationMessage && (
-                <ValidationMessage $isValid={false}>{emailValidationMessage}</ValidationMessage>
-              )}
-            </ScSection>
-            <ScSection>
-              <div>
-                <Input placeholder="비밀번호를 입력하세요." type="password" ref={passwordRef} />
-              </div>
-            </ScSection>
+            <h1>로그인</h1>
+            <p>동료들이 당신을 기다립니다.</p>
+            <div>
+              <ScSection>
+                <div>
+                  <Input placeholder="이메일을 입력하세요." type="email" name="email" ref={emailRef} />
+                </div>
+                {emailValidationMessage && (
+                  <ValidationMessage $isValid={false}>{emailValidationMessage}</ValidationMessage>
+                )}
+              </ScSection>
+              <ScSection>
+                <div>
+                  <Input placeholder="비밀번호를 입력하세요." type="password" ref={passwordRef} />
+                </div>
+              </ScSection>
+            </div>
           </div>
-        </div>
-        <ScLoginButton onClick={onClickLoginButton}>로그인</ScLoginButton>
-        <ScSocialLoginButton onClick={onClickGoogleLoginButton}>
-          <img src={googleIcon} alt="googleIcon" />
-          <span>구글로 로그인</span>
-        </ScSocialLoginButton>
-        <ScSignUpButton onClick={onClickSignUpButton}>회원가입</ScSignUpButton>
-      </ScForm>
-    </ScContainer>
+          <ScLoginButton onClick={onClickLoginButton}>로그인</ScLoginButton>
+          <ScSocialLoginButton onClick={onClickGoogleLoginButton}>
+            <img src={googleIcon} alt="googleIcon" />
+            <span>구글로 로그인</span>
+          </ScSocialLoginButton>
+          <ScSignUpButton onClick={onClickSignUpButton}>회원가입</ScSignUpButton>
+        </ScForm>
+      </ScContainer>
+    </ScWrapper>
   );
 };
 
