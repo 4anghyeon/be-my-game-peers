@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import commonStyle from 'components/Common/Common.styled';
 import fakeData from 'db/fakeData.json';
 import avatar from 'assets/avatar.png';
 import uuid from '../../node_modules/react-uuid/uuid';
@@ -45,7 +46,7 @@ const UserDetailPage = () => {
 
   return (
     <>
-      <ScContainer>
+      <CenterContainer>
         <ScSelectImg>
           <ScProfileImg src={avatar} alt="프로필 이미지" />
           {isEdit ? <ScSelectPictureBtn>사진 선택</ScSelectPictureBtn> : null}
@@ -91,7 +92,7 @@ const UserDetailPage = () => {
             <li></li>
           </ul>
         </CommentBox>
-      </ScContainer>
+      </CenterContainer>
     </>
   );
 };
