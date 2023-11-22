@@ -13,7 +13,7 @@ import {useState} from 'react';
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
   const postparty = useSelector(state => state.PostModule);
-  const dispatch = useDispatch();
+
   const gameNames = categoris.map(category => category.game);
 
   const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
@@ -22,9 +22,9 @@ const HomePage = () => {
     setfilterCategory(selectCategory);
     console.log(selectCategory);
   };
-
+  const isUserLoggedIn = getAuth().currentUser;
   useEffect(() => {
-    // 로그인되어 있으면 다시 메인으로..
+    console.log(getAuth().currentUser);
   }, []);
   return (
     <div>
@@ -41,7 +41,7 @@ const HomePage = () => {
       </ScSearchBox>
 
       <ScTeammateSearchBox>
-        <TeamMateList filterCategory={filterCategory} />
+        <TeamMateList filterCategory={filterCategory} isUserLoggedIn={isUserLoggedIn} />
       </ScTeammateSearchBox>
       <Footer />
     </div>
