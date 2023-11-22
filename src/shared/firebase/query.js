@@ -5,7 +5,6 @@ import {getAuth, updateProfile} from 'firebase/auth';
 const userCollectionRef = collection(db, 'users');
 
 export const findUserByEmail = async email => {
-  console.log(email);
   // firestore의 user정보에서 email이 같은 유저를 찾음
   const selectUserByEmailQuery = await query(userCollectionRef, where('email', '==', email));
   const querySnapshot = await getDocs(selectUserByEmailQuery);
