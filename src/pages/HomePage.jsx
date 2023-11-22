@@ -16,7 +16,7 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const gameNames = categoris.map(category => category.game);
 
-  const [filterCategory, setfilterCategory] = useState([]);
+  const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
 
   const postCategory = selectCategory => {
     setfilterCategory(selectCategory);
@@ -107,7 +107,7 @@ const ScSearchButton = styled.button`
   }
 `;
 const ScTeammateSearchBox = styled.div`
-  width: 700px;
+  width: 800px;
   height: 700px;
   margin: 0 auto;
   display: flex;
