@@ -15,7 +15,7 @@ import {ERROR_EMAIL_DUPLICATED} from '../shared/helper/errorCode';
 import {Container, Form, Section, ValidationMessage} from '../components/Auth/Auth.styled';
 import {changeAuth} from '../redux/modules/userAuth';
 import {addUser} from '../redux/modules/users';
-import {createUser, findUserByEmail} from '../shared/firebase/query';
+import {createUser, findUserByEmail, updateUser} from '../shared/firebase/query';
 import {Button, Input} from '../components/Common/Common.styled';
 
 const SignUpPage = () => {
@@ -53,8 +53,6 @@ const SignUpPage = () => {
 
   useEffect(() => {
     // 로그인되어 있으면 다시 메인으로..
-
-
     if (getAuth().currentUser) navigate('/');
   }, []);
 
@@ -170,7 +168,6 @@ const SignUpPage = () => {
           });
           emailRef.current.focus();
         }
-      } finally {
         hideLoading(document.getElementById('form'));
       }
     }
