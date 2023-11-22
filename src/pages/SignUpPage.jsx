@@ -10,12 +10,12 @@ import {createUserWithEmailAndPassword, getAuth, updateProfile} from 'firebase/a
 import {auth} from '../shared/firebase';
 import {useNavigate} from 'react-router-dom';
 import {hideLoading, showLoading} from '../shared/helper/common';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ERROR_EMAIL_DUPLICATED} from '../shared/helper/errorCode';
-import {Container, Form, Section, ValidationMessage} from '../components/Auth/Auth.styled';
+import {ScContainer, ScForm, ScSection, ValidationMessage} from '../components/Auth/Auth.styled';
 import {changeAuth} from '../redux/modules/userAuth';
 import {addUser} from '../redux/modules/users';
-import {createUser, findUserByEmail, updateUser} from '../shared/firebase/query';
+import {createUser, findUserByEmail} from '../shared/firebase/query';
 import {Button, Input} from '../components/Common/Common.styled';
 
 const SignUpPage = () => {
@@ -26,6 +26,7 @@ const SignUpPage = () => {
   const [introduction, setIntroduction] = useState('');
   const [favoriteGame, setFavoriteGame] = useState(0);
   const emailRef = useRef(null);
+  const categories = useSelector(state => state.categoriModule);
 
   // form의 전체 validation 여부를 결정하는 state
   const [validation, setValidation] = useState({
@@ -174,23 +175,23 @@ const SignUpPage = () => {
   };
 
   return (
-    <Container>
-      <Form id="form">
+    <ScContainer>
+      <ScForm id="form">
         <div>
           <h1>회원가입</h1>
           <p>가입을 통해 여러분의 게임 동료를 모아보세요!</p>
         </div>
         <div>
-          <Section>
+          <ScSection>
             <div>
               <Input type="email" name="email" placeholder="이메일 입력" onChange={handleInputChange} ref={emailRef} />
-              <CheckDuplicateButton onClick={handleCheckDuplicate}>중복 확인</CheckDuplicateButton>
+              <ScCheckDuplicateButton onClick={handleCheckDuplicate}>중복 확인</ScCheckDuplicateButton>
             </div>
             {email && validation.email.message && (
               <ValidationMessage $isValid={validation.email.isValid}>{validation.email.message}</ValidationMessage>
             )}
-          </Section>
-          <Section>
+          </ScSection>
+          <ScSection>
             <div>
               <Input
                 type="password"
@@ -204,16 +205,16 @@ const SignUpPage = () => {
                 {validation.password.message}
               </ValidationMessage>
             )}
-          </Section>
-          <Section>
+          </ScSection>
+          <ScSection>
             <div>
               <Input type="password" name="rePassword" placeholder="비밀번호 재입력" onChange={handleInputChange} />
             </div>
             <ValidationMessage $isValid={validation.rePassword.isValid}>
               {validation.rePassword.message}
             </ValidationMessage>
-          </Section>
-          <Section>
+          </ScSection>
+          <ScSection>
             <div>
               <Input type="text" placeholder="화면에 표시될 닉네임" name="nickname" onChange={handleInputChange} />
             </div>
@@ -222,33 +223,47 @@ const SignUpPage = () => {
                 {validation.nickname.message}
               </ValidationMessage>
             )}
-          </Section>
-          <Section>
+          </ScSection>
+          <ScSection>
             <div>
-              <TextArea placeholder="한 줄 소개" name="introduction" maxLength={100} onChange={handleInputChange} />
+              <ScIntroTextArea
+                placeholder="한 줄 소개"
+                name="introduction"
+                maxLength={100}
+                onChange={handleInputChange}
+              />
             </div>
-          </Section>
-          <Section>
+          </ScSection>
+          <ScSection>
             <div>
               <label>자주 하는 게임</label>
-              <Select placeholder="자주 하는 게임" name="favoriteGame" defaultValue="0" onChange={handleInputChange}>
-                <option value="0">리그 오브 레전드</option>
-                <option value="1">오버워치</option>
-                <option value="2">발로란트</option>
-              </Select>
+              <ScGameSelect
+                placeholder="자주 하는 게임"
+                name="favoriteGame"
+                defaultValue="0"
+                onChange={handleInputChange}
+              >
+                {categories.map(category => {
+                  return (
+                    <option key={category.id} value={category.id}>
+                      {category.game}
+                    </option>
+                  );
+                })}
+              </ScGameSelect>
             </div>
-          </Section>
+          </ScSection>
         </div>
 
-        <SignUpButton type="button" onClick={handleSignUp}>
+        <ScSignUpButton type="button" onClick={handleSignUp}>
           가입 하기
-        </SignUpButton>
-      </Form>
-    </Container>
+        </ScSignUpButton>
+      </ScForm>
+    </ScContainer>
   );
 };
 
-const TextArea = styled.textarea`
+const ScIntroTextArea = styled.textarea`
   resize: none;
   width: 100%;
   border: 1px solid lightgrey;
@@ -256,7 +271,7 @@ const TextArea = styled.textarea`
   padding: 15px;
 `;
 
-const Select = styled.select`
+const ScGameSelect = styled.select`
   --arrow-bg: #8e8ffa;
   --arrow-icon: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg);
   --option-bg: #c2d9ff;
@@ -288,14 +303,14 @@ const Select = styled.select`
   }
 `;
 
-const CheckDuplicateButton = styled(Button)`
+const ScCheckDuplicateButton = styled(Button)`
   border-radius: 5px;
   margin-left: 10px;
   width: 20%;
   padding: 15px;
 `;
 
-const SignUpButton = styled(Button)`
+const ScSignUpButton = styled(Button)`
   width: 50%;
   padding: 20px;
   border-radius: 10px;

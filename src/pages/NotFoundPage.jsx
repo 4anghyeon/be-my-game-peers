@@ -12,15 +12,15 @@ const NotFoundPage = () => {
   };
 
   return (
-    <Container>
+    <ScContainer>
       <h1>페이지를 찾을 수 없습니다.</h1>
-      <Content />
-      <HomeButton onClick={onClickHomeButton}>홈으로</HomeButton>
-    </Container>
+      <ScContent />
+      <ScHomeButton onClick={onClickHomeButton}>홈으로</ScHomeButton>
+    </ScContainer>
   );
 };
 
-const Container = styled(CenterContainer)`
+const ScContainer = styled(CenterContainer)`
   flex-direction: column;
 
   h1 {
@@ -29,14 +29,14 @@ const Container = styled(CenterContainer)`
   }
 `;
 
-const Content = styled.section`
+const ScContent = styled.section`
   width: 50vw;
   height: 80vh;
   background-image: url(${() => image});
   background-size: cover;
 `;
 
-const HomeButton = styled(Button)`
+const ScHomeButton = styled(Button)`
   margin-top: 20px;
   width: 80px;
   height: 40px;
