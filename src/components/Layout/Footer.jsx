@@ -2,10 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Footer = () => {
-  return <Container></Container>;
+  return <ScContainer></ScContainer>;
 };
 
-const Container = styled.footer`
+const ScContainer = styled.footer`
   height: 50px;
 `;
 
