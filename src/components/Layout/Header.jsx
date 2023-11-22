@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {changeAuth} from '../../redux/modules/userAuth';
 import downArrow from 'assets/img/down-arrow.svg';
 import {Button} from '../Common/Common.styled';
+import {useAlert} from '../../redux/modules/alert/alertHook';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -13,6 +14,8 @@ const Header = () => {
   const userAuth = useSelector(state => state.userAuth);
   const dispatch = useDispatch();
   const [showContextMenu, setShowContextMenu] = useState(false);
+
+  const alert = useAlert();
 
   useEffect(() => {
     // 현재 로그인 유저 정보 가져옴
@@ -33,7 +36,7 @@ const Header = () => {
     await signOut(getAuth());
     dispatch(changeAuth(null));
     setShowContextMenu(prev => false);
-    alert('로그아웃 되었습니다.');
+    alert.twinkle('로그아웃 되었습니다.');
   };
 
   // 설정 버튼 클릭시

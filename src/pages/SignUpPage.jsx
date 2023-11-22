@@ -17,6 +17,7 @@ import {changeAuth} from '../redux/modules/userAuth';
 import {addUser} from '../redux/modules/users';
 import {createUser, findUserByEmail} from '../shared/firebase/query';
 import {Button, Input} from '../components/Common/Common.styled';
+import {useAlert} from '../redux/modules/alert/alertHook';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -27,6 +28,7 @@ const SignUpPage = () => {
   const [favoriteGame, setFavoriteGame] = useState(0);
   const emailRef = useRef(null);
   const categories = useSelector(state => state.categoriModule);
+  const alert = useAlert();
 
   // form의 전체 validation 여부를 결정하는 state
   const [validation, setValidation] = useState({
@@ -112,19 +114,19 @@ const SignUpPage = () => {
   const handleCheckDuplicate = async e => {
     e.preventDefault();
     if (email.trim() === '') {
-      alert('이메일을 입력해주세요.');
+      alert.alert('이메일을 입력해주세요.');
       return;
     }
 
     let {isValid, message} = validationEmail(email, {...validation.email, isDuplicate: false});
-    let isDuplicate = true;
+    let isDuplicate = false;
 
     // firestore의 user정보에서 email이 같은 유저를 찾음
     const find = await findUserByEmail(email);
     if (find) {
       message = '이미 사용중인 이메일입니다.';
       isValid = false;
-      isDuplicate = false;
+      isDuplicate = true;
     }
 
     setValidation(prev => {
@@ -139,7 +141,7 @@ const SignUpPage = () => {
     let notAvailableItem = Object.values(validation).find(item => !item.isValid);
     if (notAvailableItem) {
       // validation을 통과 못한 항목이 있다면..
-      alert(notAvailableItem.message);
+      alert.alert(notAvailableItem.message);
     } else {
       try {
         showLoading(document.getElementById('form'));
@@ -156,7 +158,7 @@ const SignUpPage = () => {
         dispatch(addUser(newUser));
 
         // 성공하면 로그인까지 됨.. (막을 수 없음)
-        alert('성공적으로 가입 되었습니다!');
+        alert.alert('성공적으로 가입 되었습니다!');
         dispatch(changeAuth(getAuth().currentUser));
         navigate('/');
       } catch (error) {

@@ -48,14 +48,14 @@ const ScAlertOverlay = styled(CenterContainer)`
 
 const ScAlertContainer = styled.section`
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-around;
   align-items: center;
   flex-direction: column;
-  width: 200px;
   height: 140px;
   background-color: white;
   border-radius: 15px;
   box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
+  padding: 20px;
 
   p {
     font-size: 1.5rem;
