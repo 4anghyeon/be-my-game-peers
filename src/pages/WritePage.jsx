@@ -14,20 +14,37 @@ const WritePage = () => {
   const categoryInfo = useSelector(state => state.categoriModule);
 
   const [needPlayers, setNeedPlayers] = useState(0);
+  const [players, setPlayers] = useState(0);
 
   const [inputs, setInputs] = useState({
     postTitle: '',
     postContent: '',
-    category: 'select',
+    category: 'LEAGUE OF LEGENDS',
     currentParticipants: 1,
   });
+
+  useEffect(() => {
+    // 로그인 안 되어 있으면 다시 메인으로..
+    if (!getAuth().currentUser) navigate('/');
+  }, []);
+
+  useEffect(() => {
+    let selectedCategory = categoryInfo.find(item => item.game === inputs.category);
+    setInputs({
+      ...inputs,
+      currentParticipants: 1,
+    });
+    if (selectedCategory) {
+      setPlayers(selectedCategory.players);
+    }
+  }, [inputs.category]);
 
   useEffect(() => {
     let selectedCategory = categoryInfo.find(item => item.game === inputs.category);
     if (selectedCategory) {
       setNeedPlayers(selectedCategory.players - inputs.currentParticipants);
     }
-  }, [inputs.category, inputs.currentParticipants]);
+  }, [inputs.currentParticipants]);
 
   const submitForm = e => {
     e.preventDefault();
@@ -39,8 +56,9 @@ const WritePage = () => {
       postDate: new Date(),
       category: inputs.category,
       currentParticipants: inputs.currentParticipants,
-      comment: [],
+      comments: [],
     };
+
     dispatch(addPost(newPost));
     setInputs({
       postTitle: '',
@@ -48,6 +66,7 @@ const WritePage = () => {
       category: 'select',
       currentParticipants: '1',
     });
+    navigate(`/detail/${newPost.postId}`);
   };
 
   const changeInput = e => {
@@ -68,6 +87,7 @@ const WritePage = () => {
         <ScWriteElementGroup>
           <label htmlFor="postTitle">글제목</label>
           <Input
+            id="postTitle"
             type="text"
             placeholder="제목을 입력하세요"
             name="postTitle"
@@ -76,25 +96,26 @@ const WritePage = () => {
           />
         </ScWriteElementGroup>
         <ScSelect name="category" id="category" value={inputs.category} onChange={changeInput}>
-          <option value="select">게임선택</option>
           <option value="LEAGUE OF LEGENDS">리그오브레전드</option>
           <option value="OVERWATCH">오버워치</option>
           <option value="STARCRAFT">스타크래프트</option>
           <option value="VALLORANT">발로란트</option>
         </ScSelect>
         <ScWriteElementGroup>
-          <label htmlFor="Participants">현재 인원수</label>
+          <label htmlFor="currentParticipants">현재 인원수</label>
           <ScSelect
             name="currentParticipants"
             id="currentParticipants"
             value={inputs.currentParticipants}
             onChange={changeInput}
           >
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
+            {new Array(players).fill(true).map((v, i) => {
+              return (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              );
+            })}
           </ScSelect>
         </ScWriteElementGroup>
         <ScWriteElementGroup>
