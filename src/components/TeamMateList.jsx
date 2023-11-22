@@ -3,7 +3,7 @@ import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 
-const TeamMateList = ({filterCategory}) => {
+const TeamMateList = ({filterCategory, isUserLoggedIn}) => {
   const postparty = useSelector(state => state.PostModule);
   const navigate = useNavigate();
   const partypage = 5;
@@ -12,7 +12,6 @@ const TeamMateList = ({filterCategory}) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    // 카테고리가 바뀔 때마다 해당 카테고리의 현재 페이지 초기화
     setCurrentPage(1);
   }, [filterCategory]);
 
@@ -53,13 +52,15 @@ const TeamMateList = ({filterCategory}) => {
           ))}
           {currentPage < totalPage && <ScPageButton onClick={() => setCurrentPage(currentPage + 1)}>다음</ScPageButton>}
         </ScPageNation>
-        <ScWirteButton
-          onClick={() => {
-            navigate(`/DetailPage`);
-          }}
-        >
-          글쓰기
-        </ScWirteButton>
+        {isUserLoggedIn && (
+          <ScWirteButton
+            onClick={() => {
+              navigate(`/DetailPage`);
+            }}
+          >
+            글쓰기
+          </ScWirteButton>
+        )}
       </ScTeammateSearchBox>
     </>
   );
@@ -113,11 +114,12 @@ const ScPostBox = styled.div`
 `;
 
 const ScPageNation = styled.div`
-  margin-top: 10px;
   display: flex;
   justify-content: center;
+  position: absolute;
+  width: 70%;
+  top: 105%;
 `;
-
 const ScPageButton = styled.button`
   margin: 0 5px;
   padding: 5px 10px;
@@ -146,7 +148,9 @@ const ScWirteButton = styled.button`
   &:hover {
     background-color: #8e8ffa;
   }
-  margin-left: 600px;
+  position: absolute;
+  bottom: -70px;
+  left: 80%;
+  transform: translateX(-50%);
 `;
-
 export default TeamMateList;
