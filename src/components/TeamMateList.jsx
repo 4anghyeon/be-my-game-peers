@@ -46,7 +46,7 @@ const TeamMateList = ({filterCategory}) => {
         </ScPageNation>
         <ScWirteButton
           onClick={() => {
-            navigate(`/DetailPage`);
+            navigate(`/write`);
           }}
         >
           글쓰기
