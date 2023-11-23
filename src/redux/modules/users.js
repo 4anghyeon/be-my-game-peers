@@ -20,7 +20,7 @@ const ADD_USER = 'users/addUser';
 export const addUser = newUser => {
   return {
     type: ADD_USER,
-    userInfo: newUser,
+    newUser,
   };
 };
 
@@ -34,10 +34,10 @@ const users = (state = initialState, action) => {
       return {
         ...state,
         ...{
-          email: action.userInfo.email,
-          nickname: action.userInfo.nickname,
-          introduction: action.userInfo.introduction,
-          favoriteGame: action.userInfo.favoriteGame,
+          email: action.newUser.email,
+          nickname: action.newUser.nickname,
+          introduction: action.newUser.introduction,
+          favoriteGame: action.newUser.favoriteGame,
           profileImg: null,
         },
       };
