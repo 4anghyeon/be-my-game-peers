@@ -48,8 +48,12 @@ const PeerContainer = ({profileUser}) => {
   return (
     <ScContainer>
       <ScFollowerContainer>
-        <div>팔로워 {followerNumber}</div>
-        <div>팔로잉 {followingNumber}</div>
+        <div>
+          <strong>팔로워</strong> {followerNumber}
+        </div>
+        <div>
+          <strong>팔로잉</strong> {followingNumber}
+        </div>
       </ScFollowerContainer>
       {profileUser.email !== getAuth().currentUser.email && (
         <ScFollowerContainer>
@@ -71,6 +75,7 @@ const ScContainer = styled.section`
   align-items: center;
   width: 350px;
   height: 80px;
+  text-align: center;
 `;
 
 const ScFollowerContainer = styled.div`
