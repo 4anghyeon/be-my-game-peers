@@ -8,6 +8,15 @@ const CenterContainer = styled.div`
   height: 100vh;
 `;
 
+export const CenterVertical = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+`;
+
 export const Button = styled.button`
   border: none;
   background-color: #7752fe;

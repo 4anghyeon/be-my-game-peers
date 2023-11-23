@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import commonStyle from 'components/Common/Common.styled';
+import {CenterVertical} from 'components/Common/Common.styled';
 import fakeData from 'db/fakeData.json';
 import avatar from 'assets/avatar.png';
 import uuid from '../../node_modules/react-uuid/uuid';
@@ -46,7 +46,7 @@ const UserDetailPage = () => {
 
   return (
     <>
-      <CenterContainer>
+      <CenterVertical>
         <ScSelectImg>
           <ScProfileImg src={avatar} alt="프로필 이미지" />
           {isEdit ? <ScSelectPictureBtn>사진 선택</ScSelectPictureBtn> : null}
@@ -92,20 +92,10 @@ const UserDetailPage = () => {
             <li></li>
           </ul>
         </CommentBox>
-      </CenterContainer>
+      </CenterVertical>
     </>
   );
 };
-
-const ScContainer = styled.div`
-  color: white;
-  display: flex;
-  flex-direction: column;
-  width: 1200px;
-  align-items: center;
-  margin: 20px auto;
-  padding: 12px;
-`;
 
 const ScSelectImg = styled.div`
   width: 600px;
