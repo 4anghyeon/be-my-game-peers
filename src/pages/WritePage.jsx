@@ -7,12 +7,14 @@ import {v4 as uuid} from 'uuid';
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
 import {useNavigate} from '../../node_modules/react-router-dom/dist/index';
+import {useAlert} from 'redux/modules/alert/alertHook';
 
 const WritePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const categoryInfo = useSelector(state => state.categoriModule);
 
+  const alert = useAlert();
   const [needPlayers, setNeedPlayers] = useState(0);
   const [players, setPlayers] = useState(0);
 
@@ -63,6 +65,11 @@ const WritePage = () => {
       comments: [],
     };
 
+    if (inputs.postTitle.trim().length === 0 || inputs.postContent.trim().length === 0) {
+      alert.alert('제목과 내용을 입력해주세요');
+      return;
+    }
+
     dispatch(addPost(newPost));
     setInputs({
       postTitle: '',
@@ -70,6 +77,7 @@ const WritePage = () => {
       category: 'select',
       currentParticipants: '1',
     });
+    alert.twinkle('글이 등록되었습니다!');
     navigate(`/detail/${newPost.postId}`);
   };
 
