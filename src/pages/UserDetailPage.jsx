@@ -2,14 +2,14 @@ import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {CenterVertical, Input} from 'components/Common/Common.styled';
 import avatar from 'assets/avatar.png';
-import uuid from '../../node_modules/react-uuid/uuid';
 import {useState} from 'react';
 import {getAuth} from 'firebase/auth';
 import {updateUser, findUserByEmail} from 'shared/firebase/query';
-import fakeData from 'db/fakeData.json';
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
+import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
 import {useNavigate} from 'react-router-dom';
+
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
@@ -33,6 +33,8 @@ const UserDetailPage = () => {
   const [nickname, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [favoriteGame, setFavoriteGame] = useState('');
+
+  let [profileImg, setProfileImg] = useState(avatar);
 
   const [isEdit, setIsEdit] = useState(false);
 
@@ -59,14 +61,38 @@ const UserDetailPage = () => {
     }
   };
 
-  const choosePhoto = () => {};
+  useEffect(() => {
+    if (getUserInfo) {
+      let photoURL = getUserInfo.photoURL;
+      if (photoURL) {
+        setProfileImg(photoURL);
+      }
+    } else {
+      setProfileImg(avatar);
+    }
+  }, [userAuth]);
+
+  const [likeCount, setLikeCount] = useState(0);
+  const [disLikeCount, setDisLikeCount] = useState(0);
+
+  const CLICK_LIKE = () => setLikeCount(likeCount + 1);
+  const CLICK_DISLIKE = () => setDisLikeCount(disLikeCount + 1);
+
+  const [comment, setComment] = useState('');
+
+  const SEND_COMMENT = event => setComment(event.target.value);
+
+  
 
   return (
     <>
       <CenterVertical>
         <ScSelectImg>
-          <ScProfileImg src={avatar} alt="프로필 이미지" />
-          {isEdit ? <ScButton>upload</ScButton> : null}
+          <ScProfileImg src={profileImg} alt="프로필 이미지" />
+          {isEdit ? <ScUpload>upload</ScUpload> : null}
+          <BtnBox>
+            <ScButton onClick={EDIT_BUTTON}>{isEdit ? '저장' : '수정'}</ScButton>
+          </BtnBox>
         </ScSelectImg>
         <PeerContainer profileUser={userInfo} />
         <ScInfoBox>
@@ -92,24 +118,23 @@ const UserDetailPage = () => {
             <ScAbout>{userInfo.favoriteGame}</ScAbout>
           )}
         </ScInfoBox>
-        <ScBtnBox>
-          <ScButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScButton>
-          <ScButton>내 게시물</ScButton>
-        </ScBtnBox>
-        <BtnBox>
-          <button>Like</button>
-          <button>Dislike</button>
-        </BtnBox>
-        <CommentBox>
-          <h3>{getUserInfo.displayName}님에게 후기를 보내 보세요!</h3>
-          <form>
-            <input />
-            <button>send</button>
-          </form>
-          <ul className="comment-list">
-            <li></li>
-          </ul>
-        </CommentBox>
+        <ScCommentArea>
+          <h3 style={{color: 'red'}}>{disLikeCount >= 50 ? '※ 경고 : 위험 유저입니다. ※' : null}</h3>
+          <ScBtnBox>
+            <ScButton onClick={CLICK_LIKE}>Like {likeCount}</ScButton>
+            <ScButton onClick={CLICK_DISLIKE}>Dislike {disLikeCount}</ScButton>
+          </ScBtnBox>
+          <CommentBox>
+            <ScUserComment>{getUserInfo.displayName}님과의 게임 후기를 남겨주세요!!</ScUserComment>
+            <ScForm>
+              <ScInput type="text" value={comment} onChange={SEND_COMMENT} />
+              <ScButton>send</ScButton>
+            </ScForm>
+            <ul className="comment-list">
+              <li></li>
+            </ul>
+          </CommentBox>
+        </ScCommentArea>
       </CenterVertical>
     </>
   );
@@ -168,10 +193,10 @@ const ScLabel = styled.label`
 const ScBtnBox = styled.div`
   width: 600px;
   display: flex;
-  margin: 0 auto;
+  margin: 20px auto;
   gap: 12px;
-  margin-top: 20px;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ScButton = styled.button`
@@ -182,20 +207,54 @@ const ScButton = styled.button`
   border-radius: 5px;
   width: 80px;
   height: 40px;
+  margin-left: 10px;
+`;
+
+const ScUpload = styled.button`
+  border: none;
+  background-color: #eee;
+  color: #333;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 80px;
+  height: 40px;
 `;
 
 const BtnBox = styled.div`
-  width: 600px;
+  width: 100px;
   display: flex;
-  margin: 0 auto;
+  align-items: flex-end;
+  margin-left: auto;
   gap: 12px;
-  margin: 20px 0;
-  justify-content: center;
+  justify-content: flex-end;
+`;
+
+const ScCommentArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+  width: 100%;
+`;
+
+const ScUserComment = styled.h2`
+  font-size: 1.3rem;
+`;
+
+const ScForm = styled.form`
+  margin: 20px auto;
+`;
+
+const ScInput = styled.input`
+  width: 600px;
+  padding: 15px;
+  border: 1px solid lightgrey;
+  border-radius: 5px;
 `;
 
 const CommentBox = styled.div`
   width: 1200px;
-  margin: 0 auto;
+  margin: 30px auto;
   display: flex;
   align-items: center;
   flex-direction: column;
