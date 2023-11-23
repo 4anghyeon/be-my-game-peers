@@ -116,7 +116,7 @@ const ScPageNation = styled.div`
   position: absolute; /* absolute로 설정 */
   width: 70%;
   right: 15%;
-  top: 10px; /* 조정이 필요한 위치로 설정 */
+  top: 93%; /* 조정이 필요한 위치로 설정 */
 `;
 const ScPageButton = styled.button`
   margin: 0 5px;
@@ -124,6 +124,7 @@ const ScPageButton = styled.button`
   cursor: pointer;
   border: none;
   border-radius: 3px;
+  color: white;
   background-color: #8e8ffa;
   &:hover {
     background-color: #7752fe;
@@ -143,12 +144,14 @@ const ScWirteButton = styled.button`
   border: none;
   border-radius: 5px;
   background-color: #7752fe;
+  color: white;
+  font-weight: bold;
   &:hover {
     background-color: #8e8ffa;
   }
   position: absolute; /* absolute로 설정 */
   bottom: 10px; /* 조정이 필요한 위치로 설정 */
-  left: 69%;
+  left: 91%;
   transform: translateX(-50%);
 `;
 export default TeamMateList;
