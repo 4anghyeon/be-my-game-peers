@@ -135,7 +135,7 @@ const DetailPage = () => {
 const ScVerticalContainer = styled(CenterContainer)`
   flex-direction: column;
   padding: 20px;
-  overflow: scroll;
+  overflow: auto;
 `;
 
 const ScDetailElementGroup = styled.div`
