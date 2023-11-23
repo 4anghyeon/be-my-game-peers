@@ -67,11 +67,10 @@ const PeerContainer = ({profileUser}) => {
 const ScContainer = styled.section`
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
-  width: 200px;
-  height: 100px;
-  border: 1px solid black;
+  width: 350px;
+  height: 80px;
 `;
 
 const ScFollowerContainer = styled.div`
@@ -79,6 +78,7 @@ const ScFollowerContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  font-size: 1rem;
 `;
 
 const ScFollowButton = styled(Button)`

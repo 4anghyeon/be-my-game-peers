@@ -76,7 +76,7 @@ const Header = () => {
             {userAuth ? (
               <ScProfileContainer>
                 <ScWelcomeMessage>
-                  반갑습니다. <strong>{userAuth.displayName}</strong> 님
+                  반갑습니다. <strong>{userAuth.displayName ? userAuth.displayName : 'Guest'}</strong> 님
                 </ScWelcomeMessage>
                 <ScProfile onClick={onClickOpenContextMenu} $img={profileImg}></ScProfile>
                 <img src={downArrow} alt="화살표" onClick={onClickOpenContextMenu} />
