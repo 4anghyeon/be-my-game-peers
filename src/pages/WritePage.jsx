@@ -76,7 +76,7 @@ const WritePage = () => {
     });
   };
 
-  const canclePost = () => {
+  const cancelPost = () => {
     navigate('/');
   };
 
@@ -132,7 +132,7 @@ const WritePage = () => {
         </ScWriteElementGroup>
         <ScBtnGroup>
           <ScRegisterBtn>게시글 등록</ScRegisterBtn>
-          <ScCancelBtn onClick={canclePost}>취소</ScCancelBtn>
+          <ScCancelBtn onClick={cancelPost}>취소</ScCancelBtn>
         </ScBtnGroup>
       </ScFormGroup>
     </CenterContainer>
