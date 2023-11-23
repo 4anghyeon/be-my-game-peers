@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
-import {addPost} from 'redux/modules/PostModule';
+import {addPost, fetchData} from 'redux/modules/PostModule';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
+import {collection, addDoc} from 'firebase/firestore';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
 import {useNavigate} from '../../node_modules/react-router-dom/dist/index';
 import {useAlert} from 'redux/modules/alert/alertHook';
+import {db} from 'shared/firebase';
 
 const WritePage = () => {
   const dispatch = useDispatch();
@@ -51,7 +53,7 @@ const WritePage = () => {
   }, [inputs.currentParticipants]);
 
   // 게시글 등록
-  const submitForm = e => {
+  const submitForm = async e => {
     e.preventDefault();
     const newPost = {
       postId: uuid(),
@@ -69,13 +71,14 @@ const WritePage = () => {
       alert.alert('제목과 내용을 입력해주세요');
       return;
     }
+    await addDoc(collection(db, 'posts'), newPost);
+    fetchData();
 
-    dispatch(addPost(newPost));
     setInputs({
       postTitle: '',
       postContent: '',
       category: 'select',
-      currentParticipants: '1',
+      currentParticipants: 1,
     });
     alert.twinkle('글이 등록되었습니다!');
     navigate(`/detail/${newPost.postId}`);

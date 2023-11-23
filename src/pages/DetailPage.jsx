@@ -18,6 +18,7 @@ const DetailPage = () => {
   const {id} = params;
   const textAreaRef = useRef();
   const alert = useAlert();
+  console.log(posts, id);
 
   const selectedPost = posts.find(post => post.postId === id);
   const [comment, setComment] = useState('');

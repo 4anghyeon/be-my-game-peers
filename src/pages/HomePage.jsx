@@ -13,7 +13,6 @@ import {useState} from 'react';
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
   const postparty = useSelector(state => state.PostModule);
-  console.log(postparty);
   const gameNames = categoris.map(category => category.game);
 
   const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
