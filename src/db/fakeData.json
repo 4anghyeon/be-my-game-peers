@@ -3,7 +3,7 @@
     "id": 1,
     "nickname": "gamer1",
     "profileImg": "https://example.com/profile1.jpg",
-    "about": "게임을 사랑하는 개발자",
+    "introduction": "게임을 사랑하는 개발자",
     "favoriteGame": "League of Legends",
     "likeCount": 120,
     "dislikeCount": 8
@@ -12,7 +12,7 @@
     "id": 2,
     "nickname": "player456",
     "profileImg": "https://example.com/profile2.jpg",
-    "about": "다양한 게임을 즐기는 플레이어",
+    "introduction": "다양한 게임을 즐기는 플레이어",
     "favoriteGame": "Fortnite",
     "likeCount": 80,
     "dislikeCount": 15

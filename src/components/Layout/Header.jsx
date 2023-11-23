@@ -53,7 +53,7 @@ const Header = () => {
 
   // 설정 버튼 클릭시
   const onClickProfileSetting = () => {
-    navigate(`user/${userAuth.uid}`);
+    navigate(`user/${userAuth.email}`);
     setShowContextMenu(prev => false);
   };
 
@@ -152,9 +152,7 @@ const ScProfileMenuContainer = styled.div`
   width: 100px;
   top: 50px;
   right: 0;
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 `;
 
 const ScProfileMenuButton = styled(Button)`
