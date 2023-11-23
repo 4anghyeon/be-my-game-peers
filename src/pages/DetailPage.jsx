@@ -53,7 +53,7 @@ const DetailPage = () => {
 
   // 수정 상태 토글
   const handleEditPost = () => {
-    setIsEdit(isEdit => !isEdit);
+    if (!isEdit) setIsEdit(true);
 
     if (isEdit && selectedPost.postContent.trim() === editedText.trim()) {
       alert.alert('수정내용이 없습니다');
@@ -61,9 +61,19 @@ const DetailPage = () => {
     }
 
     if (isEdit) {
-      alert.confirm('진짜?', () => {
-        dispatch(editPost({id, editedText}));
-      });
+      alert.confirm(
+        '진짜?',
+        () => {
+          dispatch(editPost({id, editedText}));
+          setIsEdit(false);
+          dispatch(hideAlert());
+        },
+        () => {
+          setEditedText(selectedPost.postContent);
+          setIsEdit(false);
+          dispatch(hideAlert());
+        },
+      );
     }
   };
 
