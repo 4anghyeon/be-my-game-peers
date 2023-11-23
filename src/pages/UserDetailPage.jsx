@@ -67,14 +67,16 @@ const UserDetailPage = () => {
   };
 
   useEffect(() => {
-    if (getUserInfo) {
-      let photoURL = getUserInfo.photoURL;
-      if (photoURL) {
-        setProfileImg(photoURL);
+    findUserByEmail(email).then(user => {
+      if (user) {
+        let photoURL = user.profileImg;
+        if (photoURL) {
+          setProfileImg(photoURL);
+        }
+      } else {
+        setProfileImg(avatar);
       }
-    } else {
-      setProfileImg(avatar);
-    }
+    });
   }, [userAuth]);
 
   // 추천 / 비추천 버튼
