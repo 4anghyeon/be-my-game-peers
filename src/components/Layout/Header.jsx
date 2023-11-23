@@ -7,6 +7,7 @@ import {changeAuth} from '../../redux/modules/userAuth';
 import downArrow from 'assets/img/down-arrow.svg';
 import {Button} from '../Common/Common.styled';
 import {useAlert} from '../../redux/modules/alert/alertHook';
+import avatar from 'assets/avatar.png';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -14,13 +15,24 @@ const Header = () => {
   const userAuth = useSelector(state => state.userAuth);
   const dispatch = useDispatch();
   const [showContextMenu, setShowContextMenu] = useState(false);
+  let [profileImg, setProfileImg] = useState(avatar);
 
   const alert = useAlert();
 
   useEffect(() => {
     // 현재 로그인 유저 정보 가져옴
-    dispatch(changeAuth(getAuth().currentUser));
-  }, []);
+    const currentUser = getAuth().currentUser;
+    dispatch(changeAuth(currentUser));
+
+    if (currentUser) {
+      let photoURL = currentUser.photoURL;
+      if (photoURL) {
+        setProfileImg(photoURL);
+      }
+    } else {
+      setProfileImg(avatar);
+    }
+  }, [userAuth]);
 
   const onClickLogin = () => {
     navigate('/login');
@@ -63,7 +75,10 @@ const Header = () => {
           <>
             {userAuth ? (
               <ScProfileContainer>
-                <ScProfile onClick={onClickOpenContextMenu}></ScProfile>
+                <ScWelcomeMessage>
+                  반갑습니다. <strong>{userAuth.displayName}</strong> 님
+                </ScWelcomeMessage>
+                <ScProfile onClick={onClickOpenContextMenu} $img={profileImg}></ScProfile>
                 <img src={downArrow} alt="화살표" onClick={onClickOpenContextMenu} />
                 {showContextMenu && (
                   <ScProfileMenuContainer>
@@ -126,9 +141,10 @@ const ScProfileContainer = styled.div`
 const ScProfile = styled.div`
   width: 40px;
   height: 40px;
-  background-color: #8e8ffa;
   border-radius: 50%;
-  border: 2px solid black;
+  border: 1px solid black;
+  background-image: url(${({$img}) => $img});
+  background-size: contain;
 `;
 
 const ScProfileMenuContainer = styled.div`
@@ -151,6 +167,10 @@ const ScProfileMenuButton = styled(Button)`
   &:not(:first-child) {
     margin-top: 10px;
   }
+`;
+
+const ScWelcomeMessage = styled.span`
+  margin-right: 20px;
 `;
 
 export default Header;
