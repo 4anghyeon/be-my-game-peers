@@ -10,7 +10,6 @@ import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
 import {useNavigate} from 'react-router-dom';
 
-
 const UserDetailPage = () => {
   const {pathname} = useLocation();
   const getUserInfo = getAuth().currentUser;
@@ -82,8 +81,6 @@ const UserDetailPage = () => {
 
   const SEND_COMMENT = event => setComment(event.target.value);
 
-  
-
   return (
     <>
       <CenterVertical>
@@ -94,12 +91,12 @@ const UserDetailPage = () => {
             <ScButton onClick={EDIT_BUTTON}>{isEdit ? '저장' : '수정'}</ScButton>
           </BtnBox>
         </ScSelectImg>
-        <PeerContainer profileUser={userInfo} />
+        <PeerContainer profileUser={userInfo} setUserInfo={setUserInfo} />
         <ScInfoBox>
           {isEdit ? (
             <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
           ) : (
-            <ScUserName>{userInfo.displayName}님</ScUserName>
+            <ScUserName>{userInfo.nickname}님</ScUserName>
           )}
         </ScInfoBox>
         <ScInfoBox>
