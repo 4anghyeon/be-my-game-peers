@@ -1,18 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
-import {addPost} from 'redux/modules/PostModule';
+import {addPost, fetchData, setData} from 'redux/modules/PostModule';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
+import {collection, addDoc} from 'firebase/firestore';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
 import {useNavigate} from '../../node_modules/react-router-dom/dist/index';
+import {useAlert} from 'redux/modules/alert/alertHook';
+import {db} from 'shared/firebase';
 
 const WritePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const categoryInfo = useSelector(state => state.categoriModule);
 
+  const alert = useAlert();
   const [needPlayers, setNeedPlayers] = useState(0);
   const [players, setPlayers] = useState(0);
 
@@ -28,6 +32,7 @@ const WritePage = () => {
     if (!getAuth().currentUser) navigate('/');
   }, []);
 
+  // 1. 게임카테고리가 변하면 -> 현재 인원수(=최대파티원수)가 동적으로 변경
   useEffect(() => {
     let selectedCategory = categoryInfo.find(item => item.game === inputs.category);
     setInputs({
@@ -39,6 +44,7 @@ const WritePage = () => {
     }
   }, [inputs.category]);
 
+  // 2. 현재 인원수가 변하면 -> 필요 인원수가 변경
   useEffect(() => {
     let selectedCategory = categoryInfo.find(item => item.game === inputs.category);
     if (selectedCategory) {
@@ -46,7 +52,8 @@ const WritePage = () => {
     }
   }, [inputs.currentParticipants]);
 
-  const submitForm = e => {
+  // 게시글 등록
+  const submitForm = async e => {
     e.preventDefault();
     const newPost = {
       postId: uuid(),
@@ -56,19 +63,31 @@ const WritePage = () => {
       postDate: new Date(),
       category: inputs.category,
       currentParticipants: inputs.currentParticipants,
+      needPlayers,
       comments: [],
     };
 
-    dispatch(addPost(newPost));
-    setInputs({
-      postTitle: '',
-      postContent: '',
-      category: 'select',
-      currentParticipants: '1',
-    });
-    navigate(`/detail/${newPost.postId}`);
+    if (inputs.postTitle.trim().length === 0 || inputs.postContent.trim().length === 0) {
+      alert.alert('제목과 내용을 입력해주세요');
+      return;
+    }
+    await addDoc(collection(db, 'posts'), newPost);
+    const allData = await fetchData();
+
+    if (allData) {
+      dispatch(setData(allData));
+      setInputs({
+        postTitle: '',
+        postContent: '',
+        category: 'select',
+        currentParticipants: 1,
+      });
+      alert.twinkle('글이 등록되었습니다!');
+      navigate(`/detail/${newPost.postId}`);
+    }
   };
 
+  // input 변경
   const changeInput = e => {
     setInputs({
       ...inputs,
@@ -76,7 +95,8 @@ const WritePage = () => {
     });
   };
 
-  const canclePost = () => {
+  // 게시글 작성 취소
+  const cancelPost = () => {
     navigate('/');
   };
 
@@ -132,7 +152,7 @@ const WritePage = () => {
         </ScWriteElementGroup>
         <ScBtnGroup>
           <ScRegisterBtn>게시글 등록</ScRegisterBtn>
-          <ScCancelBtn onClick={canclePost}>취소</ScCancelBtn>
+          <ScCancelBtn onClick={cancelPost}>취소</ScCancelBtn>
         </ScBtnGroup>
       </ScFormGroup>
     </CenterContainer>

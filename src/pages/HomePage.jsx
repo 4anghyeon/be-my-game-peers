@@ -9,31 +9,41 @@ import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
 import {useState} from 'react';
-
+import '../common.css';
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
   const postparty = useSelector(state => state.PostModule);
-  console.log(postparty);
+
   const gameNames = categoris.map(category => category.game);
 
   const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
   const [partyInput, setpartyInput] = useState('');
   const [filteredPosts, setFilteredPosts] = useState(postparty);
+  const [onSearch, setOnSearch] = useState(false);
   const postCategory = selectCategory => {
     setfilterCategory(selectCategory);
-    console.log(selectCategory);
+    setOnSearch(false);
   };
   const isUserLoggedIn = getAuth().currentUser;
+
   useEffect(() => {
     console.log(getAuth().currentUser);
   }, []);
-  const SearchParties = () => {
-    const serachResult = postparty.filter(item => item.postTitle.includes(partyInput));
-    setFilteredPosts(serachResult);
+
+  const SearchParties = event => {
+    event.preventDefault();
+    const searchResult = postparty.filter(
+      item => item.postTitle.includes(partyInput) && item.category === filterCategory,
+    );
+    setFilteredPosts(searchResult);
+    setOnSearch(true);
+
+    setpartyInput(``);
   };
   const Inputsearching = event => {
     setpartyInput(event.target.value);
   };
+
   return (
     <div>
       <ScCategoriSection>
@@ -44,12 +54,18 @@ const HomePage = () => {
         ))}
       </ScCategoriSection>
       <ScSearchBox>
-        <ScSearchInput placeholder="원하는 파티를 검색하세오" value={partyInput} onChange={Inputsearching} />
+        <ScSearchInput placeholder="제목을 입력하세요" value={partyInput} onChange={Inputsearching} />
         <ScSearchButton onClick={SearchParties}>검색</ScSearchButton>
       </ScSearchBox>
 
       <ScTeammateSearchBox>
-        <TeamMateList filterCategory={filterCategory} isUserLoggedIn={isUserLoggedIn} />
+        <TeamMateList
+          filterCategory={filterCategory}
+          isUserLoggedIn={isUserLoggedIn}
+          filteredPosts={filteredPosts}
+          partyInput={partyInput}
+          onSearch={onSearch}
+        />
       </ScTeammateSearchBox>
       <Footer />
     </div>
@@ -108,9 +124,13 @@ const ScSearchButton = styled.button`
   border-left: none;
   border-right: none;
   border-bottom: 3px solid black;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  background-color: #7752fe;
   cursor: pointer;
   &:active {
-    background-color: gray;
+    background-color: #8e8ffa;
     transition: background-color 0.5s;
   }
 `;
