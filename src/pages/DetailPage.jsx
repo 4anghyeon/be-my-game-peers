@@ -7,6 +7,8 @@ import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
+import {useAlert} from 'redux/modules/alert/alertHook';
+import {hideAlert} from 'redux/modules/alert/alertModule';
 
 const DetailPage = () => {
   const posts = useSelector(state => state.PostModule);
@@ -15,20 +17,25 @@ const DetailPage = () => {
   const navigate = useNavigate();
   const {id} = params;
   const textAreaRef = useRef();
+  const alert = useAlert();
+  console.log(posts, id);
 
   const selectedPost = posts.find(post => post.postId === id);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
 
+  // comment input 변경
   const changeCommentText = e => {
     setComment(e.target.value);
   };
 
+  // content input 변경
   const changeContentText = e => {
     setEditedText(e.target.value);
   };
 
+  // comment 등록
   const HandleSubmitComment = e => {
     e.preventDefault();
     const newComment = {
@@ -37,28 +44,56 @@ const DetailPage = () => {
       content: comment,
       commentDate: new Date(),
     };
+    if (comment.trim().length === 0) {
+      alert.alert('댓글 내용을 입력해주세요');
+      return;
+    }
     setComment('');
     dispatch(addComment({id, newComment}));
   };
 
+  // 수정 상태 토글
   const handleEditPost = () => {
-    setIsEdit(isEdit => !isEdit);
-    dispatch(editPost({id, editedText}));
+    if (!isEdit) setIsEdit(true);
+
+    if (isEdit && selectedPost.postContent.trim() === editedText.trim()) {
+      alert.alert('수정내용이 없습니다');
+      return;
+    }
+
+    if (isEdit) {
+      alert.confirm(
+        '진짜?',
+        () => {
+          dispatch(editPost({id, editedText}));
+          setIsEdit(false);
+          dispatch(hideAlert());
+        },
+        () => {
+          setEditedText(selectedPost.postContent);
+          setIsEdit(false);
+          dispatch(hideAlert());
+        },
+      );
+    }
   };
 
+  // 게시글 삭제
   const HandleDeletePost = () => {
-    dispatch(deletePost(id));
-    navigate('/write');
+    alert.confirm('정말 삭제하시겠습니까?', () => {
+      dispatch(deletePost(id));
+      navigate('/write');
+      dispatch(hideAlert());
+    });
   };
 
+  // 텍스트의 끝으로 커서를 이동 (focus)
   useEffect(() => {
     if (isEdit) {
       const textArea = textAreaRef.current;
 
       if (textArea) {
         textArea.focus();
-
-        // 텍스트의 끝으로 커서를 이동
         textArea.setSelectionRange(textArea.value.length, textArea.value.length);
       }
     }
@@ -70,7 +105,8 @@ const DetailPage = () => {
         <h1>{selectedPost.postTitle}</h1>
         <ScPostDetailGroup>
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
-          {!isEdit && <ScTextarea disabled defaultValue={selectedPost.postContent} />}
+          {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
+          <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
           <ScBtnGroup>
             <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
             <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
@@ -141,6 +177,12 @@ const ScTextarea = styled.textarea`
   border-radius: 5px;
   padding: 15px;
   resize: none;
+`;
+
+const ScNeedPlayersSpan = styled.span`
+  position: absolute;
+  bottom: 30px;
+  left: 20px;
 `;
 
 const ScBtnGroup = styled.div`
