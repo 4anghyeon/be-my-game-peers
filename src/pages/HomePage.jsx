@@ -13,11 +13,12 @@ import {useState} from 'react';
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
   const postparty = useSelector(state => state.PostModule);
-
+  console.log(postparty);
   const gameNames = categoris.map(category => category.game);
 
   const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
-
+  const [partyInput, setpartyInput] = useState('');
+  const [filteredPosts, setFilteredPosts] = useState(postparty);
   const postCategory = selectCategory => {
     setfilterCategory(selectCategory);
     console.log(selectCategory);
@@ -26,6 +27,13 @@ const HomePage = () => {
   useEffect(() => {
     console.log(getAuth().currentUser);
   }, []);
+  const SearchParties = () => {
+    const serachResult = postparty.filter(item => item.postTitle.includes(partyInput));
+    setFilteredPosts(serachResult);
+  };
+  const Inputsearching = event => {
+    setpartyInput(event.target.value);
+  };
   return (
     <div>
       <ScCategoriSection>
@@ -36,8 +44,8 @@ const HomePage = () => {
         ))}
       </ScCategoriSection>
       <ScSearchBox>
-        <ScSearchInput placeholder="원하는 파티를 검색하세오" />
-        <ScSearchButton>검색</ScSearchButton>
+        <ScSearchInput placeholder="원하는 파티를 검색하세오" value={partyInput} onChange={Inputsearching} />
+        <ScSearchButton onClick={SearchParties()}>검색</ScSearchButton>
       </ScSearchBox>
 
       <ScTeammateSearchBox>
