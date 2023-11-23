@@ -26,12 +26,14 @@ const TeamMateList = ({filterCategory, isUserLoggedIn}) => {
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
-
+  const moveDetailpage = postId => {
+    navigate(`/detail/${postId}`);
+  };
   return (
     <>
       <ScTeammateSearchBox>
         {currentPageList.map(post => (
-          <ScGameParty key={post.postId}>
+          <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
             <ScPostBox>
               <span>[{post.postId}]</span>
               <div>
@@ -116,7 +118,8 @@ const ScPageNation = styled.div`
   justify-content: center;
   position: absolute;
   width: 70%;
-  top: 105%;
+  right: 15%;
+  bottom: -13%;
 `;
 const ScPageButton = styled.button`
   margin: 0 5px;
@@ -147,8 +150,8 @@ const ScWirteButton = styled.button`
     background-color: #8e8ffa;
   }
   position: absolute;
-  bottom: -70px;
-  left: 80%;
+  bottom: -130px;
+  left: 69%;
   transform: translateX(-50%);
 `;
 export default TeamMateList;
