@@ -5,7 +5,12 @@ import {useNavigate} from 'react-router-dom';
 
 const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput, onSearch}) => {
   const postparty = useSelector(state => state.PostModule);
+
+  const postm = useSelector(state => state.categoriModule);
+  const gameNames = postm.map(postm => postm.players);
+
   const navigate = useNavigate();
+
   const partypage = 5;
   console.log(filteredPosts);
   // 각 카테고리에 대한 현재 페이지를 저장하는 상태
@@ -32,17 +37,24 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
   const moveDetailpage = postId => {
     navigate(`/detail/${postId}`);
   };
+
+  const getCategoryPlayers = category => {
+    const selectedCategory = postm.find(c => c.game === category);
+    return selectedCategory ? selectedCategory.players : 0;
+  };
   return (
     <>
       <ScTeammateSearchBox>
-        {currentPageList.map(post => (
+        {currentPageList.map((post, index) => (
           <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
             <ScPostBox>
-              <span>[{post.postId}]</span>
+              <span>{startPageIndex + index + 1}</span>
               <div>
                 ({post.category}) {truncate(post.postTitle, 5)}
               </div>
-              <div>{post.currentParticipants}</div>
+              <div>
+                {post.currentParticipants} / {getCategoryPlayers(post.category)}
+              </div>
               <span>{truncate(post.author, 5)}</span>
               <time>{post.postDate}</time>
             </ScPostBox>
