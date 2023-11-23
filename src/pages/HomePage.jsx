@@ -24,16 +24,18 @@ const HomePage = () => {
     console.log(selectCategory);
   };
   const isUserLoggedIn = getAuth().currentUser;
+
   useEffect(() => {
     console.log(getAuth().currentUser);
   }, []);
-  const SearchParties = () => {
-    const serachResult = postparty.filter(item => item.postTitle.includes(partyInput));
-    setFilteredPosts(serachResult);
-  };
-  const Inputsearching = event => {
-    setpartyInput(event.target.value);
-  };
+
+  // const SearchParties = () => {
+  //   const serachResult = postparty.filter(item => item.postTitle.includes(partyInput));
+  //   setFilteredPosts(serachResult);
+  // };
+  // const Inputsearching = event => {
+  //   setpartyInput(event.target.value);
+  // };
   return (
     <div>
       <ScCategoriSection>
@@ -44,8 +46,8 @@ const HomePage = () => {
         ))}
       </ScCategoriSection>
       <ScSearchBox>
-        <ScSearchInput placeholder="원하는 파티를 검색하세오" value={partyInput} onChange={Inputsearching} />
-        <ScSearchButton onClick={SearchParties}>검색</ScSearchButton>
+        <ScSearchInput placeholder="원하는 파티를 검색하세오" value={partyInput} />
+        <ScSearchButton>검색</ScSearchButton>
       </ScSearchBox>
 
       <ScTeammateSearchBox>
