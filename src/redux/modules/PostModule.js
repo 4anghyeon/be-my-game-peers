@@ -1,4 +1,5 @@
-import PostFakeData from './PostFakeData.json';
+import {collection, getDocs, query} from 'firebase/firestore';
+import {db} from 'shared/firebase';
 
 // action values
 const ADD_POST = 'post/ADD_POST';
@@ -6,7 +7,24 @@ const EDIT_POST = 'post/EDIT_POST';
 const DELETE_POST = 'post/DELETE_POST';
 const ADD_COMMENT = 'post/ADD_COMMENT';
 
-const initialState = PostFakeData;
+let initialState = [];
+
+export const fetchData = async () => {
+  const q = query(collection(db, 'posts'));
+  const querySnapShot = await getDocs(q);
+  const initialPosts = [];
+
+  querySnapShot.forEach(doc => {
+    const data = {
+      id: doc.id,
+      ...doc.data(),
+    };
+    initialPosts.push(data);
+  });
+
+  initialState = initialPosts;
+};
+fetchData();
 
 // action creator
 export const addPost = payload => {
