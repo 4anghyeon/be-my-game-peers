@@ -70,7 +70,6 @@ const UserDetailPage = () => {
       setProfileImg(avatar);
     }
   }, [userAuth]);
-  console.log(userInfo);
 
   const [likeCount, setLikeCount] = useState(0);
   const [disLikeCount, setDisLikeCount] = useState(0);
@@ -91,7 +90,7 @@ const UserDetailPage = () => {
               <img src={profileImg} alt="프로필 이미지" />
               {isEdit ? <ScUpload>upload</ScUpload> : null}
             </ScProfileImg>
-            {isEdit ? null : <PeerContainer profileUser={userInfo} />}
+            {isEdit ? null : <PeerContainer profileUser={userInfo} setUserInfo={setUserInfo} />}
           </ScSelectImg>
           <ScInfoBox>
             {isEdit ? (
@@ -121,6 +120,7 @@ const UserDetailPage = () => {
             <ScButton>내 게시물</ScButton>
           </ScEditAndPost>
         </ScHr>
+
         <ScCommentArea>
           <h3 style={{color: 'red'}}>{disLikeCount >= 50 ? '※ 경고 : 위험 유저입니다. ※' : null}</h3>
           <CommentBox>
