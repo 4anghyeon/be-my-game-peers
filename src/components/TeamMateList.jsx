@@ -11,10 +11,6 @@ const TeamMateList = ({filterCategory, isUserLoggedIn}) => {
   // 각 카테고리에 대한 현재 페이지를 저장하는 상태
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filterCategory]);
-
   const startPageIndex = (currentPage - 1) * partypage;
   const endPageIndex = startPageIndex + partypage;
 
@@ -75,6 +71,7 @@ const ScTeammateSearchBox = styled.div`
   text-align: center;
   align-items: flex-start;
   justify-content: center;
+  position: relative;
 `;
 
 const ScGameParty = styled.div`
@@ -116,10 +113,10 @@ const ScPostBox = styled.div`
 const ScPageNation = styled.div`
   display: flex;
   justify-content: center;
-  position: absolute;
+  position: absolute; /* absolute로 설정 */
   width: 70%;
   right: 15%;
-  bottom: -13%;
+  top: 10px; /* 조정이 필요한 위치로 설정 */
 `;
 const ScPageButton = styled.button`
   margin: 0 5px;
@@ -149,8 +146,8 @@ const ScWirteButton = styled.button`
   &:hover {
     background-color: #8e8ffa;
   }
-  position: absolute;
-  bottom: -130px;
+  position: absolute; /* absolute로 설정 */
+  bottom: 10px; /* 조정이 필요한 위치로 설정 */
   left: 69%;
   transform: translateX(-50%);
 `;
