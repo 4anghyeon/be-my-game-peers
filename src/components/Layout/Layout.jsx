@@ -21,6 +21,12 @@ const ScMain = styled.main`
   height: 100vh;
 `;
 
-const ScContent = styled.section``;
+const ScContent = styled.section`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: calc(100vh - 240px);
+`;
 
 export default Layout;

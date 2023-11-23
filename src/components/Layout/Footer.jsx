@@ -31,6 +31,7 @@ const ScContainer = styled.footer`
   display: flex;
   justify-content: space-around;
   background-color: rgba(142, 143, 250, 0.8);
+  min-height: 200px;
 
   div {
     padding: 40px;
