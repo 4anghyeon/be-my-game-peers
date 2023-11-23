@@ -6,8 +6,7 @@ const ADD_POST = 'post/ADD_POST';
 const EDIT_POST = 'post/EDIT_POST';
 const DELETE_POST = 'post/DELETE_POST';
 const ADD_COMMENT = 'post/ADD_COMMENT';
-
-let initialState = [];
+const SET_DATA = 'post/SET_DATA';
 
 export const fetchData = async () => {
   const q = query(collection(db, 'posts'));
@@ -22,9 +21,9 @@ export const fetchData = async () => {
     initialPosts.push(data);
   });
 
-  initialState = initialPosts;
+  return initialPosts;
 };
-fetchData();
+const initialState = await fetchData();
 
 // action creator
 export const addPost = payload => {
@@ -54,6 +53,13 @@ export const addComment = payload => {
   };
 };
 
+export const setData = payload => {
+  return {
+    type: SET_DATA,
+    payload,
+  };
+};
+
 // reducer: 'state에 변화를 일으키는' 함수
 // input: state와 action
 const PostModule = (state = initialState, action) => {
@@ -73,6 +79,9 @@ const PostModule = (state = initialState, action) => {
       return state.map(item =>
         item.postId === action.payload.id ? {...item, comments: [action.payload.newComment, ...item.comments]} : item,
       );
+    case SET_DATA:
+      return [...state.filter(s => false), ...action.payload];
+
     default:
       return state;
   }

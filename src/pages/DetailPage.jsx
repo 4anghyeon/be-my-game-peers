@@ -63,7 +63,7 @@ const DetailPage = () => {
 
     if (isEdit) {
       alert.confirm(
-        '진짜?',
+        '이대로 수정하시겠습니까?',
         () => {
           dispatch(editPost({id, editedText}));
           setIsEdit(false);

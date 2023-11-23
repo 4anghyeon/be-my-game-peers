@@ -9,10 +9,14 @@ import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
 import {useState} from 'react';
-
+import '../common.css';
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
   const postparty = useSelector(state => state.PostModule);
+<<<<<<< HEAD
+=======
+
+>>>>>>> dev
   const gameNames = categoris.map(category => category.game);
 
   const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
@@ -123,9 +127,13 @@ const ScSearchButton = styled.button`
   border-left: none;
   border-right: none;
   border-bottom: 3px solid black;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  background-color: #7752fe;
   cursor: pointer;
   &:active {
-    background-color: gray;
+    background-color: #8e8ffa;
     transition: background-color 0.5s;
   }
 `;
