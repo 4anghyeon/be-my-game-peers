@@ -125,6 +125,7 @@ const SignUpPage = () => {
     try {
       await findUserByEmail(email);
       message = '이미 사용중인 이메일입니다.';
+      isValid = false;
       isDuplicate = true;
     } catch (error) {
       message = '사용 가능한 이메일입니다.';
@@ -156,7 +157,8 @@ const SignUpPage = () => {
         await updateProfile(userCredential.user, {displayName: nickname});
 
         // authentication이 아닌 firestore에도 저장
-        const newUser = {email, introduction, favoriteGame, nickname};
+        const profileImg = userCredential.user.photoURL;
+        const newUser = {email, introduction, favoriteGame, nickname, profileImg};
         await createUser(newUser);
         dispatch(addUser(newUser));
 
