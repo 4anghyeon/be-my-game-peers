@@ -6,6 +6,7 @@ import avatar from 'assets/avatar.png';
 import uuid from '../../node_modules/react-uuid/uuid';
 import {useState, useEffect} from 'react';
 import {getAuth} from 'firebase/auth';
+import {updateUser} from 'shared/firebase/query';
 
 const UserDetailPage = () => {
   const [userInfo, setUserInfo] = useState(fakeData);
@@ -21,7 +22,10 @@ const UserDetailPage = () => {
 
   let NEW_USER_INFO = {};
 
-  const EDIT_BUTTON = () => {
+  const getUserInfo = getAuth().currentUser;
+  console.log(getUserInfo);
+
+  const EDIT_BUTTON = async () => {
     setIsEdit(!isEdit);
     NEW_USER_INFO = {
       id: uuid(),
@@ -32,15 +36,12 @@ const UserDetailPage = () => {
 
     console.log(NEW_USER_INFO);
     setUserInfo(userInfo => [NEW_USER_INFO, ...userInfo]);
+    await updateUser('julisanta1015@gmail.com');
 
     setNickName('');
     setAbout('');
     setFavoriteGame('');
   };
-
-  useEffect(() => {
-    console.log(getAuth().currentUser);
-  }, []);
 
   const choosePhoto = () => {};
 
@@ -55,7 +56,7 @@ const UserDetailPage = () => {
           {isEdit ? (
             <ScInput type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
           ) : (
-            <ScUserName>{userInfo[0].nickname}님</ScUserName>
+            <ScUserName>{getUserInfo.displayName}님</ScUserName>
           )}
         </ScInfoBox>
         <ScInfoBox>

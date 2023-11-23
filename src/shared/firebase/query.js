@@ -20,14 +20,16 @@ export const findUserByEmail = async email => {
 };
 
 export const updateUser = async (email, updateInfo) => {
+  console.log('hello');
   const find = await findUserByEmail(email);
+  console.log(find);
   const userRef = doc(db, 'users', find.id);
 
   // auth 내용 업데이트
-  await updateProfile(getAuth().currentUser, {displayName: updateInfo.nickname, photoURL: updateInfo.profileImg});
+  // await updateProfile(getAuth().currentUser, {displayName: updateInfo.nickname, photoURL: updateInfo.profileImg});
 
   // firebase 내용 업데이트
-  await updateDoc(userRef, updateInfo);
+  // await updateDoc(userRef, updateInfo);
 };
 
 export const createUser = async user => {
