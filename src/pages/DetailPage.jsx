@@ -71,6 +71,7 @@ const DetailPage = () => {
         <ScPostDetailGroup>
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
           {!isEdit && <ScTextarea disabled defaultValue={selectedPost.postContent} />}
+          <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
           <ScBtnGroup>
             <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
             <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
@@ -141,6 +142,12 @@ const ScTextarea = styled.textarea`
   border-radius: 5px;
   padding: 15px;
   resize: none;
+`;
+
+const ScNeedPlayersSpan = styled.span`
+  position: absolute;
+  bottom: 30px;
+  left: 20px;
 `;
 
 const ScBtnGroup = styled.div`

@@ -26,7 +26,7 @@ const AppRouter = () => {
           <Route path="detail/:id" element={<DetailPage />}></Route>
           {/* 글쓰기 */}
           <Route path="write" element={<WritePage />}></Route>
-          {/* <Route path="*" element={<NotFoundPage />}></Route> */}
+          <Route path="*" element={<NotFoundPage />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

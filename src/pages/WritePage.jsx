@@ -28,6 +28,7 @@ const WritePage = () => {
     if (!getAuth().currentUser) navigate('/');
   }, []);
 
+  // 1. 게임카테고리가 변하면 -> 현재 인원수(=최대파티원수)가 동적으로 변경
   useEffect(() => {
     let selectedCategory = categoryInfo.find(item => item.game === inputs.category);
     setInputs({
@@ -39,6 +40,7 @@ const WritePage = () => {
     }
   }, [inputs.category]);
 
+  // 2. 현재 인원수가 변하면 -> 필요 인원수가 변경
   useEffect(() => {
     let selectedCategory = categoryInfo.find(item => item.game === inputs.category);
     if (selectedCategory) {
@@ -46,6 +48,7 @@ const WritePage = () => {
     }
   }, [inputs.currentParticipants]);
 
+  // 게시글 등록
   const submitForm = e => {
     e.preventDefault();
     const newPost = {
@@ -56,6 +59,7 @@ const WritePage = () => {
       postDate: new Date(),
       category: inputs.category,
       currentParticipants: inputs.currentParticipants,
+      needPlayers,
       comments: [],
     };
 
@@ -69,6 +73,7 @@ const WritePage = () => {
     navigate(`/detail/${newPost.postId}`);
   };
 
+  // input 변경
   const changeInput = e => {
     setInputs({
       ...inputs,
@@ -76,6 +81,7 @@ const WritePage = () => {
     });
   };
 
+  // 게시글 작성 취소
   const cancelPost = () => {
     navigate('/');
   };
