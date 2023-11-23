@@ -1,13 +1,20 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+export const ScWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
+
+export const ScContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
 
-export const Form = styled.form`
+export const ScForm = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -27,7 +34,7 @@ export const Form = styled.form`
   }
 `;
 
-export const Section = styled.section`
+export const ScSection = styled.section`
   display: flex;
   flex-direction: column;
   width: 100%;

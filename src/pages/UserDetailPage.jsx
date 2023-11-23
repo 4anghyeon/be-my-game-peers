@@ -1,46 +1,55 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
-import {CenterVertical} from 'components/Common/Common.styled';
-import fakeData from 'db/fakeData.json';
+import {CenterVertical, Input} from 'components/Common/Common.styled';
 import avatar from 'assets/avatar.png';
 import uuid from '../../node_modules/react-uuid/uuid';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {getAuth} from 'firebase/auth';
-import {updateUser} from 'shared/firebase/query';
+import {updateUser, findUserByEmail} from 'shared/firebase/query';
+import fakeData from 'db/fakeData.json';
+import {useLocation} from '../../node_modules/react-router-dom/dist/index';
 
 const UserDetailPage = () => {
-  const [userInfo, setUserInfo] = useState(fakeData);
+  const {pathname} = useLocation();
+  const getUserInfo = getAuth().currentUser;
+  console.log(getUserInfo);
+  const email = pathname.replace('/user/', '');
+
+  const [userInfo, setUserInfo] = useState({});
+
+  useEffect(() => {
+    findUserByEmail(email).then(user => {
+      setUserInfo(user);
+    });
+  }, []);
+
   const [nickname, setNickName] = useState('');
-  const [about, setAbout] = useState('');
+  const [introduction, setIntroduction] = useState('');
   const [favoriteGame, setFavoriteGame] = useState('');
 
   const [isEdit, setIsEdit] = useState(false);
 
   const EDIT_NICKNAME = event => setNickName(event.target.value);
-  const EDIT_ABOUT = event => setAbout(event.target.value);
+  const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
   const EDIT_FAVORITE = event => setFavoriteGame(event.target.value);
 
   let NEW_USER_INFO = {};
 
-  const getUserInfo = getAuth().currentUser;
-  console.log(getUserInfo);
-
   const EDIT_BUTTON = async () => {
     setIsEdit(!isEdit);
     NEW_USER_INFO = {
-      id: uuid(),
       nickname,
-      about,
+      introduction,
       favoriteGame,
     };
 
-    console.log(NEW_USER_INFO);
-    setUserInfo(userInfo => [NEW_USER_INFO, ...userInfo]);
-    await updateUser('julisanta1015@gmail.com');
-
-    setNickName('');
-    setAbout('');
-    setFavoriteGame('');
+    if (isEdit) {
+      setUserInfo(NEW_USER_INFO);
+      await updateUser(email, NEW_USER_INFO);
+      setNickName('');
+      setIntroduction('');
+      setFavoriteGame('');
+    }
   };
 
   const choosePhoto = () => {};
@@ -50,11 +59,11 @@ const UserDetailPage = () => {
       <CenterVertical>
         <ScSelectImg>
           <ScProfileImg src={avatar} alt="프로필 이미지" />
-          {isEdit ? <ScSelectPictureBtn>사진 선택</ScSelectPictureBtn> : null}
+          {isEdit ? <ScButton>upload</ScButton> : null}
         </ScSelectImg>
         <ScInfoBox>
           {isEdit ? (
-            <ScInput type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
+            <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
           ) : (
             <ScUserName>{getUserInfo.displayName}님</ScUserName>
           )}
@@ -62,17 +71,17 @@ const UserDetailPage = () => {
         <ScInfoBox>
           <ScLabel>About</ScLabel>
           {isEdit ? (
-            <ScInput type="text" value={about} onChange={EDIT_ABOUT} placeholder="한줄 소개" />
+            <Input type="text" value={introduction} onChange={EDIT_INTRODUCTION} placeholder="한줄 소개" />
           ) : (
-            <ScAbout>{userInfo[0].about}</ScAbout>
+            <ScAbout>{userInfo.introduction}</ScAbout>
           )}
         </ScInfoBox>
         <ScInfoBox>
           <ScLabel>Favorite Game</ScLabel>
           {isEdit ? (
-            <ScInput type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
+            <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
           ) : (
-            <ScAbout>{userInfo[0].favoriteGame}</ScAbout>
+            <ScAbout>{userInfo.favoriteGame}</ScAbout>
           )}
         </ScInfoBox>
         <ScBtnBox>
@@ -84,7 +93,7 @@ const UserDetailPage = () => {
           <button>Dislike</button>
         </BtnBox>
         <CommentBox>
-          <h3>123님에게 후기를 보내주세요!</h3>
+          <h3>{getUserInfo.displayName}님에게 후기를 보내 보세요!</h3>
           <form>
             <input />
             <button>send</button>
@@ -112,15 +121,6 @@ const ScProfileImg = styled.img`
   width: 180px;
   height: 180px;
   border-radius: 50%;
-`;
-
-const ScSelectPictureBtn = styled.button`
-  background-color: #7752fe;
-  color: white;
-  width: 100px;
-  height: 36px;
-  border-radius: 10px;
-  border: none;
 `;
 
 const ScInfoBox = styled.div`
@@ -157,15 +157,6 @@ const ScLabel = styled.label`
   font-weight: 700;
 `;
 
-const ScInput = styled.input`
-  width: 600px;
-  height: 30px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  color: #333;
-  padding: 4px;
-`;
-
 const ScBtnBox = styled.div`
   width: 600px;
   display: flex;
@@ -176,18 +167,13 @@ const ScBtnBox = styled.div`
 `;
 
 const ScButton = styled.button`
-  background-color: white;
-  font-weight: 600;
-  color: black;
+  border: none;
+  background-color: #7752fe;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
   width: 80px;
-  height: 36px;
-  border-radius: 10px;
-  border: 2px solid #7752fe;
-
-  &:hover {
-    background-color: #7752fe;
-    color: white;
-  }
+  height: 40px;
 `;
 
 const BtnBox = styled.div`

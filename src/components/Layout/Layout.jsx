@@ -6,22 +6,22 @@ import styled from 'styled-components';
 
 const Layout = () => {
   return (
-    <Main>
+    <ScMain>
       <Header />
-      <Content>
+      <ScContent>
         <Outlet />
-      </Content>
+      </ScContent>
       <Footer />
-    </Main>
+    </ScMain>
   );
 };
 
-const Main = styled.main`
+const ScMain = styled.main`
   width: 100vw;
   height: 100vh;
 `;
 
-const Content = styled.section`
+const ScContent = styled.section`
   height: calc(100% - 100px); // 100% - (header(px) + footer(px))
 `;
 

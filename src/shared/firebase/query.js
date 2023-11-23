@@ -12,24 +12,23 @@ export const findUserByEmail = async email => {
   let user = null;
   await new Promise(res => {
     if (querySnapshot.docs.length > 0) {
-      res();
       user = {id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data()};
     }
+    res();
   });
   return user;
 };
 
 export const updateUser = async (email, updateInfo) => {
-  console.log('hello');
   const find = await findUserByEmail(email);
-  console.log(find);
+  console.log(updateInfo);
   const userRef = doc(db, 'users', find.id);
 
   // auth 내용 업데이트
-  // await updateProfile(getAuth().currentUser, {displayName: updateInfo.nickname, photoURL: updateInfo.profileImg});
+  await updateProfile(getAuth().currentUser, {displayName: updateInfo.nickname});
 
   // firebase 내용 업데이트
-  // await updateDoc(userRef, updateInfo);
+  await updateDoc(userRef, updateInfo);
 };
 
 export const createUser = async user => {

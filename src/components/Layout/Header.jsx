@@ -4,8 +4,10 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {getAuth, signOut} from 'firebase/auth';
 import {useDispatch, useSelector} from 'react-redux';
 import {changeAuth} from '../../redux/modules/userAuth';
-import downArrow from '../../assets/img/down-arrow.svg';
+import downArrow from 'assets/img/down-arrow.svg';
 import {Button} from '../Common/Common.styled';
+import {useAlert} from '../../redux/modules/alert/alertHook';
+import avatar from 'assets/avatar.png';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -13,11 +15,24 @@ const Header = () => {
   const userAuth = useSelector(state => state.userAuth);
   const dispatch = useDispatch();
   const [showContextMenu, setShowContextMenu] = useState(false);
+  let [profileImg, setProfileImg] = useState(avatar);
+
+  const alert = useAlert();
 
   useEffect(() => {
     // 현재 로그인 유저 정보 가져옴
-    dispatch(changeAuth(getAuth().currentUser));
-  }, []);
+    const currentUser = getAuth().currentUser;
+    dispatch(changeAuth(currentUser));
+
+    if (currentUser) {
+      let photoURL = currentUser.photoURL;
+      if (photoURL) {
+        setProfileImg(photoURL);
+      }
+    } else {
+      setProfileImg(avatar);
+    }
+  }, [userAuth]);
 
   const onClickLogin = () => {
     navigate('/login');
@@ -33,12 +48,12 @@ const Header = () => {
     await signOut(getAuth());
     dispatch(changeAuth(null));
     setShowContextMenu(prev => false);
-    alert('로그아웃 되었습니다.');
+    alert.twinkle('로그아웃 되었습니다.');
   };
 
   // 설정 버튼 클릭시
   const onClickProfileSetting = () => {
-    navigate(`user/${userAuth.uid}`);
+    navigate(`user/${userAuth.email}`);
     setShowContextMenu(prev => false);
   };
 
@@ -53,22 +68,25 @@ const Header = () => {
   };
 
   return (
-    <Container $pathname={pathname}>
+    <ScContainer $pathname={pathname}>
       {pathname !== '/' ? <button onClick={onClickHome}>홈으로</button> : <div></div>}
       <div>
         {pathname !== '/signup' && pathname !== '/login' && (
           <>
             {userAuth ? (
-              <ProfileContainer>
-                <Profile onClick={onClickOpenContextMenu}></Profile>
+              <ScProfileContainer>
+                <ScWelcomeMessage>
+                  반갑습니다. <strong>{userAuth.displayName}</strong> 님
+                </ScWelcomeMessage>
+                <ScProfile onClick={onClickOpenContextMenu} $img={profileImg}></ScProfile>
                 <img src={downArrow} alt="화살표" onClick={onClickOpenContextMenu} />
                 {showContextMenu && (
-                  <ProfileMenuContainer>
-                    <ProfileMenuButton onClick={onClickProfileSetting}>설정</ProfileMenuButton>
-                    <ProfileMenuButton onClick={onClickSignOut}>로그아웃</ProfileMenuButton>
-                  </ProfileMenuContainer>
+                  <ScProfileMenuContainer>
+                    <ScProfileMenuButton onClick={onClickProfileSetting}>설정</ScProfileMenuButton>
+                    <ScProfileMenuButton onClick={onClickSignOut}>로그아웃</ScProfileMenuButton>
+                  </ScProfileMenuContainer>
                 )}
-              </ProfileContainer>
+              </ScProfileContainer>
             ) : (
               <>
                 <button onClick={onClickSingUp}>회원가입</button>
@@ -78,11 +96,11 @@ const Header = () => {
           </>
         )}
       </div>
-    </Container>
+    </ScContainer>
   );
 };
 
-const Container = styled.header`
+const ScContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -103,7 +121,7 @@ const Container = styled.header`
   }
 `;
 
-const ProfileContainer = styled.div`
+const ScProfileContainer = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
@@ -120,25 +138,24 @@ const ProfileContainer = styled.div`
   }
 `;
 
-const Profile = styled.div`
+const ScProfile = styled.div`
   width: 40px;
   height: 40px;
-  background-color: #8e8ffa;
   border-radius: 50%;
-  border: 2px solid black;
+  border: 1px solid black;
+  background-image: url(${({$img}) => $img});
+  background-size: contain;
 `;
 
-const ProfileMenuContainer = styled.div`
+const ScProfileMenuContainer = styled.div`
   position: absolute;
   width: 100px;
   top: 50px;
   right: 0;
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 `;
 
-const ProfileMenuButton = styled(Button)`
+const ScProfileMenuButton = styled(Button)`
   width: 100% !important;
   background: transparent !important;
   color: black !important;
@@ -148,6 +165,10 @@ const ProfileMenuButton = styled(Button)`
   &:not(:first-child) {
     margin-top: 10px;
   }
+`;
+
+const ScWelcomeMessage = styled.span`
+  margin-right: 20px;
 `;
 
 export default Header;
