@@ -96,7 +96,7 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
 const ScContainer = styled.section`
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   width: 200px;
   height: 100px;
@@ -108,6 +108,7 @@ const ScFollowerContainer = styled.div`
   justify-content: space-evenly;
   align-items: center;
   margin: 10px 0 10px 0;
+  font-size: 1rem;
 
   span {
     cursor: pointer;

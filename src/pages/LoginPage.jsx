@@ -48,25 +48,24 @@ const LoginPage = () => {
     const provider = new GoogleAuthProvider();
     const auth = getAuth();
 
+    const result = await signInWithPopup(auth, provider);
+    dispatch(changeAuth(result.user));
+
     try {
-      const result = await signInWithPopup(auth, provider);
-      dispatch(changeAuth(result.user));
-
-      const user = await findUserByEmail(result.user.email);
-      if (!user) {
-        const newUser = {
-          email: result.user.email,
-          introduction: '',
-          favoriteGame: 0,
-          nickname: auth.currentUser.displayName,
-        };
-        await createUser(newUser);
-        dispatch(addUser(newUser));
-      }
-
-      navigate('/');
+      await findUserByEmail(result.user.email);
     } catch (error) {
       console.error(error);
+      // 에러가 났다는 뜻은 찾은 유저가 없다는 것...
+      const newUser = {
+        email: result.user.email,
+        introduction: '',
+        favoriteGame: 0,
+        nickname: auth.currentUser.displayName,
+      };
+      await createUser(newUser);
+      dispatch(addUser(newUser));
+    } finally {
+      navigate('/');
     }
   };
 
