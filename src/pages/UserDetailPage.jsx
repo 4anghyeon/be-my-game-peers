@@ -131,15 +131,7 @@ const UserDetailPage = () => {
               <ScInput type="text" value={comments} onChange={SEND_COMMENT} />
               <ScButton>send</ScButton>
             </ScForm>
-            <ul className="comment-list">
-              {comments.map(comment => {
-                return (
-                  <>
-                    <li>{comment.nickname}</li>
-                  </>
-                );
-              })}
-            </ul>
+            <ul className="comment-list"></ul>
           </CommentBox>
           <ScBtnBox>
             <ScButton onClick={CLICK_LIKE}>Like {likeCount}</ScButton>
