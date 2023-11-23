@@ -45,7 +45,7 @@ const HomePage = () => {
       </ScCategoriSection>
       <ScSearchBox>
         <ScSearchInput placeholder="원하는 파티를 검색하세오" value={partyInput} onChange={Inputsearching} />
-        <ScSearchButton onClick={SearchParties()}>검색</ScSearchButton>
+        <ScSearchButton onClick={SearchParties}>검색</ScSearchButton>
       </ScSearchBox>
 
       <ScTeammateSearchBox>
