@@ -153,7 +153,7 @@ const SignUpPage = () => {
         await updateProfile(userCredential.user, {displayName: nickname});
 
         // authentication이 아닌 firestore에도 저장
-        const newUser = {email, introduction, favoriteGame};
+        const newUser = {email, introduction, favoriteGame, nickname};
         await createUser(newUser);
         dispatch(addUser(newUser));
 

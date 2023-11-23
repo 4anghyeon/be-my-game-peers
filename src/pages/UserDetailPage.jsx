@@ -8,6 +8,8 @@ import {getAuth} from 'firebase/auth';
 import {updateUser, findUserByEmail} from 'shared/firebase/query';
 import fakeData from 'db/fakeData.json';
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
+import PeerContainer from '../components/UserDetail/PeerContainer';
+import {useNavigate} from 'react-router-dom';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
@@ -16,12 +18,17 @@ const UserDetailPage = () => {
   const email = pathname.replace('/user/', '');
 
   const [userInfo, setUserInfo] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
-    findUserByEmail(email).then(user => {
-      setUserInfo(user);
-    });
-  }, []);
+    findUserByEmail(email)
+      .then(user => {
+        setUserInfo(user);
+      })
+      .catch(err => {
+        navigate('/nouser');
+      });
+  }, [pathname]);
 
   const [nickname, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
@@ -61,11 +68,12 @@ const UserDetailPage = () => {
           <ScProfileImg src={avatar} alt="프로필 이미지" />
           {isEdit ? <ScButton>upload</ScButton> : null}
         </ScSelectImg>
+        <PeerContainer profileUser={userInfo} />
         <ScInfoBox>
           {isEdit ? (
             <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
           ) : (
-            <ScUserName>{getUserInfo.displayName}님</ScUserName>
+            <ScUserName>{userInfo.displayName}님</ScUserName>
           )}
         </ScInfoBox>
         <ScInfoBox>
