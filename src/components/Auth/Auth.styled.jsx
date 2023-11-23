@@ -1,5 +1,12 @@
 import styled from 'styled-components';
 
+export const ScWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
+
 export const ScContainer = styled.div`
   display: flex;
   flex-direction: column;

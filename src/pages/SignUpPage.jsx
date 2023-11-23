@@ -12,7 +12,7 @@ import {useNavigate} from 'react-router-dom';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {useDispatch, useSelector} from 'react-redux';
 import {ERROR_EMAIL_DUPLICATED} from '../shared/helper/errorCode';
-import {ScContainer, ScForm, ScSection, ValidationMessage} from '../components/Auth/Auth.styled';
+import {ScContainer, ScForm, ScSection, ScWrapper, ValidationMessage} from '../components/Auth/Auth.styled';
 import {changeAuth} from '../redux/modules/userAuth';
 import {addUser} from '../redux/modules/users';
 import {createUser, findUserByEmail} from '../shared/firebase/query';
@@ -177,91 +177,99 @@ const SignUpPage = () => {
   };
 
   return (
-    <ScContainer>
-      <ScForm id="form">
-        <div>
-          <h1>회원가입</h1>
-          <p>가입을 통해 여러분의 게임 동료를 모아보세요!</p>
-        </div>
-        <div>
-          <ScSection>
-            <div>
-              <Input type="email" name="email" placeholder="이메일 입력" onChange={handleInputChange} ref={emailRef} />
-              <ScCheckDuplicateButton onClick={handleCheckDuplicate}>중복 확인</ScCheckDuplicateButton>
-            </div>
-            {email && validation.email.message && (
-              <ValidationMessage $isValid={validation.email.isValid}>{validation.email.message}</ValidationMessage>
-            )}
-          </ScSection>
-          <ScSection>
-            <div>
-              <Input
-                type="password"
-                name="password"
-                placeholder="비밀번호 입력 (6자 이상)"
-                onChange={handleInputChange}
-              />
-            </div>
-            {password && (
-              <ValidationMessage $isValid={validation.password.isValid}>
-                {validation.password.message}
+    <ScWrapper>
+      <ScContainer>
+        <ScForm id="form">
+          <div>
+            <h1>회원가입</h1>
+            <p>가입을 통해 여러분의 게임 동료를 모아보세요!</p>
+          </div>
+          <div>
+            <ScSection>
+              <div>
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="이메일 입력"
+                  onChange={handleInputChange}
+                  ref={emailRef}
+                />
+                <ScCheckDuplicateButton onClick={handleCheckDuplicate}>중복 확인</ScCheckDuplicateButton>
+              </div>
+              {email && validation.email.message && (
+                <ValidationMessage $isValid={validation.email.isValid}>{validation.email.message}</ValidationMessage>
+              )}
+            </ScSection>
+            <ScSection>
+              <div>
+                <Input
+                  type="password"
+                  name="password"
+                  placeholder="비밀번호 입력 (6자 이상)"
+                  onChange={handleInputChange}
+                />
+              </div>
+              {password && (
+                <ValidationMessage $isValid={validation.password.isValid}>
+                  {validation.password.message}
+                </ValidationMessage>
+              )}
+            </ScSection>
+            <ScSection>
+              <div>
+                <Input type="password" name="rePassword" placeholder="비밀번호 재입력" onChange={handleInputChange} />
+              </div>
+              <ValidationMessage $isValid={validation.rePassword.isValid}>
+                {validation.rePassword.message}
               </ValidationMessage>
-            )}
-          </ScSection>
-          <ScSection>
-            <div>
-              <Input type="password" name="rePassword" placeholder="비밀번호 재입력" onChange={handleInputChange} />
-            </div>
-            <ValidationMessage $isValid={validation.rePassword.isValid}>
-              {validation.rePassword.message}
-            </ValidationMessage>
-          </ScSection>
-          <ScSection>
-            <div>
-              <Input type="text" placeholder="화면에 표시될 닉네임" name="nickname" onChange={handleInputChange} />
-            </div>
-            {nickname && (
-              <ValidationMessage $isValid={validation.nickname.isValid}>
-                {validation.nickname.message}
-              </ValidationMessage>
-            )}
-          </ScSection>
-          <ScSection>
-            <div>
-              <ScIntroTextArea
-                placeholder="한 줄 소개"
-                name="introduction"
-                maxLength={100}
-                onChange={handleInputChange}
-              />
-            </div>
-          </ScSection>
-          <ScSection>
-            <div>
-              <label>자주 하는 게임</label>
-              <ScGameSelect
-                placeholder="자주 하는 게임"
-                name="favoriteGame"
-                defaultValue="0"
-                onChange={handleInputChange}
-              >
-                {categories.map(category => {
-                  return (
-                    <option key={category.id} value={category.id}>
-                      {category.game}
-                    </option>
-                  );
-                })}
-              </ScGameSelect>
-            </div>
-          </ScSection>
-        </div>
+            </ScSection>
+            <ScSection>
+              <div>
+                <Input type="text" placeholder="화면에 표시될 닉네임" name="nickname" onChange={handleInputChange} />
+              </div>
+              {nickname && (
+                <ValidationMessage $isValid={validation.nickname.isValid}>
+                  {validation.nickname.message}
+                </ValidationMessage>
+              )}
+            </ScSection>
+            <ScSection>
+              <div>
+                <ScIntroTextArea
+                  placeholder="한 줄 소개"
+                  name="introduction"
+                  maxLength={100}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </ScSection>
+            <ScSection>
+              <div>
+                <label>자주 하는 게임</label>
+                <ScGameSelect
+                  placeholder="자주 하는 게임"
+                  name="favoriteGame"
+                  defaultValue="0"
+                  onChange={handleInputChange}
+                >
+                  {categories.map(category => {
+                    return (
+                      <option key={category.id} value={category.id}>
+                        {category.game}
+                      </option>
+                    );
+                  })}
+                </ScGameSelect>
+              </div>
+            </ScSection>
+          </div>
 
-        <ScSignUpButton type="button" onClick={handleSignUp}>
-          가입 하기
-        </ScSignUpButton>
-      </ScForm>
-    </ScContainer>
+          <ScSignUpButton type="button" onClick={handleSignUp}>
+            가입 하기
+          </ScSignUpButton>
+        </ScForm>
+      </ScContainer>
+    </ScWrapper>
   );
 };
 
