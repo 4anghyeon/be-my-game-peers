@@ -54,7 +54,12 @@ const LoginPage = () => {
 
       const user = await findUserByEmail(result.user.email);
       if (!user) {
-        const newUser = {email: result.user.email, introduction: '', favoriteGame: 0};
+        const newUser = {
+          email: result.user.email,
+          introduction: '',
+          favoriteGame: 0,
+          nickname: auth.currentUser.displayName,
+        };
         await createUser(newUser);
         dispatch(addUser(newUser));
       }

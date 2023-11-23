@@ -7,6 +7,8 @@ import {getAuth} from 'firebase/auth';
 import {updateUser, findUserByEmail} from 'shared/firebase/query';
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
 import userAuth from 'redux/modules/userAuth';
+import PeerContainer from '../components/UserDetail/PeerContainer';
+import {useNavigate} from 'react-router-dom';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
@@ -15,12 +17,17 @@ const UserDetailPage = () => {
   const email = pathname.replace('/user/', '');
 
   const [userInfo, setUserInfo] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
-    findUserByEmail(email).then(user => {
-      setUserInfo(user);
-    });
-  }, []);
+    findUserByEmail(email)
+      .then(user => {
+        setUserInfo(user);
+      })
+      .catch(err => {
+        navigate('/nouser');
+      });
+  }, [pathname]);
 
   const [nickname, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
@@ -63,6 +70,7 @@ const UserDetailPage = () => {
       setProfileImg(avatar);
     }
   }, [userAuth]);
+  console.log(userInfo);
 
   const [likeCount, setLikeCount] = useState(0);
   const [disLikeCount, setDisLikeCount] = useState(0);
@@ -74,8 +82,6 @@ const UserDetailPage = () => {
 
   const SEND_COMMENT = event => setComment(event.target.value);
 
-  
-
   return (
     <>
       <CenterVertical>
@@ -86,11 +92,12 @@ const UserDetailPage = () => {
             <ScButton onClick={EDIT_BUTTON}>{isEdit ? '저장' : '수정'}</ScButton>
           </BtnBox>
         </ScSelectImg>
+        <PeerContainer profileUser={userInfo} />
         <ScInfoBox>
           {isEdit ? (
             <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
           ) : (
-            <ScUserName>{getUserInfo.displayName}님</ScUserName>
+            <ScUserName>{userInfo.nickname}님</ScUserName>
           )}
         </ScInfoBox>
         <ScInfoBox>
