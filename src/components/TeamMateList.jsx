@@ -63,23 +63,13 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
           ))
         )}
         <ScPageNation>
-          {currentPageList.length > 0 && totalPage > 1 && (
-            <>
-              <ScPageButton onClick={() => setCurrentPage(currentPage - 1)}>이전</ScPageButton>
-              {Array.from({length: totalPage}, (_, index) => (
-                <ScPageButton
-                  key={index}
-                  onClick={() => setCurrentPage(index + 1)}
-                  isActive={currentPage === index + 1}
-                >
-                  {index + 1}
-                </ScPageButton>
-              ))}
-              {currentPage < totalPage && (
-                <ScPageButton onClick={() => setCurrentPage(currentPage + 1)}>다음</ScPageButton>
-              )}
-            </>
-          )}
+          {currentPage > 1 && <ScPageButton onClick={() => setCurrentPage(currentPage - 1)}>이전</ScPageButton>}
+          {Array.from({length: totalPage}, (_, index) => (
+            <ScPageButton key={index} onClick={() => setCurrentPage(index + 1)} isActive={currentPage === index + 1}>
+              {index + 1}
+            </ScPageButton>
+          ))}
+          {currentPage < totalPage && <ScPageButton onClick={() => setCurrentPage(currentPage + 1)}>다음</ScPageButton>}
         </ScPageNation>
         {isUserLoggedIn && (
           <ScWirteButton
