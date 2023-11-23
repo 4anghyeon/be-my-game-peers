@@ -21,8 +21,6 @@ const ScMain = styled.main`
   height: 100vh;
 `;
 
-const ScContent = styled.section`
-  height: calc(100% - 100px); // 100% - (header(px) + footer(px))
-`;
+const ScContent = styled.section``;
 
 export default Layout;
