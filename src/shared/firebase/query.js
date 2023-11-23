@@ -21,6 +21,25 @@ export const findUserByEmail = async email => {
   return user;
 };
 
+export const findUsersByEmailList = async list => {
+  // firestore의 user정보에서 list의 email의 유저 정보를 모두 찾음
+  const selectUsersByEmailQuery = await query(userCollectionRef, where('email', 'in', list));
+  const querySnapshot = await getDocs(selectUsersByEmailQuery);
+
+  let findList = [];
+  await new Promise((res, rej) => {
+    if (querySnapshot.docs.length > 0) {
+      querySnapshot.docs.forEach(doc => {
+        findList.push(doc.data());
+      });
+      res();
+    } else {
+      rej(new Error('No User'));
+    }
+  });
+  return findList;
+};
+
 export const updateUser = async (email, updateInfo) => {
   const find = await findUserByEmail(email);
   const userRef = doc(db, 'users', find.id);
@@ -32,15 +51,26 @@ export const updateUser = async (email, updateInfo) => {
   await updateDoc(userRef, updateInfo);
 };
 
-export const updateUserFollower = async (followerEmail, followList) => {
-  // 팔로우 당하는 사람의 팔로우 목록을 업데이트 한다.
-  const followedUser = await findUserByEmail(followerEmail);
-  const followedUserRef = doc(db, 'users', followedUser.id);
-  await updateDoc(followedUserRef, {follower: followList});
-};
-
 export const createUser = async user => {
   await addDoc(userCollectionRef, user);
+};
+
+export const updateUserFollower = async (currentUserEmail, followerEmail, isFollow) => {
+  // 팔로우 당하는 사람의 팔로우 목록을 업데이트 한다.
+  const followedUser = await findUserByEmail(followerEmail);
+  let followerList = followedUser.follower ?? [];
+
+  if (isFollow) {
+    if (!followerList.includes(currentUserEmail)) {
+      followerList.push(currentUserEmail);
+    }
+  } else {
+    followerList = followerList.filter(email => email !== currentUserEmail);
+  }
+
+  const followedUserRef = doc(db, 'users', followedUser.id);
+  await updateDoc(followedUserRef, {follower: followerList});
+  return followerList;
 };
 
 export const updateUserFollowing = async (currentUserEmail, followerEmail, isFollow) => {
@@ -54,4 +84,5 @@ export const updateUserFollowing = async (currentUserEmail, followerEmail, isFol
     followingList = followingList.filter(email => email !== followerEmail);
   }
   await updateDoc(followingUserRef, {following: followingList});
+  return followingList;
 };

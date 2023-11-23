@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from '../../node_modules/react-redux/es/export
 import {useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
-import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
+import {addComment, deletePost, editPost, fetchData} from 'redux/modules/PostModule';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';

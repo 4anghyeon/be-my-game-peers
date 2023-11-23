@@ -73,7 +73,6 @@ const PostModule = (state = initialState, action) => {
       return state.map(item =>
         item.postId === action.payload.id ? {...item, comments: [action.payload.newComment, ...item.comments]} : item,
       );
-
     default:
       return state;
   }

@@ -3,11 +3,11 @@ import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 
-const TeamMateList = ({filterCategory, isUserLoggedIn}) => {
+const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput, onSearch}) => {
   const postparty = useSelector(state => state.PostModule);
   const navigate = useNavigate();
   const partypage = 5;
-
+  console.log(filteredPosts);
   // 각 카테고리에 대한 현재 페이지를 저장하는 상태
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -15,9 +15,16 @@ const TeamMateList = ({filterCategory, isUserLoggedIn}) => {
   const endPageIndex = startPageIndex + partypage;
 
   const totalPage = Math.ceil(postparty.filter(item => item.category === filterCategory).length / partypage);
-  const currentPageList = postparty
-    .filter(item => item.category === filterCategory)
-    .slice(startPageIndex, endPageIndex);
+
+  const currentPageList = onSearch
+    ? filteredPosts
+        .filter(item => item.category === filterCategory && item.postTitle.includes(partyInput))
+        .slice(startPageIndex, endPageIndex)
+    : postparty.filter(item => item.category === filterCategory).slice(startPageIndex, endPageIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterCategory, partyInput, filteredPosts, onSearch]);
 
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
@@ -50,13 +57,15 @@ const TeamMateList = ({filterCategory, isUserLoggedIn}) => {
           ))}
           {currentPage < totalPage && <ScPageButton onClick={() => setCurrentPage(currentPage + 1)}>다음</ScPageButton>}
         </ScPageNation>
-        <ScWirteButton
-          onClick={() => {
-            navigate(`/write`);
-          }}
-        >
-          글쓰기
-        </ScWirteButton>
+        {isUserLoggedIn && (
+          <ScWirteButton
+            onClick={() => {
+              navigate(`/write`);
+            }}
+          >
+            글쓰기
+          </ScWirteButton>
+        )}
       </ScTeammateSearchBox>
     </>
   );
