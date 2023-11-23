@@ -122,11 +122,14 @@ const SignUpPage = () => {
     let isDuplicate = false;
 
     // firestore의 user정보에서 email이 같은 유저를 찾음
-    const find = await findUserByEmail(email);
-    if (find) {
+    try {
+      await findUserByEmail(email);
       message = '이미 사용중인 이메일입니다.';
-      isValid = false;
       isDuplicate = true;
+    } catch (error) {
+      message = '사용 가능한 이메일입니다.';
+      isValid = true;
+      isDuplicate = false;
     }
 
     setValidation(prev => {
