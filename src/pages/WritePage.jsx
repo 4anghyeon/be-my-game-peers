@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
-import {addPost, fetchData} from 'redux/modules/PostModule';
+import {addPost, fetchData, setData} from 'redux/modules/PostModule';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
 import {collection, addDoc} from 'firebase/firestore';
@@ -72,16 +72,19 @@ const WritePage = () => {
       return;
     }
     await addDoc(collection(db, 'posts'), newPost);
-    fetchData();
+    const allData = await fetchData();
 
-    setInputs({
-      postTitle: '',
-      postContent: '',
-      category: 'select',
-      currentParticipants: 1,
-    });
-    alert.twinkle('글이 등록되었습니다!');
-    navigate(`/detail/${newPost.postId}`);
+    if (allData) {
+      dispatch(setData(allData));
+      setInputs({
+        postTitle: '',
+        postContent: '',
+        category: 'select',
+        currentParticipants: 1,
+      });
+      alert.twinkle('글이 등록되었습니다!');
+      navigate(`/detail/${newPost.postId}`);
+    }
   };
 
   // input 변경

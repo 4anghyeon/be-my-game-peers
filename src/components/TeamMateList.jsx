@@ -72,7 +72,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         {isUserLoggedIn && (
           <ScWirteButton
             onClick={() => {
-              navigate(`/DetailPage`);
+              navigate(`/write`);
             }}
           >
             글쓰기
