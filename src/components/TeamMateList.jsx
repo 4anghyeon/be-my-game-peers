@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
-import categori from 'redux/modules/categoriModule';
+import moment from 'moment';
 
 const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput, onSearch}) => {
   const postparty = useSelector(state => state.PostModule);
@@ -28,10 +28,6 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         .slice(startPageIndex, endPageIndex)
     : postparty.filter(item => item.category === filterCategory).slice(startPageIndex, endPageIndex);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filterCategory, partyInput, filteredPosts, onSearch]);
-
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
@@ -43,10 +39,11 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
     const selectedCategory = postm.find(c => c.game === category);
     return selectedCategory ? selectedCategory.players : 0;
   };
+  console.log('currentPageList', currentPageList);
   return (
     <>
       <ScTeammateSearchBox>
-        {currentPageList.filter(item => item === categori).length === 0 ? (
+        {currentPageList.filter(item => item).length === 0 ? (
           <NoPostParty>파티구인 구직 글이 없습니다 글을 작성해주세요</NoPostParty>
         ) : (
           currentPageList.map((post, index) => (
@@ -60,7 +57,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
                   {post.currentParticipants} / {getCategoryPlayers(post.category)}
                 </div>
                 <span>{truncate(post.author, 5)}</span>
-                <time>{post.postDate}</time>
+                <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
               </ScPostBox>
             </ScGameParty>
           ))
@@ -87,7 +84,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         {isUserLoggedIn && (
           <ScWirteButton
             onClick={() => {
-              navigate(`/DetailPage`);
+              navigate(`/write`);
             }}
           >
             글쓰기
