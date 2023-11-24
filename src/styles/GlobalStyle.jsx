@@ -42,6 +42,7 @@ export const GlobalStyle = createGlobalStyle`
     -o-background-size: 100% 100%;
     -webkit-background-size: 100% 100%;
     background-size: cover;
+    font-family: 'MaplestoryOTFLight';
   }
   ol, ul {
     list-style: none;
