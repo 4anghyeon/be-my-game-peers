@@ -27,6 +27,7 @@ const WritePage = () => {
     currentParticipants: 1,
   });
 
+  console.log(getAuth().currentUser.email);
   useEffect(() => {
     // 로그인 안 되어 있으면 다시 메인으로..
     if (!getAuth().currentUser) navigate('/');
@@ -60,6 +61,7 @@ const WritePage = () => {
       postTitle: inputs.postTitle,
       postContent: inputs.postContent,
       author: getAuth().currentUser.displayName,
+      authorEmail: getAuth().currentUser.email,
       postDate: new Date(),
       category: inputs.category,
       currentParticipants: inputs.currentParticipants,
