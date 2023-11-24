@@ -124,7 +124,8 @@ const DetailPage = () => {
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
-          {currentAuthor === postAuthor ? (
+          {/*{currentAuthor === postAuthor ? (*/}
+          {currentUser.email === postAuthorEmail ? (
             <ScBtnGroup>
               <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
               <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
