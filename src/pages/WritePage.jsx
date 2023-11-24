@@ -27,10 +27,13 @@ const WritePage = () => {
     currentParticipants: 1,
   });
 
-  console.log(getAuth().currentUser.email);
   useEffect(() => {
     // 로그인 안 되어 있으면 다시 메인으로..
-    if (!getAuth().currentUser) navigate('/');
+
+    if (!getAuth().currentUser) {
+      alert.twinkle('로그인 후 이용해주세요');
+      navigate('/');
+    }
   }, []);
 
   // 1. 게임카테고리가 변하면 -> 현재 인원수(=최대파티원수)가 동적으로 변경
