@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useSelector, useDispatch} from 'react-redux';
-import Header from 'components/Layout/Header';
+import Header from 'components/Layout/Header/Header';
 import Footer from 'components/Layout/Footer';
 import PostModule from 'redux/modules/PostModule';
 import categori, {seartchCategori} from 'redux/modules/categoriModule';
