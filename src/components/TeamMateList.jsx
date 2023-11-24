@@ -234,7 +234,13 @@ const ScWriter = styled.span`
   margin-bottom: 5px;
   display: block;
   letter-spacing: 5px;
-  color: ${props => (props.isUserLoggedIn && getAuth().currentUser.displayName === 'desiredValue' ? 'red' : 'black')};
+
+  ${props =>
+    props.isUserLoggedIn &&
+    getAuth().currentUser?.displayName &&
+    css`
+      color: ${getAuth().currentUser.displayName === props.desiredValue ? 'red' : 'inherit'};
+    `}
 `;
 
 const ScPartyTime = styled.div`
