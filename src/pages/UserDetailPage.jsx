@@ -86,7 +86,7 @@ const UserDetailPage = () => {
         setProfileImg(avatar);
       }
     });
-  }, [userAuth]);
+  }, [userAuth, pathname]);
 
   // 추천 / 비추천 버튼
   const [likeCount, setLikeCount] = useState(0);

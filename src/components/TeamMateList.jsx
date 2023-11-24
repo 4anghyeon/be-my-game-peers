@@ -8,16 +8,15 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
   const postparty = useSelector(state => state.PostModule);
 
   const postm = useSelector(state => state.categoriModule);
-  const gameNames = postm.map(postm => postm.players);
 
   const navigate = useNavigate();
 
   const partypage = 5;
-  console.log(filteredPosts);
-  // 각 카테고리에 대한 현재 페이지를 저장하는 상태
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const startPageIndex = (currentPage - 1) * partypage;
+  // 각 카테고리에 대한 현재 페이지를 저장하는 상태
+  const [currentPage, setCurrentPage] = useState({});
+
+  const startPageIndex = (currentPage[filterCategory] - 1) * partypage;
   const endPageIndex = startPageIndex + partypage;
 
   const totalPage = Math.ceil(postparty.filter(item => item.category === filterCategory).length / partypage);
@@ -36,10 +35,17 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
   };
 
   const getCategoryPlayers = category => {
-    const selectedCategory = postm.find(c => c.game === category);
+    const selectedCategory = postm.find(intro => intro.game === category);
     return selectedCategory ? selectedCategory.players : 0;
   };
-  console.log('currentPageList', currentPageList);
+  useEffect(() => {
+    if (!currentPage[filterCategory]) {
+      setCurrentPage(prev => ({
+        ...prev,
+        [filterCategory]: 1,
+      }));
+    }
+  }, [filterCategory]);
   return (
     <>
       <ScTeammateSearchBox>
@@ -56,20 +62,51 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
                 <div>
                   {post.currentParticipants} / {getCategoryPlayers(post.category)}
                 </div>
-                <span>{truncate(post.author, 5)}</span>
+                <span>{truncate(post.author, 4)}</span>
                 <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
               </ScPostBox>
             </ScGameParty>
           ))
         )}
         <ScPageNation>
-          {currentPage > 1 && <ScPageButton onClick={() => setCurrentPage(currentPage - 1)}>이전</ScPageButton>}
+          {currentPage[filterCategory] > 1 && (
+            <ScPageButton
+              onClick={() =>
+                setCurrentPage(prev => ({
+                  ...prev,
+                  [filterCategory]: prev[filterCategory] - 1,
+                }))
+              }
+            >
+              이전
+            </ScPageButton>
+          )}
           {Array.from({length: totalPage}, (_, index) => (
-            <ScPageButton key={index} onClick={() => setCurrentPage(index + 1)} isActive={currentPage === index + 1}>
+            <ScPageButton
+              key={index}
+              onClick={() =>
+                setCurrentPage(prev => ({
+                  ...prev,
+                  [filterCategory]: index + 1,
+                }))
+              }
+              isActive={currentPage[filterCategory] === index + 1}
+            >
               {index + 1}
             </ScPageButton>
           ))}
-          {currentPage < totalPage && <ScPageButton onClick={() => setCurrentPage(currentPage + 1)}>다음</ScPageButton>}
+          {currentPage[filterCategory] < totalPage && (
+            <ScPageButton
+              onClick={() =>
+                setCurrentPage(prev => ({
+                  ...prev,
+                  [filterCategory]: prev[filterCategory] + 1,
+                }))
+              }
+            >
+              다음
+            </ScPageButton>
+          )}
         </ScPageNation>
         {isUserLoggedIn && (
           <ScWirteButton
@@ -84,7 +121,6 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
     </>
   );
 };
-
 const ScTeammateSearchBox = styled.div`
   width: 1000px;
   height: 650px;
@@ -136,10 +172,10 @@ const ScPostBox = styled.div`
 const ScPageNation = styled.div`
   display: flex;
   justify-content: center;
-  position: absolute; /* absolute로 설정 */
+  position: absolute;
   width: 70%;
   right: 15%;
-  top: 94%; /* 조정이 필요한 위치로 설정 */
+  top: 94%;
 `;
 const ScPageButton = styled.button`
   margin: 0 5px;
@@ -172,8 +208,8 @@ const ScWirteButton = styled.button`
   &:hover {
     background-color: #8e8ffa;
   }
-  position: absolute; /* absolute로 설정 */
-  bottom: 15px; /* 조정이 필요한 위치로 설정 */
+  position: absolute;
+  bottom: 15px;
   left: 90%;
   transform: translateX(-50%);
 `;
