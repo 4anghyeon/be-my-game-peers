@@ -7,7 +7,7 @@ import {
   validationRePassword,
 } from '../shared/helper/validation';
 import {createUserWithEmailAndPassword, getAuth, updateProfile} from 'firebase/auth';
-import {auth} from '../shared/firebase';
+import {auth} from '../shared/firebase/firebase';
 import {useNavigate} from 'react-router-dom';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {useDispatch, useSelector} from 'react-redux';
@@ -125,6 +125,7 @@ const SignUpPage = () => {
     try {
       await findUserByEmail(email);
       message = '이미 사용중인 이메일입니다.';
+      isValid = false;
       isDuplicate = true;
     } catch (error) {
       message = '사용 가능한 이메일입니다.';
@@ -156,7 +157,8 @@ const SignUpPage = () => {
         await updateProfile(userCredential.user, {displayName: nickname});
 
         // authentication이 아닌 firestore에도 저장
-        const newUser = {email, introduction, favoriteGame, nickname};
+        const profileImg = userCredential.user.photoURL;
+        const newUser = {email, introduction, favoriteGame, nickname, profileImg};
         await createUser(newUser);
         dispatch(addUser(newUser));
 

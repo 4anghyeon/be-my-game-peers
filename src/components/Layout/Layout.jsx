@@ -17,12 +17,16 @@ const Layout = () => {
 };
 
 const ScMain = styled.main`
-  width: 100vw;
+  width: 100%;
   height: 100vh;
 `;
 
 const ScContent = styled.section`
-  height: calc(100% - 100px); // 100% - (header(px) + footer(px))
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: calc(100vh - 240px);
 `;
 
 export default Layout;

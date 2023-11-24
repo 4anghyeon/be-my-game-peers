@@ -3,7 +3,7 @@ import {ScContainer, ScForm, ScSection, ScWrapper, ValidationMessage} from '../c
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import {signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
-import {auth} from '../shared/firebase';
+import {auth} from '../shared/firebase/firebase';
 import {useDispatch} from 'react-redux';
 import {changeAuth} from '../redux/modules/userAuth';
 import googleIcon from '../assets/img/google-icon.png';
@@ -56,11 +56,13 @@ const LoginPage = () => {
     } catch (error) {
       console.error(error);
       // 에러가 났다는 뜻은 찾은 유저가 없다는 것...
+      // 새로 생성!
       const newUser = {
         email: result.user.email,
         introduction: '',
         favoriteGame: 0,
         nickname: auth.currentUser.displayName,
+        profileImg: result.user.photoURL,
       };
       await createUser(newUser);
       dispatch(addUser(newUser));

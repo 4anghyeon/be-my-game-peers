@@ -1,4 +1,5 @@
 import {createGlobalStyle} from 'styled-components';
+import bg from 'assets/img/bg.svg';
 
 export const GlobalStyle = createGlobalStyle`
   /* http://meyerweb.com/eric/tools/css/reset/
@@ -37,6 +38,10 @@ export const GlobalStyle = createGlobalStyle`
   }
   body {
     line-height: 1;
+    background-image: url(${() => bg});
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    background-size: cover;
   }
   ol, ul {
     list-style: none;
@@ -54,5 +59,40 @@ export const GlobalStyle = createGlobalStyle`
   }
   textarea:focus, input:focus{
     outline: none;
+  }
+
+  @keyframes spinner {
+    0% {
+      transform: translate3d(-50%, -50%, 0) rotate(0deg);
+    }
+    100% {
+      transform: translate3d(-50%, -50%, 0) rotate(360deg);
+    }
+  }
+
+  .spin-bg::before {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+  }
+
+  .spin::before {
+    animation: 1.5s linear infinite spinner;
+    animation-play-state: inherit;
+    border: solid 5px #cfd0d1;
+    border-bottom-color: #8e8ffa;
+    border-radius: 50%;
+    content: '';
+    height: 60px;
+    width: 60px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    will-change: transform;
   }
 `;

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
-import {useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
+import {Link, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
 import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
@@ -18,12 +18,19 @@ const DetailPage = () => {
   const {id} = params;
   const textAreaRef = useRef();
   const alert = useAlert();
-  console.log(posts, id);
 
   const selectedPost = posts.find(post => post.postId === id);
+  console.log(selectedPost);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
+
+  const currentUser = getAuth().currentUser;
+  const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';
+  const postAuthor = selectedPost.author;
+  console.log('postAuthor: ', postAuthor);
+  const postAuthorEmail = selectedPost.authorEmail;
+  console.log('postAuthorEmail: ', postAuthorEmail);
 
   // comment input 변경
   const changeCommentText = e => {
@@ -63,7 +70,7 @@ const DetailPage = () => {
 
     if (isEdit) {
       alert.confirm(
-        '진짜?',
+        '이대로 수정하시겠습니까?',
         () => {
           dispatch(editPost({id, editedText}));
           setIsEdit(false);
@@ -91,7 +98,6 @@ const DetailPage = () => {
   useEffect(() => {
     if (isEdit) {
       const textArea = textAreaRef.current;
-
       if (textArea) {
         textArea.focus();
         textArea.setSelectionRange(textArea.value.length, textArea.value.length);
@@ -104,13 +110,23 @@ const DetailPage = () => {
       <ScDetailElementGroup>
         <h1>{selectedPost.postTitle}</h1>
         <ScPostDetailGroup>
+          {currentUser ? (
+            <Link to={`/user/${postAuthorEmail}`}>
+              <span>작성자 : {postAuthor}</span>
+            </Link>
+          ) : (
+            <span>작성자 : Guest</span>
+          )}
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
-          <ScBtnGroup>
-            <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
-            <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
-          </ScBtnGroup>
+
+          {currentAuthor === postAuthor ? (
+            <ScBtnGroup>
+              <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
+              <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
+            </ScBtnGroup>
+          ) : null}
         </ScPostDetailGroup>
 
         <hr />
@@ -135,7 +151,7 @@ const DetailPage = () => {
 const ScVerticalContainer = styled(CenterContainer)`
   flex-direction: column;
   padding: 20px;
-  overflow: scroll;
+  overflow: auto;
 `;
 
 const ScDetailElementGroup = styled.div`
@@ -167,6 +183,12 @@ const ScPostDetailGroup = styled.div`
   border-radius: 10px;
   min-height: 40%;
   position: relative;
+
+  span {
+    display: inline-block;
+    margin-bottom: 10px;
+    text-align: right;
+  }
 `;
 
 const ScTextarea = styled.textarea`

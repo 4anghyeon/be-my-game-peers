@@ -1,5 +1,5 @@
 import {collection, doc, query, where, getDocs, addDoc, updateDoc} from 'firebase/firestore';
-import {db} from '../firebase';
+import {db} from './firebase';
 import {getAuth, updateProfile} from 'firebase/auth';
 
 const userCollectionRef = collection(db, 'users');
