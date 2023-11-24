@@ -156,7 +156,7 @@ const UserDetailPage = () => {
   const handleChangeImage = event => {
     setImgfile(event.target.files[0]);
     const imgUrl = URL.createObjectURL(event.target.files[0]);
-    // setProfileImg(imgUrl);
+    setProfileImg(imgUrl);
   };
 
   return (
