@@ -92,7 +92,12 @@ const DetailPage = () => {
     setComment('');
     dispatch(addComment({id, newComment}));
     if (postAuthorEmail !== currentUser.email)
-      sendMessage(postAuthorEmail, `님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`, id, 'post');
+      sendMessage(
+        postAuthorEmail,
+        `${currentUser.displayName}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
+        id,
+        'post',
+      );
   };
 
   // 수정 상태 토글

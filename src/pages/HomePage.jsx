@@ -9,6 +9,7 @@ import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
 import {useState} from 'react';
+import GameCardContainer from '../components/Home/GameCardContainer';
 
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
@@ -56,6 +57,7 @@ const HomePage = () => {
           </ScCategoriList>
         ))}
       </ScCategoriSection>
+      <GameCardContainer category={filterCategory} />
       <ScSearchBox>
         <ScSearchInput placeholder="제목을 입력하세요" value={partyInput} onChange={Inputsearching} />
         <ScSearchButton onClick={SearchParties}>검색</ScSearchButton>
@@ -98,9 +100,8 @@ const ScCategoriList = styled(Link)`
   }
 `;
 const ScCategoriSection = styled.section`
-  margin-top: 20px;
+  margin: 20px 0 20px 0;
   width: 100%;
-  height: 150px;
   text-align: center;
 `;
 const ScSearchBox = styled.form`
