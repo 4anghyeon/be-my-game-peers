@@ -1,10 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {CenterVertical, Input} from 'components/Common/Common.styled';
 import avatar from 'assets/avatar.png';
-import {useState} from 'react';
 import {getAuth} from 'firebase/auth';
-import {updateUser, findUserByEmail} from 'shared/firebase/query';
+import {findUserByEmail, updateUser} from 'shared/firebase/query';
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
 import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
@@ -13,7 +12,7 @@ import uuid from '../../node_modules/react-uuid/uuid';
 import Like from 'assets/like.png';
 import DisLike from 'assets/disLike.png';
 import alert from 'assets/alert(purple).png';
-import {storage, auth} from 'shared/firebase/firebase';
+import {auth, storage} from 'shared/firebase/firebase';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 
 const UserDetailPage = () => {
@@ -90,27 +89,24 @@ const UserDetailPage = () => {
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
   const EDIT_FAVORITE = event => setFavoriteGame(event.target.value);
 
-  let newUserInfo = {};
-
   // 프로필 수정 버튼
   const EDIT_BUTTON = async () => {
     setIsEdit(!isEdit);
 
     if (isEdit) {
-      newUserInfo = {
+      const newUserInfo = {
         nickname,
         introduction,
         favoriteGame,
+        follower: userInfo.follower,
+        following: userInfo.following,
+        email: userInfo.email,
       };
       if (imgFile !== null) {
         const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
-        console.log('imageRef: ', imageRef); // undefined
         await uploadBytes(imageRef, imgFile);
 
-        const downloadURL = await getDownloadURL(imageRef);
-        console.log(downloadURL);
-
-        newUserInfo.profileImg = downloadURL;
+        newUserInfo.profileImg = await getDownloadURL(imageRef);
       }
       setUserInfo(newUserInfo);
       await updateUser(email, newUserInfo);

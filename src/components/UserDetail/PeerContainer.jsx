@@ -23,7 +23,8 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
     setFollowerNumber(profileUser.follower?.length || 0);
     setFollowingNumber(profileUser.following?.length || 0);
 
-    if (profileUser.follower) {
+    if (profileUser.email === currentUserEmail) setIsFollow(false);
+    else if (profileUser.follower) {
       if (profileUser.follower.includes(currentUserEmail)) setIsFollow(true);
       else setIsFollow(false);
     }
