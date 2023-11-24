@@ -3,7 +3,7 @@ import {useSelector} from 'react-redux';
 import styled, {css} from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import moment from 'moment';
-
+import {getAuth} from 'firebase/auth';
 const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput, onSearch}) => {
   const postparty = useSelector(state => state.PostModule);
 
@@ -33,7 +33,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         .sort((a, b) => b.postDate.seconds - a.postDate.seconds)
         .slice(startPageIndex, endPageIndex);
 
-  //페이지네이션 길이. 문자열의 길이가 이상이면 ... 나오게
+  // 문자열의 길이가 이상이면 ... 나오게
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
@@ -68,7 +68,13 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
                   {post.category} ({post.currentParticipants} / {getCategoryPlayers(post.category)})
                 </ScCateGory>
                 <ScTitle>{truncate(post.postTitle, 15)}</ScTitle>
-                <ScWriter>{truncate(post.author, 7)}</ScWriter>
+                <ScWriter
+                  isUserLoggedIn={isUserLoggedIn}
+                  userDisplayName={getAuth().currentUser?.displayName}
+                  postAuthor={truncate(post.author, 7)}
+                >
+                  {truncate(post.author, 7)}
+                </ScWriter>
                 <ScPartyTime>
                   <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
                 </ScPartyTime>
@@ -98,7 +104,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
                   [filterCategory]: index + 1,
                 }))
               }
-              isActive={currentPage[filterCategory] === index + 1}
+              $isActive={currentPage[filterCategory] === index + 1}
             >
               {index + 1}
             </ScPageButton>
@@ -183,8 +189,8 @@ const ScPageButton = styled.button`
     background-color: #7752fe;
   }
 
-  ${({isActive}) =>
-    isActive &&
+  ${({$isActive}) =>
+    $isActive &&
     `
     background-color: #7752fe;
   `}
@@ -234,11 +240,13 @@ const ScWriter = styled.span`
   margin-bottom: 5px;
   display: block;
   letter-spacing: 5px;
-  ${({isUserLoggedIn, postAuthor}) =>
-    isUserLoggedIn &&
-    postAuthor &&
+
+  ${props =>
+    props.isUserLoggedIn &&
+    props.userDisplayName &&
+    props.postAuthor &&
     css`
-      color: blue;
+      color: ${props.userDisplayName === props.postAuthor ? '#C2D9FF' : 'inherit'};
     `}
 `;
 

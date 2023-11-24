@@ -25,7 +25,7 @@ const HomePage = () => {
     setfilterCategory(selectCategory);
     setOnSearch(false);
   };
-  console.log(filterCategory);
+
   const isUserLoggedIn = getAuth().currentUser;
 
   useEffect(() => {
