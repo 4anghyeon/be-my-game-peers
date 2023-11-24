@@ -3,7 +3,7 @@ import {useSelector} from 'react-redux';
 import styled, {css} from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import moment from 'moment';
-
+import {getAuth} from 'firebase/auth';
 const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput, onSearch}) => {
   const postparty = useSelector(state => state.PostModule);
 
@@ -32,8 +32,8 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         .filter(item => item.category === filterCategory)
         .sort((a, b) => b.postDate.seconds - a.postDate.seconds)
         .slice(startPageIndex, endPageIndex);
-
-  //페이지네이션 길이. 문자열의 길이가 이상이면 ... 나오게
+  console.log(getAuth().currentUser.displayName);
+  // 문자열의 길이가 이상이면 ... 나오게
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
@@ -98,7 +98,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
                   [filterCategory]: index + 1,
                 }))
               }
-              isActive={currentPage[filterCategory] === index + 1}
+              $isActive={currentPage[filterCategory] === index + 1}
             >
               {index + 1}
             </ScPageButton>
@@ -183,8 +183,8 @@ const ScPageButton = styled.button`
     background-color: #7752fe;
   }
 
-  ${({isActive}) =>
-    isActive &&
+  ${({$isActive}) =>
+    $isActive &&
     `
     background-color: #7752fe;
   `}
@@ -234,12 +234,7 @@ const ScWriter = styled.span`
   margin-bottom: 5px;
   display: block;
   letter-spacing: 5px;
-  ${({isUserLoggedIn, postAuthor}) =>
-    isUserLoggedIn &&
-    postAuthor &&
-    css`
-      color: blue;
-    `}
+  color: ${props => (props.isUserLoggedIn && getAuth().currentUser.displayName === 'desiredValue' ? 'red' : 'black')};
 `;
 
 const ScPartyTime = styled.div`
