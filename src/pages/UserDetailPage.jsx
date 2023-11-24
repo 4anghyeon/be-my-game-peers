@@ -14,11 +14,13 @@ import DisLike from 'assets/disLike.png';
 import alert from 'assets/alert(purple).png';
 import {auth, storage} from 'shared/firebase/firebase';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {setData} from '../redux/modules/PostModule';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
-  const getUserInfo = getAuth().currentUser.email;
   const getUser = getAuth().currentUser;
+  const currentUserEmail = getUser.email;
   const email = pathname.replace('/user/', '');
   const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
@@ -33,12 +35,14 @@ const UserDetailPage = () => {
   const [disableClick, setDisableClick] = useState(false);
   // 코멘트란
   const [comments, setComments] = useState([]);
-  console.log(comments);
   const [content, setContent] = useState('');
   // 프로필 이미지 업로드
   const [profileImg, setProfileImg] = useState('');
   const [imgFile, setImgfile] = useState(null);
-  console.log(imgFile);
+  // posts
+  const posts = useSelector(state => state.PostModule);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     findUserByEmail(email).then(user => {
@@ -72,7 +76,7 @@ const UserDetailPage = () => {
 
   //firebase에 저장된 user 정보 가져오기
   useEffect(() => {
-    if (getUserInfo === null) {
+    if (currentUserEmail === null) {
       console.log('로그인 해주세요');
     } else {
       findUserByEmail(email)
@@ -114,6 +118,24 @@ const UserDetailPage = () => {
       setIntroduction('');
       setFavoriteGame('');
       setImgfile(null);
+
+      // 닉네임이 바뀌면 모든 글 닉네임 변경!
+      if (userInfo.nickname !== newUserInfo.nickname) {
+        const newPosts = posts.map(post => {
+          if (post.authorEmail === currentUserEmail) {
+            post.author = newUserInfo.nickname;
+            post.comments = post.comments.map(comment => {
+              if (comment.userEmail === currentUserEmail) {
+                comment.userId = nickname;
+              }
+              return comment;
+            });
+          }
+          return post;
+        });
+
+        dispatch(setData(newPosts));
+      }
     }
   };
 
@@ -159,7 +181,7 @@ const UserDetailPage = () => {
 
   return (
     <>
-      {getUserInfo === null ? (
+      {currentUserEmail === null ? (
         <ScContainer>
           <img className="alert" src={alert} alt="경고 아이콘" />
           <h3>로그인 후 이용가능한 페이지 입니다.</h3>
@@ -193,7 +215,7 @@ const UserDetailPage = () => {
                   <ScAbout>{isEdit ? null : `💜 LIKE  ${userInfo.favoriteGame}`}</ScAbout>
                 </div>
                 <ScEditAndPost>
-                  {getUserInfo === userInfo.email ? (
+                  {currentUserEmail === userInfo.email ? (
                     <div>
                       <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
                       <ScEditButton onClick={checkMyPost}>내 게시물</ScEditButton>
