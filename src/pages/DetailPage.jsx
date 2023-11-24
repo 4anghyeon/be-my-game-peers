@@ -3,16 +3,19 @@ import {useDispatch, useSelector} from '../../node_modules/react-redux/es/export
 import {Link, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
-import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
+import {addComment, deletePost, editPost, fetchData, setData} from 'redux/modules/PostModule';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
 import {useAlert} from 'redux/modules/alert/alertHook';
 import {hideAlert} from 'redux/modules/alert/alertModule';
+
+import {db} from 'shared/firebase/firebase';
+import {collection, query, getDocs, doc, deleteDoc, updateDoc} from 'firebase/firestore';
 import {sendMessage} from '../shared/firebase/query';
 
 const DetailPage = () => {
-  const posts = useSelector(state => state.PostModule);
+  // const posts = useSelector(state => state.PostModule);
   const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
@@ -20,16 +23,52 @@ const DetailPage = () => {
   const textAreaRef = useRef();
   const alert = useAlert();
 
-  const selectedPost = posts.find(post => post.postId === id);
+  const [posts, setPosts] = useState([]);
+  const [selectedPost, setSelectedPost] = useState({
+    postTitle: '',
+  });
+  const [postAuthor, setPostAuthor] = useState('');
+  const [postAuthorEmail, setPostAuthorEmail] = useState('');
+
+  const [commentList, setCommentList] = useState([]);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
-  const [editedText, setEditedText] = useState(selectedPost.postContent);
-  console.log(editedText);
-
+  const [editedText, setEditedText] = useState('');
   const currentUser = getAuth().currentUser;
-  const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';
-  const postAuthor = selectedPost.author;
-  const postAuthorEmail = selectedPost.authorEmail;
+
+  const fetchData = async () => {
+    const q = query(collection(db, 'posts'));
+    const querySnapshot = await getDocs(q);
+
+    const initialPosts = [];
+    querySnapshot.forEach(doc => {
+      initialPosts.push({...doc.data(), id: doc.id});
+    });
+
+    setPosts(initialPosts);
+    return initialPosts;
+  };
+
+  // 최신 데이터 가져오기
+  useEffect(() => {
+    // 수정한 부분!!!!
+    fetchData().then(posts => {
+      const post = posts.find(post => post.postId === id);
+      setSelectedPost(post);
+      setPostAuthor(post.author);
+      setPostAuthorEmail(post.authorEmail);
+      setCommentList(posts.comments);
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchData().then(posts => {
+      const post = posts.find(post => post.postId === id);
+      setSelectedPost(post);
+      setPostAuthor(post.author);
+      setPostAuthorEmail(post.authorEmail);
+    });
+  }, [commentList]);
 
   // comment input 변경
   const changeCommentText = e => {
@@ -42,15 +81,16 @@ const DetailPage = () => {
   };
 
   // comment 등록
-  const HandleSubmitComment = e => {
+  const addComment = async e => {
     e.preventDefault();
+
     if (!currentUser) {
       alert.alert('로그인 후 이용해주세요');
       return;
     }
     const newComment = {
       commentId: uuid(),
-      userId: getAuth().currentUser.displayName,
+      userId: currentUser && currentUser.displayName,
       content: comment,
       commentDate: new Date(),
     };
@@ -59,20 +99,34 @@ const DetailPage = () => {
       alert.alert('댓글 내용을 입력해주세요');
       return;
     }
-    setComment('');
-    dispatch(addComment({id, newComment}));
-    if (postAuthorEmail !== currentUser.email)
+
+    const commentRef = doc(db, 'posts', selectedPost.id);
+    await updateDoc(commentRef, {...selectedPost, comments: [...selectedPost.comments, newComment]});
+    const allData = await fetchData();
+    if (allData) {
+      setCommentList([...selectedPost.comments, newComment]);
+      dispatch(setData(allData));
+    }
+
+    if (postAuthorEmail !== currentUser.email) {
       sendMessage(
         postAuthorEmail,
-        `${currentAuthor}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
+        `${currentUser.displayName}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
         id,
         'post',
       );
+    }
+
+    setComment('');
   };
 
-  // 수정 상태 토글
-  const handleEditPost = () => {
-    if (!isEdit) setIsEdit(true);
+  // 게시글 수정
+  const editPost = async id => {
+    if (!isEdit) {
+      setIsEdit(true);
+      setEditedText(selectedPost.postContent);
+      console.log('성공');
+    }
 
     if (isEdit && selectedPost.postContent.trim() === editedText.trim()) {
       alert.alert('수정내용이 없습니다');
@@ -80,26 +134,23 @@ const DetailPage = () => {
     }
 
     if (isEdit) {
-      alert.confirm(
-        '이대로 수정하시겠습니까?',
-        () => {
-          dispatch(editPost({id, editedText}));
-          setIsEdit(false);
-          dispatch(hideAlert());
-        },
-        () => {
-          setEditedText(selectedPost.postContent);
-          setIsEdit(false);
-          dispatch(hideAlert());
-        },
-      );
+      const postRef = doc(db, 'posts', id);
+      await updateDoc(postRef, {...selectedPost, postContent: editedText});
+      const allData = await fetchData();
+      if (allData) {
+        dispatch(setData(allData));
+      }
     }
   };
 
   // 게시글 삭제
-  const HandleDeletePost = () => {
-    alert.confirm('정말 삭제하시겠습니까?', () => {
-      dispatch(deletePost(id));
+  const deletePost = async id => {
+    alert.confirm('정말 삭제하시겠습니까?', async () => {
+      const postRef = doc(db, 'posts', id);
+      console.log(id);
+      await deleteDoc(postRef);
+      const allNewList = await fetchData();
+      dispatch(setData(allNewList));
       navigate('/');
       dispatch(hideAlert());
     });
@@ -121,39 +172,35 @@ const DetailPage = () => {
       <ScDetailElementGroup>
         <h1>{selectedPost.postTitle}</h1>
         <ScPostDetailGroup>
-          {currentUser ? (
-            <Link to={`/user/${postAuthorEmail}`}>
-              <span>작성자 : {postAuthor}</span>
-            </Link>
-          ) : (
-            <span>작성자 : Guest</span>
-          )}
+          <Link to={`/user/${postAuthorEmail}`}>
+            <span>작성자 : {postAuthor}</span>
+          </Link>
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
-          {/*{currentAuthor === postAuthor ? (*/}
-          {currentUser.email === postAuthorEmail ? (
+          {currentUser && currentUser.email === postAuthorEmail ? (
             <ScBtnGroup>
-              <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
-              <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
+              <ScEditBtn onClick={() => editPost(selectedPost.id)}>수정</ScEditBtn>
+              <ScDeleteBtn onClick={() => deletePost(selectedPost.id)}>삭제</ScDeleteBtn>
             </ScBtnGroup>
           ) : null}
         </ScPostDetailGroup>
 
         <hr />
-        <ScCommentFormGroup onSubmit={HandleSubmitComment}>
+        <ScCommentFormGroup onSubmit={addComment}>
           <Input type="text" placeholder="댓글을 입력해주세요" value={comment} onChange={changeCommentText} />
           <ScRegisterBtn>등록</ScRegisterBtn>
         </ScCommentFormGroup>
 
         <SCCommentGroup>
-          {selectedPost.comments.map(item => (
-            <div key={item.postId}>
-              <span>{item.userId}</span>
-              <p>{item.content}</p>
-            </div>
-          ))}
+          {selectedPost.comments &&
+            selectedPost.comments.map(item => (
+              <div key={item.postId}>
+                <span>{item.userId}</span>
+                <p>{item.content}</p>
+              </div>
+            ))}
         </SCCommentGroup>
       </ScDetailElementGroup>
     </ScVerticalContainer>

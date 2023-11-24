@@ -9,11 +9,7 @@ import {Button} from '../../Common/Common.styled';
 import {useAlert} from '../../../redux/modules/alert/alertHook';
 import avatar from 'assets/avatar.png';
 import logo from 'assets/img/logo.png';
-import {getDatabase, ref, onValue, set} from 'firebase/database';
-import {realTimeDb} from '../../../shared/firebase/firebase';
-import bell from 'assets/img/bell.png';
-import newBell from 'assets/img/new-bell.png';
-import Message from './Message';
+import MessageContainer from './MessageContainer';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -85,8 +81,9 @@ const Header = () => {
   return (
     <ScContainer $pathname={pathname}>
       <ScLogoContainer onClick={onClickHome}>
-        <img src={logo} /> <h1>너 내 동료가 돼라</h1>
+        <img src={logo} alt="logo" />
       </ScLogoContainer>
+      <h1 onClick={onClickHome}>너 내 동료가 돼라</h1>
       <div>
         {pathname !== '/signup' && pathname !== '/login' && (
           <>
@@ -95,7 +92,7 @@ const Header = () => {
                 <ScWelcomeMessage>
                   반갑습니다. <strong>{userAuth.displayName ? userAuth.displayName : 'Guest'}</strong> 님
                 </ScWelcomeMessage>
-                <Message
+                <MessageContainer
                   onClickOpenMessageList={onClickOpenMessageList}
                   setShowMessageList={setShowMessageList}
                   showMessageList={showMessageList}
@@ -128,8 +125,22 @@ const ScContainer = styled.header`
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  height: 50px;
+  height: 80px;
   border-bottom: ${({$pathname}) => ($pathname === '/signup' || $pathname === '/login' ? 0 : '1px solid lightgrey')};
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  background: white;
+
+  h1 {
+    font-size: 2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
 
   & button {
     cursor: pointer;

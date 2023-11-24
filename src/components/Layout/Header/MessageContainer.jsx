@@ -7,7 +7,7 @@ import {realTimeDb} from '../../../shared/firebase/firebase';
 import {useNavigate} from 'react-router-dom';
 import {deleteMessage} from '../../../shared/firebase/query';
 
-const Message = ({onClickOpenMessageList, showMessageList, setShowMessageList, currentUser}) => {
+const MessageContainer = ({onClickOpenMessageList, showMessageList, setShowMessageList, currentUser}) => {
   const [newMessage, setNewMessage] = useState(false);
   const [messageList, setMessageList] = useState([]);
   const navigate = useNavigate();
@@ -103,6 +103,8 @@ const ScMessageContainer = styled.div`
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
   width: fit-content;
   z-index: 200;
+  padding: 10px;
+  border-radius: 10px;
   background: white;
 `;
 
@@ -125,4 +127,4 @@ const ScNoMessage = styled.div`
   font-size: 1.2rem;
 `;
 
-export default Message;
+export default MessageContainer;

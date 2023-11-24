@@ -22,6 +22,7 @@ const ScMain = styled.main`
 `;
 
 const ScContent = styled.section`
+  margin-top: 80px;
   display: flex;
   justify-content: center;
   align-items: center;

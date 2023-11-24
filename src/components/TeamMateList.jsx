@@ -59,20 +59,20 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
     <>
       <ScTeammateSearchBox>
         {currentPageList.filter(item => item).length === 0 ? (
-          <NoPostParty>파티구인 구직 글이 없습니다. 글을 작성해주세요.</NoPostParty>
+          <ScNoPostParty>파티구인 구직 글이 없습니다. 글을 작성해주세요.</ScNoPostParty>
         ) : (
-          currentPageList.map((post, index) => (
+          currentPageList.map(post => (
             <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
               <ScPostBox>
-                <span>{startPageIndex + index + 1}</span> {/* 여기 수정 */}
-                <div>
-                  ({post.category}) {truncate(post.postTitle, 5)}
-                </div>
-                <div>
+                <ScCateGory>{post.category}</ScCateGory>
+                <ScTitle>{post.postTitle}</ScTitle>
+                <ScCategoryPlayers>
                   {post.currentParticipants} / {getCategoryPlayers(post.category)}
-                </div>
-                <span>{truncate(post.author, 4)}</span>
-                <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
+                </ScCategoryPlayers>
+                <ScWriter>{post.author}</ScWriter>
+                <ScPartyTime>
+                  <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
+                </ScPartyTime>
               </ScPostBox>
             </ScGameParty>
           ))
@@ -150,7 +150,7 @@ const ScGameParty = styled.div`
   border-radius: 5px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+
   justify-content: center;
   margin: 10px auto 15px auto;
   cursor: pointer;
@@ -161,21 +161,7 @@ const ScGameParty = styled.div`
 `;
 
 const ScPostBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
   justify-content: space-between;
-  padding: 15px;
-  font-family: arial;
-  span {
-    margin-right: 30px;
-  }
-  time {
-    margin-left: auto;
-  }
-  div {
-    margin: 18px;
-  }
 `;
 
 const ScPageNation = styled.div`
@@ -214,6 +200,7 @@ const ScWirteButton = styled.button`
   background-color: #7752fe;
   color: white;
   font-weight: bold;
+
   &:hover {
     background-color: #8e8ffa;
   }
@@ -222,11 +209,40 @@ const ScWirteButton = styled.button`
   left: 90%;
   transform: translateX(-50%);
 `;
-const NoPostParty = styled.p`
+const ScNoPostParty = styled.p`
   top: 50%;
   color: #190482;
   font-size: 30px;
   font-weight: bold;
   margin-top: 20px;
+`;
+const ScCateGory = styled.div`
+  text-align: left;
+  margin-left: 20px;
+  font-family: 'BeaufortforLOL';
+  font-weight: bold;
+`;
+const ScTitle = styled.div`
+  text-align: left;
+  margin-left: 20px;
+  margin-top: 5px;
+`;
+const ScWriter = styled.span`
+  width: 300px;
+  text-align: left;
+  margin-left: 20px;
+  display: block;
+  letter-spacing: 5px;
+`;
+const ScCategoryPlayers = styled.div`
+  text-align: right;
+  margin-right: 10px;
+`;
+const ScPartyTime = styled.div`
+  text-align: right;
+  margin-left: auto;
+
+  width: 200px;
+  margin-right: 10px;
 `;
 export default TeamMateList;

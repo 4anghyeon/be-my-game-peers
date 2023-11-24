@@ -80,6 +80,7 @@ const PostModule = (state = initialState, action) => {
         item.postId === action.payload.id ? {...item, comments: [action.payload.newComment, ...item.comments]} : item,
       );
     case SET_DATA:
+      console.log(action.payload);
       return [...state.filter(s => false), ...action.payload];
 
     default:
