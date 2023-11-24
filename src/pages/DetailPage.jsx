@@ -11,7 +11,7 @@ import {useAlert} from 'redux/modules/alert/alertHook';
 import {hideAlert} from 'redux/modules/alert/alertModule';
 
 import {db} from 'shared/firebase/firebase';
-import {collection, query, getDocs, doc, deleteDoc} from 'firebase/firestore';
+import {collection, query, getDocs, doc, deleteDoc, updateDoc} from 'firebase/firestore';
 import {sendMessage} from '../shared/firebase/query';
 
 const DetailPage = () => {
@@ -100,11 +100,11 @@ const DetailPage = () => {
       );
   };
 
-  // 수정 상태 토글
-  const handleEditPost = () => {
+  const editPost = async id => {
     if (!isEdit) {
       setIsEdit(true);
       setEditedText(selectedPost.postContent);
+      console.log('성공');
     }
 
     if (isEdit && selectedPost.postContent.trim() === editedText.trim()) {
@@ -113,19 +113,12 @@ const DetailPage = () => {
     }
 
     if (isEdit) {
-      alert.confirm(
-        '이대로 수정하시겠습니까?',
-        () => {
-          dispatch(editPost({id, editedText}));
-          setIsEdit(false);
-          dispatch(hideAlert());
-        },
-        () => {
-          setEditedText(selectedPost.postContent);
-          setIsEdit(false);
-          dispatch(hideAlert());
-        },
-      );
+      const postRef = doc(db, 'posts', id);
+      await updateDoc(postRef, {...selectedPost, postContent: editedText});
+      const allData = await fetchData();
+      if (allData) {
+        dispatch(setData(allData));
+      }
     }
   };
 
@@ -167,7 +160,7 @@ const DetailPage = () => {
 
           {currentUser && currentUser.email === postAuthorEmail ? (
             <ScBtnGroup>
-              <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
+              <ScEditBtn onClick={() => editPost(selectedPost.id)}>수정</ScEditBtn>
               <ScDeleteBtn onClick={() => deletePost(selectedPost.id)}>삭제</ScDeleteBtn>
             </ScBtnGroup>
           ) : null}
