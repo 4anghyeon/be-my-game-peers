@@ -27,6 +27,7 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
       if (profileUser.follower.includes(currentUserEmail)) setIsFollow(true);
       else setIsFollow(false);
     }
+    console.log(profileUser);
   }, [profileUser]);
 
   const onClickFollow = async () => {
@@ -46,7 +47,9 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
 
     await updateUserFollower(currentUserEmail, profileUser.email, false);
     await updateUserFollowing(currentUserEmail, profileUser.email, false);
-    setUserInfo(await findUserByEmail(profileUser.email));
+
+    const userInfo = await findUserByEmail(profileUser.email);
+    setUserInfo(userInfo);
   };
 
   const onClickOpenFollowerModal = () => {
@@ -82,7 +85,7 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
           {!isFollow ? (
             <ScFollowButton onClick={onClickFollow}>팔로우</ScFollowButton>
           ) : (
-            <ScUnFollowButton onClick={onClickUnFollow}>언팔로우</ScUnFollowButton>
+            <ScUnFollowButton onClick={onClickUnFollow}>팔로우 취소</ScUnFollowButton>
           )}
         </ScFollowerContainer>
       )}
