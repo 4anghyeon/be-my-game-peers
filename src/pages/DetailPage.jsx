@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from '../../node_modules/react-redux/es/export
 import {useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
-import {addComment, deletePost, editPost, fetchData} from 'redux/modules/PostModule';
+import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
@@ -18,12 +18,15 @@ const DetailPage = () => {
   const {id} = params;
   const textAreaRef = useRef();
   const alert = useAlert();
-  console.log(posts, id);
 
   const selectedPost = posts.find(post => post.postId === id);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
+
+  // const currentAuthor = getAuth().currentUser.displayName || null;
+  // const postedAuthor = selectedPost.author;
+  // console.log(currentAuthor, postedAuthor);
 
   // comment input 변경
   const changeCommentText = e => {
@@ -91,7 +94,6 @@ const DetailPage = () => {
   useEffect(() => {
     if (isEdit) {
       const textArea = textAreaRef.current;
-
       if (textArea) {
         textArea.focus();
         textArea.setSelectionRange(textArea.value.length, textArea.value.length);
@@ -107,6 +109,7 @@ const DetailPage = () => {
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
+
           <ScBtnGroup>
             <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
             <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
