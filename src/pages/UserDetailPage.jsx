@@ -50,20 +50,29 @@ const UserDetailPage = () => {
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
   const EDIT_FAVORITE = event => setFavoriteGame(event.target.value);
 
-  let NEW_USER_INFO = {};
+  let newUserInfo = {};
 
   // 프로필 수정 버튼
   const EDIT_BUTTON = async () => {
     setIsEdit(!isEdit);
-    NEW_USER_INFO = {
+    newUserInfo = {
       nickname,
       introduction,
       favoriteGame,
     };
 
     if (isEdit) {
-      setUserInfo(NEW_USER_INFO);
-      await updateUser(email, NEW_USER_INFO);
+      setUserInfo(prevInfo => {
+        if (
+          prevInfo.nickname === newUserInfo.nickname &&
+          prevInfo.introduction === newUserInfo.introduction &&
+          prevInfo.favoriteGame === newUserInfo.favoriteGame
+        ) {
+          console.log('값이 변경되지 않았습니다.');
+        }
+        console.log('값이 변경되었습니다.');
+      });
+      await updateUser(email, newUserInfo);
       setNickName('');
       setIntroduction('');
       setFavoriteGame('');
@@ -153,20 +162,15 @@ const UserDetailPage = () => {
             </div>
             <div className="wrapInput">
               {isEdit ? (
-                <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder={userInfo.nickname} />
+                <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
               ) : (
-                <ScUserName>{userInfo.nickname ? userInfo.nickname : getUserInfo.displayName}님</ScUserName>
+                <ScUserName>도대체 뭘까</ScUserName>
               )}
             </div>
             <div className="wrapInput">
               <Label>About</Label>
               {isEdit ? (
-                <Input
-                  type="text"
-                  value={introduction}
-                  onChange={EDIT_INTRODUCTION}
-                  placeholder={userInfo.introduction}
-                />
+                <Input type="text" value={introduction} onChange={EDIT_INTRODUCTION} placeholder="한줄 소개" />
               ) : (
                 <ScAbout>{userInfo.introduction}</ScAbout>
               )}
@@ -174,7 +178,7 @@ const UserDetailPage = () => {
             <div className="wrapInput">
               <Label>Favorite Game</Label>
               {isEdit ? (
-                <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder={userInfo.favoriteGame} />
+                <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
               ) : (
                 <ScAbout>{userInfo.favoriteGame}</ScAbout>
               )}
