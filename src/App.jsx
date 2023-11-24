@@ -1,4 +1,4 @@
-import {GlobalStyle} from './shared/GlobalStyle';
+import {GlobalStyle} from './styles/GlobalStyle';
 import {Provider} from 'react-redux';
 import AppRouter from './shared/AppRouter';
 import store from './redux/config/store';

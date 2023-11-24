@@ -1,4 +1,4 @@
-import {db} from '../../shared/firebase.js';
+import {db} from '../../shared/firebase/firebase.js';
 import {collection, getDocs, query} from 'firebase/firestore';
 
 const fetchData = async () => {
