@@ -20,11 +20,13 @@ const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, fol
   return (
     <ScRow>
       <li>
-        <ScProfileImage $img={user.profileImg}></ScProfileImage>
-        <ScColumn onClick={onClickNickname}>
-          <b>{user.nickname || 'unnamed'}</b>
-          <span>{user.email}</span>
-        </ScColumn>
+        <ScBox>
+          <ScProfileImage $img={user.profileImg}></ScProfileImage>
+          <ScColumn onClick={onClickNickname}>
+            <b>{user.nickname || 'unnamed'}</b>
+            <span>{user.email}</span>
+          </ScColumn>
+        </ScBox>
         {/*본인이면 팔로잉 버튼 표시할 필요 없음*/}
         {getAuth().currentUser &&
           user.email !== currentEmail &&
@@ -86,6 +88,11 @@ const ScProfileImage = styled.div`
   border-radius: 50%;
   border: solid 1px lightgrey;
   margin-right: 10px;
+`;
+
+const ScBox = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 export default FollowListRow;
