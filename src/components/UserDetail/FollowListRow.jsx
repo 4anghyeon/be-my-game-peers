@@ -5,6 +5,7 @@ import {getAuth} from 'firebase/auth';
 import {useNavigate} from 'react-router-dom';
 import {hideModal} from '../../redux/modules/modal/modalModule';
 import {useDispatch} from 'react-redux';
+import avatar from 'assets/avatar.png';
 
 const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, followingList}) => {
   const isFollow = followingList?.includes(user.email);
@@ -80,7 +81,7 @@ const ScFollowingButton = styled(ScFollowButton)`
 const ScProfileImage = styled.div`
   width: 40px;
   height: 40px;
-  background-image: url(${({$img}) => $img});
+  background-image: url(${({$img}) => $img || avatar});
   background-size: cover;
   border-radius: 50%;
   border: solid 1px lightgrey;
