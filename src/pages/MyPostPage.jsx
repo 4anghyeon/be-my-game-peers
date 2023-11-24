@@ -1,49 +1,65 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {CenterVertical} from 'components/Common/Common.styled';
-import {useSelector} from '../../node_modules/react-redux/es/hooks/useSelector';
 import styled from 'styled-components';
-
-import {getAuth} from 'firebase/auth';
+import {useSelector} from 'react-redux';
+import {auth} from '../shared/firebase/firebase';
+import {useNavigate} from 'react-router-dom';
+import {useAlert} from '../redux/modules/alert/alertHook';
+import moment from 'moment/moment';
 
 export default function MyPost() {
-  const getUserInfo = getAuth().currentUser.email;
-  console.log(getUserInfo);
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
+  const [selectedPost, setSelectedPost] = useState([]);
+  const alert = useAlert();
+
+  const navigate = useNavigate();
   const posts = useSelector(state => state.PostModule);
-  console.log(posts);
 
-  const selectedPost = posts.filter(post => post.authorEmail === getUserInfo);
-  console.log(selectedPost);
-
+  // TODO: comments!!
   const comments = useSelector(state => state.PostModule);
+
+  const currentUser = auth.currentUser;
   const selectedComments = comments.filter(comment => comment.commentId);
-  console.log(selectedComments);
+
+  useEffect(() => {
+    if (!currentUser) {
+      alert.twinkle('로그인이 필요합니다.', 1500);
+      navigate('/login');
+    } else {
+      const currentEmail = currentUser.email;
+      setCurrentUserEmail(currentEmail);
+      setSelectedPost(posts.filter(post => post.authorEmail === currentEmail));
+    }
+  }, []);
+
+  const onClickPost = id => {
+    navigate(`/detail/${id}`);
+  };
 
   // 내 게시물
   return (
     <CenterVertical>
       <ScWrapper>
-        <h3>`내가 쓴 게시물 ({selectedPost.length})</h3>
+        <h3>내가 쓴 게시물 ({selectedPost.length})</h3>
         <ScMyPost>
-          {posts
-            .filter(post => post.authorEmail === getUserInfo)
-            .map(list => {
-              return (
-                <li key={list.id}>
-                  <h4 className="title">{list.postTitle}</h4>
-                  <p className="content">{list.postContent}</p>
-                  <p className="writer">작성자 : {list.author}</p>
-                </li>
-              );
-            })}
+          {selectedPost.map(list => {
+            return (
+              <li key={list.id} onClick={onClickPost.bind(null, list.postId)}>
+                <h4 className="title">[{list.category}]</h4>
+                <h4 className="title">{list.postTitle}</h4>
+                <h4 className="title">{moment.unix(list.postDate.seconds).format('yyyy-MM-DD HH:mm')}</h4>
+              </li>
+            );
+          })}
         </ScMyPost>
       </ScWrapper>
       <ScWrapper className="myComment">
         <h3>내가 쓴 댓글</h3>
         <ScMyPost>
           {selectedComments.length === 0
-            ? `${getUserInfo.displayName}님이 작성한 댓글이 없습니다.`
+            ? `${currentUserEmail.displayName}님이 작성한 댓글이 없습니다.`
             : comments
-                .filter(comment => comment.authorEmail === getUserInfo)
+                .filter(comment => comment.authorEmail === currentUserEmail)
                 .map(list => {
                   return (
                     <li key={list.id}>
@@ -79,7 +95,6 @@ const ScMyPost = styled.div`
   gap: 12px;
 
   li {
-    border: 1px solid #333;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -89,6 +104,7 @@ const ScMyPost = styled.div`
     border: 1px solid lightgrey;
     border-radius: 5px;
     padding: 10px;
+    cursor: pointer;
 
     .title {
       width: 200px;
