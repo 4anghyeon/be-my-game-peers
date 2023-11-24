@@ -48,7 +48,7 @@ const HomePage = () => {
     <>
       <ScCategoriSection>
         {gameNames.map((gameName, index) => (
-          <ScCategoriList key={index} onClick={() => postCategory(gameName)}>
+          <ScCategoriList key={index} onClick={() => postCategory(gameName)} selected={gameName === filterCategory}>
             {gameName}
           </ScCategoriList>
         ))}
@@ -81,7 +81,7 @@ const ScCategoriList = styled(Link)`
   &::before {
     content: '';
     position: absolute;
-    width: 0;
+    width: ${({selected}) => (selected ? '100%' : '0')};
     height: 4px;
     bottom: 0;
     left: 0;
