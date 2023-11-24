@@ -15,12 +15,12 @@ const Footer = () => {
         <h2>뉴스피드 프로젝트</h2>
         <span>OZO</span>
       </ScVerticalContainer>
-      <ScVerticalContainer>
+      <ScHorizonContainer>
         <span>이상현</span>
         <span>김미희</span>
         <span>권영준</span>
         <span>이희원</span>
-      </ScVerticalContainer>
+      </ScHorizonContainer>
       <ScVerticalContainer>
         <img src={githubIcon} alt="github" onClick={onClickGitHub} />
       </ScVerticalContainer>
@@ -30,16 +30,27 @@ const Footer = () => {
 
 const ScContainer = styled.footer`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   background-image: url(${() => bg});
   -o-background-size: 100% 100%;
   -webkit-background-size: 100% 100%;
   background-size: cover;
-  min-height: 200px;
 
   div {
     padding: 40px;
     color: white;
+  }
+`;
+
+const ScHorizonContainer = styled.div`
+  display: flex;
+  font-weight: bold;
+  font-size: 1.4rem;
+  align-items: center;
+  justify-content: space-between;
+
+  span:not(:last-child) {
+    margin-right: 160px;
   }
 `;
 
