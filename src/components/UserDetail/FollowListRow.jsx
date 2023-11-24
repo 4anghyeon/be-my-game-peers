@@ -2,14 +2,25 @@ import React from 'react';
 import styled from 'styled-components';
 import {Button} from '../Common/Common.styled';
 import {getAuth} from 'firebase/auth';
+import {useNavigate} from 'react-router-dom';
+import {hideModal} from '../../redux/modules/modal/modalModule';
+import {useDispatch} from 'react-redux';
 
 const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, followingList}) => {
   const isFollow = followingList?.includes(user.email);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onClickNickname = () => {
+    dispatch(hideModal());
+    navigate(`/user/${user.email}`);
+  };
 
   return (
     <ScRow>
       <li>
-        <ScColumn>
+        <ScProfileImage $img={user.profileImg}></ScProfileImage>
+        <ScColumn onClick={onClickNickname}>
           <b>{user.nickname || 'unnamed'}</b>
           <span>{user.email}</span>
         </ScColumn>
@@ -43,6 +54,7 @@ const ScRow = styled.ul`
 const ScColumn = styled.div`
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 
   & span:last-child {
     color: grey;
@@ -63,6 +75,16 @@ const ScFollowingButton = styled(ScFollowButton)`
   &:hover {
     color: #7752fe;
   }
+`;
+
+const ScProfileImage = styled.div`
+  width: 40px;
+  height: 40px;
+  background-image: url(${({$img}) => $img});
+  background-size: cover;
+  border-radius: 50%;
+  border: solid 1px lightgrey;
+  margin-right: 10px;
 `;
 
 export default FollowListRow;
