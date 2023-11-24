@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import moment from 'moment';
 
@@ -64,12 +64,11 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
           currentPageList.map(post => (
             <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
               <ScPostBox>
-                <ScCateGory>{post.category}</ScCateGory>
-                <ScTitle>{post.postTitle}</ScTitle>
-                <ScCategoryPlayers>
-                  {post.currentParticipants} / {getCategoryPlayers(post.category)}
-                </ScCategoryPlayers>
-                <ScWriter>{post.author}</ScWriter>
+                <ScCateGory>
+                  {post.category} ({post.currentParticipants} / {getCategoryPlayers(post.category)})
+                </ScCateGory>
+                <ScTitle>{truncate(post.postTitle, 15)}</ScTitle>
+                <ScWriter>{truncate(post.author, 7)}</ScWriter>
                 <ScPartyTime>
                   <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
                 </ScPartyTime>
@@ -218,30 +217,34 @@ const ScNoPostParty = styled.p`
 `;
 const ScCateGory = styled.div`
   text-align: left;
+  margin-top: 2px;
   margin-left: 20px;
   font-family: 'BeaufortforLOL';
   font-weight: bold;
 `;
 const ScTitle = styled.div`
   text-align: left;
+  font-size: 25px;
   margin-left: 20px;
-  margin-top: 5px;
+  margin-top: 10px;
 `;
 const ScWriter = styled.span`
-  width: 300px;
-  text-align: left;
-  margin-left: 20px;
+  text-align: right;
+  margin-right: 30px;
+  margin-bottom: 5px;
   display: block;
   letter-spacing: 5px;
+  ${({isUserLoggedIn, postAuthor}) =>
+    isUserLoggedIn &&
+    postAuthor &&
+    css`
+      color: blue;
+    `}
 `;
-const ScCategoryPlayers = styled.div`
-  text-align: right;
-  margin-right: 10px;
-`;
+
 const ScPartyTime = styled.div`
   text-align: right;
   margin-left: auto;
-
   width: 200px;
   margin-right: 10px;
 `;
