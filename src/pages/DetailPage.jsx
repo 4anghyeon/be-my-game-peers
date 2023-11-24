@@ -26,10 +26,8 @@ const DetailPage = () => {
 
   const currentUser = getAuth().currentUser;
   const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';
-  const postedAuthor = selectedPost.author;
-  const postedAuthorEmail = selectedPost.authorEmail;
-
-  console.log(postedAuthorEmail);
+  const postAuthor = selectedPost.author;
+  const postAuthorEmail = selectedPost.authorEmail;
 
   // comment input 변경
   const changeCommentText = e => {
@@ -110,8 +108,8 @@ const DetailPage = () => {
         <h1>{selectedPost.postTitle}</h1>
         <ScPostDetailGroup>
           {currentUser ? (
-            <Link to={`/user/${postedAuthorEmail}`}>
-              <span>작성자 : {postedAuthor}</span>
+            <Link to={`/user/${postAuthorEmail}`}>
+              <span>작성자 : {postAuthor}</span>
             </Link>
           ) : (
             <span>작성자 : Guest</span>
@@ -120,7 +118,7 @@ const DetailPage = () => {
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
-          {currentAuthor === postedAuthor ? (
+          {currentAuthor === postAuthor ? (
             <ScBtnGroup>
               <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
               <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
