@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
-import {useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
+import {Link, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
 import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
@@ -24,9 +24,12 @@ const DetailPage = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
 
-  // const currentAuthor = getAuth().currentUser.displayName || null;
-  // const postedAuthor = selectedPost.author;
-  // console.log(currentAuthor, postedAuthor);
+  const currentUser = getAuth().currentUser;
+  const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';
+  const postedAuthor = selectedPost.author;
+  const postedAuthorEmail = selectedPost.authorEmail;
+
+  console.log(postedAuthorEmail);
 
   // comment input 변경
   const changeCommentText = e => {
@@ -106,14 +109,23 @@ const DetailPage = () => {
       <ScDetailElementGroup>
         <h1>{selectedPost.postTitle}</h1>
         <ScPostDetailGroup>
+          {currentUser ? (
+            <Link to={`/user/${postedAuthorEmail}`}>
+              <span>작성자 : {postedAuthor}</span>
+            </Link>
+          ) : (
+            <span>작성자 : Guest</span>
+          )}
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
-          <ScBtnGroup>
-            <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
-            <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
-          </ScBtnGroup>
+          {currentAuthor === postedAuthor ? (
+            <ScBtnGroup>
+              <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
+              <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>
+            </ScBtnGroup>
+          ) : null}
         </ScPostDetailGroup>
 
         <hr />
@@ -170,6 +182,12 @@ const ScPostDetailGroup = styled.div`
   border-radius: 10px;
   min-height: 40%;
   position: relative;
+
+  span {
+    display: inline-block;
+    margin-bottom: 10px;
+    text-align: right;
+  }
 `;
 
 const ScTextarea = styled.textarea`
