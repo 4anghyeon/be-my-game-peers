@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {Button} from '../Common/Common.styled';
+import {getAuth} from 'firebase/auth';
 
 const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, followingList}) => {
   const isFollow = followingList?.includes(user.email);
@@ -13,7 +14,8 @@ const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, fol
           <span>{user.email}</span>
         </ScColumn>
         {/*본인이면 팔로잉 버튼 표시할 필요 없음*/}
-        {user.email !== currentEmail &&
+        {getAuth().currentUser &&
+          user.email !== currentEmail &&
           (isFollow ? (
             <ScFollowingButton onClick={onClickFollowing.bind(null, user.email)}>팔로잉</ScFollowingButton>
           ) : (

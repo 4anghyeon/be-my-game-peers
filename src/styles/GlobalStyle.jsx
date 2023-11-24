@@ -1,4 +1,5 @@
 import {createGlobalStyle} from 'styled-components';
+import bg from 'assets/img/bg.svg';
 
 export const GlobalStyle = createGlobalStyle`
   /* http://meyerweb.com/eric/tools/css/reset/
@@ -37,6 +38,10 @@ export const GlobalStyle = createGlobalStyle`
   }
   body {
     line-height: 1;
+    background-image: url(${() => bg});
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    background-size: cover;
   }
   ol, ul {
     list-style: none;

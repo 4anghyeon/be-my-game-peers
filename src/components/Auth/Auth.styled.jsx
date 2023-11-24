@@ -5,6 +5,7 @@ export const ScWrapper = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
+  margin-bottom: 40px;
 `;
 
 export const ScContainer = styled.div`

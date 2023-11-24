@@ -8,7 +8,7 @@ import downArrow from 'assets/img/down-arrow.svg';
 import {Button} from '../Common/Common.styled';
 import {useAlert} from '../../redux/modules/alert/alertHook';
 import avatar from 'assets/avatar.png';
-import user from 'assets/user.png';
+import logo from 'assets/img/logo.png';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -71,7 +71,9 @@ const Header = () => {
 
   return (
     <ScContainer $pathname={pathname}>
-      {pathname !== '/' ? <button onClick={onClickHome}>홈으로</button> : <div></div>}
+      <ScLogoContainer onClick={onClickHome}>
+        <img src={logo} /> <h1>너 내 동료가 돼라</h1>
+      </ScLogoContainer>
       <div>
         {pathname !== '/signup' && pathname !== '/login' && (
           <>
@@ -113,13 +115,13 @@ const ScContainer = styled.header`
   & button {
     cursor: pointer;
     margin-right: 10px;
-    height: 40px;
-    width: 80px;
+    padding: 8px;
+    width: fit-content;
     border: 0;
     background-color: #7752fe;
     color: white;
     border-radius: 5px;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -128,9 +130,9 @@ const ScProfileContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
 
   & img {
+    cursor: pointer;
     width: 15px;
     margin-left: 5px;
   }
@@ -143,6 +145,7 @@ const ScProfileContainer = styled.div`
 const ScProfile = styled.div`
   width: 40px;
   height: 40px;
+  cursor: pointer;
   border-radius: 50%;
   border: 1px solid black;
   background-image: url(${({$img}) => $img});
@@ -173,14 +176,25 @@ const ScWelcomeMessage = styled.span`
   margin-right: 20px;
 `;
 
-const ScProfileBtn = styled.button`
+const ScLogoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  margin-right: 10px;
-  height: 40px;
-  width: 40px;
-  border: 0;
-  background-color: #eee;
-  border-radius: 5px;
+
+  img {
+    height: 40px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  transition: all 0.3s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 export default Header;
