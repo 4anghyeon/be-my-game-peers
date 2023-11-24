@@ -13,9 +13,10 @@ import {useLocation} from 'react-router-dom';
 
 const FollowListModal = ({showFollowing, followerList, followingList, setFollowingNumber, setUserInfo}) => {
   const [showingList, setShowingList] = useState([]);
-  const currentEmail = getAuth().currentUser.email;
+  const currentEmail = getAuth().currentUser?.email;
   const {pathname} = useLocation();
-  const isMyPage = pathname.replace('/user/', '') === currentEmail;
+  const pathEmail = pathname.replace('/user/', '');
+  const isMyPage = pathEmail === currentEmail;
 
   let list = showFollowing ? followingList : followerList;
 
@@ -40,7 +41,7 @@ const FollowListModal = ({showFollowing, followerList, followingList, setFollowi
     if (isMyPage) {
       setFollowingNumber(prev => --prev);
     }
-    const user = await findUserByEmail(email);
+    const user = await findUserByEmail(pathEmail);
     setUserInfo(user);
   };
 
@@ -54,7 +55,7 @@ const FollowListModal = ({showFollowing, followerList, followingList, setFollowi
     if (isMyPage) {
       setFollowingNumber(prev => ++prev);
     }
-    const user = await findUserByEmail(email);
+    const user = await findUserByEmail(pathEmail);
     setUserInfo(user);
   };
 

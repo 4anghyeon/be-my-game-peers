@@ -12,35 +12,70 @@ import {useNavigate} from 'react-router-dom';
 import uuid from '../../node_modules/react-uuid/uuid';
 import Like from 'assets/like.png';
 import DisLike from 'assets/disLike.png';
+import alert from 'assets/alert(purple).png';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
-  const getUserInfo = getAuth().currentUser;
+  const getUserInfo = getAuth().currentUser.email;
   console.log(getUserInfo);
   const email = pathname.replace('/user/', '');
-
   const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
-
-  // firebase에 저장된 user 정보 가져오기
-  useEffect(() => {
-    findUserByEmail(email)
-      .then(user => {
-        setUserInfo(user);
-      })
-      .catch(err => {
-        navigate('/nouser');
-      });
-  }, [pathname]);
-
   // 닉네임, 한줄 소개, 좋아하는 게임 정보 변경시 사용될 state
   const [nickname, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [favoriteGame, setFavoriteGame] = useState('');
-
-  let [profileImg, setProfileImg] = useState(avatar);
-
+  const [profileImg, setProfileImg] = useState(avatar);
   const [isEdit, setIsEdit] = useState(false);
+  // 추천 / 비추천 버튼
+  const [likeCount, setLikeCount] = useState(0);
+  const [disLikeCount, setDisLikeCount] = useState(0);
+  const [disableClick, setDisableClick] = useState(false);
+  // 코멘트란
+  const [comments, setComments] = useState([]);
+  const [content, setContent] = useState('');
+
+  useEffect(() => {
+    findUserByEmail(email).then(user => {
+      if (user) {
+        let photoURL = user.profileImg;
+        if (photoURL) {
+          setProfileImg(photoURL);
+        }
+        setIntroduction(user.introduction);
+        setFavoriteGame(user.favoriteGame);
+        setNickName(user.nickname);
+      } else {
+        setProfileImg(avatar);
+      }
+    });
+  }, [userAuth, pathname]);
+
+  useEffect(() => {
+    findUserByEmail(email).then(user => {
+      if (user) {
+        let like = likeCount;
+        if (like) {
+          setLikeCount(like);
+        }
+      }
+    });
+  }, [userAuth, pathname]);
+
+  //firebase에 저장된 user 정보 가져오기
+  useEffect(() => {
+    if (getUserInfo === null) {
+      console.log('로그인 해주세요');
+    } else {
+      findUserByEmail(email)
+        .then(user => {
+          setUserInfo(user);
+        })
+        .catch(err => {
+          navigate('/nouser');
+        });
+    }
+  }, [pathname]);
 
   const EDIT_NICKNAME = event => setNickName(event.target.value);
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
@@ -66,28 +101,8 @@ const UserDetailPage = () => {
     }
   };
 
-  useEffect(() => {
-    findUserByEmail(email).then(user => {
-      if (user) {
-        let photoURL = user.profileImg;
-        if (photoURL) {
-          setProfileImg(photoURL);
-        }
-      } else {
-        setProfileImg(avatar);
-      }
-    });
-  }, [userAuth]);
-
-  // 추천 / 비추천 버튼
-  const [likeCount, setLikeCount] = useState(0);
-  const [disLikeCount, setDisLikeCount] = useState(0);
-
-  const [disableClick, setDisableClick] = useState(false);
-
   const CLICK_LIKE = () => {
     if (!disableClick) {
-      setLikeCount(likeCount + 1);
       setDisableClick(true);
     }
   };
@@ -97,10 +112,6 @@ const UserDetailPage = () => {
       setDisableClick(true);
     }
   };
-
-  // 코멘트란
-  const [comments, setComments] = useState([]);
-  const [content, setContent] = useState('');
 
   const writeContent = event => setContent(event.target.value);
 
@@ -117,97 +128,129 @@ const UserDetailPage = () => {
   };
 
   // 내 게시물 (필터)
+  const checkMyPost = () => {
+    navigate(`/myPost`);
+  };
 
   return (
-    <ScContainer>
-      <ScHr>
-        <div className="wrapImage">
-          <ScProfileImg>
-            <img src={profileImg} alt="프로필 이미지" />
-            {isEdit ? <ScUpload>upload</ScUpload> : null}
-          </ScProfileImg>
-          {isEdit ? null : <PeerContainer profileUser={userInfo} setUserInfo={setUserInfo} />}
-        </div>
-        <div className="wrapInput">
-          {isEdit ? (
-            <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
-          ) : (
-            <ScUserName>{userInfo.nickname ? userInfo.nickname : 'Guest'}님</ScUserName>
-          )}
-        </div>
-        <div className="wrapInput">
-          <Label>About</Label>
-          {isEdit ? (
-            <Input type="text" value={introduction} onChange={EDIT_INTRODUCTION} placeholder="한줄 소개" />
-          ) : (
-            <ScAbout>{userInfo.introduction}</ScAbout>
-          )}
-        </div>
-        <div className="wrapInput">
-          <Label>Favorite Game</Label>
-          {isEdit ? (
-            <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
-          ) : (
-            <ScAbout>{userInfo.favoriteGame}</ScAbout>
-          )}
-        </div>
-        <ScEditAndPost>
-          <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
-          <ScButton>내 게시물</ScButton>
-        </ScEditAndPost>
-      </ScHr>
+    <>
+      {getUserInfo === null ? (
+        <ScContainer>
+          <img className="alert" src={alert} alt="경고 아이콘" />
+          <h3>로그인 후 이용가능한 페이지 입니다.</h3>
+        </ScContainer>
+      ) : (
+        <ScContainer>
+          <ScHr>
+            <div className="wrapImage">
+              <ScProfileImg>
+                <img src={profileImg} alt="프로필 이미지" />
+                {isEdit ? <ScUpload>upload</ScUpload> : null}
+              </ScProfileImg>
+              {isEdit ? null : <PeerContainer profileUser={userInfo} setUserInfo={setUserInfo} />}
+            </div>
+            <div className="wrapInput">
+              {isEdit ? (
+                <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder={userInfo.nickname} />
+              ) : (
+                <ScUserName>{userInfo.nickname ? userInfo.nickname : getUserInfo.displayName}님</ScUserName>
+              )}
+            </div>
+            <div className="wrapInput">
+              <Label>About</Label>
+              {isEdit ? (
+                <Input
+                  type="text"
+                  value={introduction}
+                  onChange={EDIT_INTRODUCTION}
+                  placeholder={userInfo.introduction}
+                />
+              ) : (
+                <ScAbout>{userInfo.introduction}</ScAbout>
+              )}
+            </div>
+            <div className="wrapInput">
+              <Label>Favorite Game</Label>
+              {isEdit ? (
+                <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder={userInfo.favoriteGame} />
+              ) : (
+                <ScAbout>{userInfo.favoriteGame}</ScAbout>
+              )}
+            </div>
+            <ScEditAndPost>
+              {getUserInfo === userInfo.email ? (
+                <div>
+                  <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
+                  <ScButton onClick={checkMyPost}>내 게시물</ScButton>
+                </div>
+              ) : null}
+            </ScEditAndPost>
+          </ScHr>
 
-      <ScCommentArea>
-        <h3 style={{color: 'red'}}>{disLikeCount >= 50 ? '※ 경고 : 위험 유저입니다. ※' : null}</h3>
-        <CommentBox>
-          <ScUserComment>
-            {userInfo.nickname ? userInfo.nickname : 'Guest'}님과의 게임 후기를 남겨주세요!!
-          </ScUserComment>
-          <ScForm onSubmit={sendComment}>
-            <ScInput
-              type="text"
-              value={content}
-              onChange={writeContent}
-              placeholder="예쁜 언어를 사용해주세요❤️"
-              required
-            />
-            <ScButton type="submit">send</ScButton>
-          </ScForm>
-          <ScWrapList className="comment-list">
-            {comments.length === 0 ? <h3>현재 작성된 후기가 없습니다.</h3> : null}
-            {comments.map(comment => {
-              return (
-                <ScList key={uuid()} className="content">
-                  <h3 className="ToYou">{comment.nickname}</h3>
-                  <p className="comment-body">{comment.content}</p>
-                </ScList>
-              );
-            })}
-          </ScWrapList>
-        </CommentBox>
-        <ScBtnBox>
-          <ScButton onClick={CLICK_LIKE}>
-            <img src={Like} alt="추천" />
-            <span>{likeCount}</span>
-          </ScButton>
-          <ScButton onClick={CLICK_DISLIKE}>
-            <img src={DisLike} alt="비추천" />
-            <span>{disLikeCount}</span>
-          </ScButton>
-        </ScBtnBox>
-      </ScCommentArea>
-    </ScContainer>
+          <ScCommentArea>
+            <h3 style={{color: 'red'}}>{disLikeCount >= 50 ? '※ 경고 : 위험 유저입니다. ※' : null}</h3>
+            <CommentBox>
+              <ScUserComment>
+                {userInfo.nickname ? userInfo.nickname : 'Guest'}님과의 게임 후기를 남겨주세요!!
+              </ScUserComment>
+              <ScForm onSubmit={sendComment}>
+                <ScInput
+                  type="text"
+                  value={content}
+                  onChange={writeContent}
+                  placeholder="예쁜 언어를 사용해주세요❤️"
+                  required
+                />
+                <ScButton type="submit">send</ScButton>
+              </ScForm>
+              <ScWrapList className="comment-list">
+                {comments.length === 0 ? <h3>현재 작성된 후기가 없습니다.</h3> : null}
+                {comments.map(comment => {
+                  return (
+                    <ScList key={uuid()} className="content">
+                      <h3 className="ToYou">{comment.nickname}</h3>
+                      <p className="comment-body">{comment.content}</p>
+                    </ScList>
+                  );
+                })}
+              </ScWrapList>
+            </CommentBox>
+            <ScBtnBox>
+              <ScButton onClick={CLICK_LIKE}>
+                <img src={Like} alt="추천" />
+                <span>{likeCount}</span>
+              </ScButton>
+              <ScButton onClick={CLICK_DISLIKE}>
+                <img src={DisLike} alt="비추천" />
+                <span>{disLikeCount}</span>
+              </ScButton>
+            </ScBtnBox>
+          </ScCommentArea>
+        </ScContainer>
+      )}
+    </>
   );
 };
 const ScContainer = styled(CenterVertical)`
   height: 100%;
   margin-bottom: 50px;
+
+  .alert {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+  }
+  h3 {
+    font-size: 1.2rem;
+    color: #333;
+  }
 `;
 
 const ScHr = styled.div`
-  margin-top: 100px;
-  width: 630px;
-  gap: 36px;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   & > .wrapImage {
     width: 600px;
@@ -247,6 +290,11 @@ const ScEditAndPost = styled.div`
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+
+  div {
+    display: flex;
+    gap: 12px;
+  }
 `;
 
 const ScEditButton = styled.button`

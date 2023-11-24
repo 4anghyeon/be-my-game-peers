@@ -16,7 +16,7 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
   const dispatch = useDispatch();
 
   // 로그인한 유저의 이메일
-  const currentUserEmail = getAuth().currentUser.email;
+  const currentUserEmail = getAuth().currentUser?.email;
 
   // 유저 상세 페이지의 유저가 달라질때마다 다시 계산
   useEffect(() => {
@@ -46,7 +46,9 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
 
     await updateUserFollower(currentUserEmail, profileUser.email, false);
     await updateUserFollowing(currentUserEmail, profileUser.email, false);
-    setUserInfo(await findUserByEmail(profileUser.email));
+
+    const userInfo = await findUserByEmail(profileUser.email);
+    setUserInfo(userInfo);
   };
 
   const onClickOpenFollowerModal = () => {
@@ -77,12 +79,12 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
           </span>
         </div>
       </ScFollowerContainer>
-      {profileUser.email !== getAuth().currentUser.email && (
+      {getAuth().currentUser && profileUser.email !== getAuth().currentUser.email && (
         <ScFollowerContainer>
           {!isFollow ? (
             <ScFollowButton onClick={onClickFollow}>팔로우</ScFollowButton>
           ) : (
-            <ScUnFollowButton onClick={onClickUnFollow}>언팔로우</ScUnFollowButton>
+            <ScUnFollowButton onClick={onClickUnFollow}>팔로우 취소</ScUnFollowButton>
           )}
         </ScFollowerContainer>
       )}

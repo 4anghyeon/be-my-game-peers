@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useSelector, useDispatch} from 'react-redux';
-import Header from 'components/Layout/Header';
+import Header from 'components/Layout/Header/Header';
 import Footer from 'components/Layout/Footer';
 import PostModule from 'redux/modules/PostModule';
 import categori, {seartchCategori} from 'redux/modules/categoriModule';
@@ -24,12 +24,14 @@ const HomePage = () => {
     setfilterCategory(selectCategory);
     setOnSearch(false);
   };
+  console.log(filterCategory);
   const isUserLoggedIn = getAuth().currentUser;
 
   useEffect(() => {
     console.log(getAuth().currentUser);
   }, []);
 
+  //카테고리안에서 제목이름과 비슷한것들만 필터되게
   const SearchParties = event => {
     event.preventDefault();
     const searchResult = postparty.filter(
@@ -40,6 +42,7 @@ const HomePage = () => {
 
     setpartyInput(``);
   };
+
   const Inputsearching = event => {
     setpartyInput(event.target.value);
   };
@@ -48,7 +51,7 @@ const HomePage = () => {
     <>
       <ScCategoriSection>
         {gameNames.map((gameName, index) => (
-          <ScCategoriList key={index} onClick={() => postCategory(gameName)}>
+          <ScCategoriList key={index} onClick={() => postCategory(gameName)} selected={gameName === filterCategory}>
             {gameName}
           </ScCategoriList>
         ))}
@@ -81,7 +84,7 @@ const ScCategoriList = styled(Link)`
   &::before {
     content: '';
     position: absolute;
-    width: 0;
+    width: ${({selected}) => (selected ? '100%' : '0')};
     height: 4px;
     bottom: 0;
     left: 0;

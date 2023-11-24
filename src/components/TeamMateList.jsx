@@ -8,73 +8,119 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
   const postparty = useSelector(state => state.PostModule);
 
   const postm = useSelector(state => state.categoriModule);
-  const gameNames = postm.map(postm => postm.players);
 
   const navigate = useNavigate();
 
   const partypage = 5;
-  console.log(filteredPosts);
-  // 각 카테고리에 대한 현재 페이지를 저장하는 상태
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const startPageIndex = (currentPage - 1) * partypage;
+  // 각 카테고리에 대한 현재 페이지를 저장하는 상태
+  const [currentPage, setCurrentPage] = useState({});
+
+  const startPageIndex = (currentPage[filterCategory] - 1) * partypage;
   const endPageIndex = startPageIndex + partypage;
 
+  //전체페이지를 저장
   const totalPage = Math.ceil(postparty.filter(item => item.category === filterCategory).length / partypage);
 
+  //지정한 카테고리에서 카테고리와 홈페이지jsx 에 filterCategory와 일치하는 구인글을 보여줌
   const currentPageList = onSearch
     ? filteredPosts
         .filter(item => item.category === filterCategory && item.postTitle.includes(partyInput))
+        .sort((a, b) => b.postDate.seconds - a.postDate.seconds)
         .slice(startPageIndex, endPageIndex)
-    : postparty.filter(item => item.category === filterCategory).slice(startPageIndex, endPageIndex);
+    : postparty
+        .filter(item => item.category === filterCategory)
+        .sort((a, b) => b.postDate.seconds - a.postDate.seconds)
+        .slice(startPageIndex, endPageIndex);
 
+  //페이지네이션 길이. 문자열의 길이가 이상이면 ... 나오게
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
+
   const moveDetailpage = postId => {
     navigate(`/detail/${postId}`);
   };
 
+  //리듀서로 받아온 파티 총 인원을 보여줌
   const getCategoryPlayers = category => {
-    const selectedCategory = postm.find(c => c.game === category);
+    const selectedCategory = postm.find(intro => intro.game === category);
     return selectedCategory ? selectedCategory.players : 0;
   };
-  console.log('currentPageList', currentPageList);
+  useEffect(() => {
+    if (!currentPage[filterCategory]) {
+      setCurrentPage(prev => ({
+        ...prev,
+        [filterCategory]: 1,
+      }));
+    }
+  }, [filterCategory]);
   return (
     <>
       <ScTeammateSearchBox>
         {currentPageList.filter(item => item).length === 0 ? (
-          <NoPostParty>파티구인 구직 글이 없습니다 글을 작성해주세요</NoPostParty>
+          <NoPostParty>파티구인 구직 글이 없습니다. 글을 작성해주세요.</NoPostParty>
         ) : (
           currentPageList.map((post, index) => (
             <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
               <ScPostBox>
-                <span>{startPageIndex + index + 1}</span>
+                <span>{startPageIndex + index + 1}</span> {/* 여기 수정 */}
                 <div>
                   ({post.category}) {truncate(post.postTitle, 5)}
                 </div>
                 <div>
                   {post.currentParticipants} / {getCategoryPlayers(post.category)}
                 </div>
-                <span>{truncate(post.author, 5)}</span>
+                <span>{truncate(post.author, 4)}</span>
                 <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
               </ScPostBox>
             </ScGameParty>
           ))
         )}
         <ScPageNation>
-          {currentPage > 1 && <ScPageButton onClick={() => setCurrentPage(currentPage - 1)}>이전</ScPageButton>}
+          {currentPage[filterCategory] > 1 && (
+            <ScPageButton
+              onClick={() =>
+                setCurrentPage(prev => ({
+                  ...prev,
+                  [filterCategory]: prev[filterCategory] - 1,
+                }))
+              }
+            >
+              이전
+            </ScPageButton>
+          )}
           {Array.from({length: totalPage}, (_, index) => (
-            <ScPageButton key={index} onClick={() => setCurrentPage(index + 1)} isActive={currentPage === index + 1}>
+            <ScPageButton
+              key={index}
+              onClick={() =>
+                setCurrentPage(prev => ({
+                  ...prev,
+                  [filterCategory]: index + 1,
+                }))
+              }
+              isActive={currentPage[filterCategory] === index + 1}
+            >
               {index + 1}
             </ScPageButton>
           ))}
-          {currentPage < totalPage && <ScPageButton onClick={() => setCurrentPage(currentPage + 1)}>다음</ScPageButton>}
+          {currentPage[filterCategory] < totalPage && (
+            <ScPageButton
+              onClick={() =>
+                setCurrentPage(prev => ({
+                  ...prev,
+                  [filterCategory]: prev[filterCategory] + 1,
+                }))
+              }
+            >
+              다음
+            </ScPageButton>
+          )}
         </ScPageNation>
         {isUserLoggedIn && (
           <ScWirteButton
             onClick={() => {
-              navigate(`/write`);
+              navigate(`/write?category=${filterCategory}`);
             }}
           >
             글쓰기
@@ -84,7 +130,6 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
     </>
   );
 };
-
 const ScTeammateSearchBox = styled.div`
   width: 1000px;
   height: 650px;
@@ -136,10 +181,10 @@ const ScPostBox = styled.div`
 const ScPageNation = styled.div`
   display: flex;
   justify-content: center;
-  position: absolute; /* absolute로 설정 */
+  position: absolute;
   width: 70%;
   right: 15%;
-  top: 94%; /* 조정이 필요한 위치로 설정 */
+  top: 94%;
 `;
 const ScPageButton = styled.button`
   margin: 0 5px;
@@ -172,8 +217,8 @@ const ScWirteButton = styled.button`
   &:hover {
     background-color: #8e8ffa;
   }
-  position: absolute; /* absolute로 설정 */
-  bottom: 15px; /* 조정이 필요한 위치로 설정 */
+  position: absolute;
+  bottom: 15px;
   left: 90%;
   transform: translateX(-50%);
 `;

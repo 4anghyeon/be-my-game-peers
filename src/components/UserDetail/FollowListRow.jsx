@@ -1,19 +1,35 @@
 import React from 'react';
 import styled from 'styled-components';
 import {Button} from '../Common/Common.styled';
+import {getAuth} from 'firebase/auth';
+import {useNavigate} from 'react-router-dom';
+import {hideModal} from '../../redux/modules/modal/modalModule';
+import {useDispatch} from 'react-redux';
+import avatar from 'assets/avatar.png';
 
 const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, followingList}) => {
   const isFollow = followingList?.includes(user.email);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onClickNickname = () => {
+    dispatch(hideModal());
+    navigate(`/user/${user.email}`);
+  };
 
   return (
     <ScRow>
       <li>
-        <ScColumn>
-          <b>{user.nickname || 'unnamed'}</b>
-          <span>{user.email}</span>
-        </ScColumn>
+        <ScBox>
+          <ScProfileImage $img={user.profileImg}></ScProfileImage>
+          <ScColumn onClick={onClickNickname}>
+            <b>{user.nickname || 'unnamed'}</b>
+            <span>{user.email}</span>
+          </ScColumn>
+        </ScBox>
         {/*본인이면 팔로잉 버튼 표시할 필요 없음*/}
-        {user.email !== currentEmail &&
+        {getAuth().currentUser &&
+          user.email !== currentEmail &&
           (isFollow ? (
             <ScFollowingButton onClick={onClickFollowing.bind(null, user.email)}>팔로잉</ScFollowingButton>
           ) : (
@@ -26,6 +42,7 @@ const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, fol
 
 const ScRow = styled.ul`
   width: 100%;
+  margin: 10px 0 10px 0;
 
   li {
     display: flex;
@@ -41,6 +58,7 @@ const ScRow = styled.ul`
 const ScColumn = styled.div`
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 
   & span:last-child {
     color: grey;
@@ -61,6 +79,21 @@ const ScFollowingButton = styled(ScFollowButton)`
   &:hover {
     color: #7752fe;
   }
+`;
+
+const ScProfileImage = styled.div`
+  width: 40px;
+  height: 40px;
+  background-image: url(${({$img}) => $img || avatar});
+  background-size: cover;
+  border-radius: 50%;
+  border: solid 1px lightgrey;
+  margin-right: 10px;
+`;
+
+const ScBox = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 export default FollowListRow;

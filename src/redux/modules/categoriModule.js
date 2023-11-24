@@ -25,7 +25,7 @@ const categoriState = [
   },
   {
     id: 4,
-    game: 'VALLOLANT',
+    game: 'VALLORANT',
     players: 5,
   },
 ];
