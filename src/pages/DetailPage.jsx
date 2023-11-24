@@ -14,7 +14,6 @@ import {db} from 'shared/firebase/firebase';
 import {collection, query, getDocs, doc, deleteDoc} from 'firebase/firestore';
 import {sendMessage} from '../shared/firebase/query';
 
-
 const DetailPage = () => {
   // const posts = useSelector(state => state.PostModule);
   const dispatch = useDispatch();
@@ -95,7 +94,7 @@ const DetailPage = () => {
     if (postAuthorEmail !== currentUser.email)
       sendMessage(
         postAuthorEmail,
-        `${currentAuthor}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
+        `${currentUser.displayName}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
         id,
         'post',
       );
