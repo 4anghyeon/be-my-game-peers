@@ -20,10 +20,10 @@ const DetailPage = () => {
   const alert = useAlert();
 
   const selectedPost = posts.find(post => post.postId === id);
-  console.log(selectedPost);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
+  console.log(editedText);
 
   const currentUser = getAuth().currentUser;
   const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';

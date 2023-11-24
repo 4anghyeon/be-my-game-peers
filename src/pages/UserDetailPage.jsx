@@ -5,7 +5,7 @@ import avatar from 'assets/avatar.png';
 import {useState} from 'react';
 import {getAuth} from 'firebase/auth';
 import {updateUser, findUserByEmail} from 'shared/firebase/query';
-import {useLocation} from '../../node_modules/react-router-dom/dist/index';
+import {useLocation, useParams} from '../../node_modules/react-router-dom/dist/index';
 import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
 import {useNavigate} from 'react-router-dom';
@@ -18,9 +18,13 @@ import alert from 'assets/alert(purple).png';
 const UserDetailPage = () => {
   const {pathname} = useLocation();
   const getUserInfo = getAuth().currentUser.email;
+  console.log(getUserInfo);
   const email = pathname.replace('/user/', '');
 
+  const params = useParams();
+
   const [userInfo, setUserInfo] = useState({});
+  console.log(userInfo);
   const navigate = useNavigate();
 
   //firebase에 저장된 user 정보 가져오기
@@ -125,6 +129,7 @@ const UserDetailPage = () => {
   const checkMyPost = () => {
     navigate(<MyPost />);
   };
+
   return (
     <>
       {getUserInfo === null ? (
@@ -144,7 +149,7 @@ const UserDetailPage = () => {
             </div>
             <div className="wrapInput">
               {isEdit ? (
-                <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
+                <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder={userInfo.nickname} />
               ) : (
                 <ScUserName>{userInfo.nickname ? userInfo.nickname : 'Guest'}님</ScUserName>
               )}
@@ -152,7 +157,12 @@ const UserDetailPage = () => {
             <div className="wrapInput">
               <Label>About</Label>
               {isEdit ? (
-                <Input type="text" value={introduction} onChange={EDIT_INTRODUCTION} placeholder="한줄 소개" />
+                <Input
+                  type="text"
+                  value={introduction}
+                  onChange={EDIT_INTRODUCTION}
+                  placeholder={userInfo.introduction}
+                />
               ) : (
                 <ScAbout>{userInfo.introduction}</ScAbout>
               )}
@@ -160,13 +170,13 @@ const UserDetailPage = () => {
             <div className="wrapInput">
               <Label>Favorite Game</Label>
               {isEdit ? (
-                <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
+                <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder={userInfo.favoriteGame} />
               ) : (
                 <ScAbout>{userInfo.favoriteGame}</ScAbout>
               )}
             </div>
             <ScEditAndPost>
-              {getUserInfo.email === userInfo.email ? (
+              {getUserInfo === userInfo.email ? (
                 <div>
                   <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
                   <ScButton>내 게시물</ScButton>
