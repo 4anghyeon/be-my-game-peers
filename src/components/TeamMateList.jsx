@@ -232,6 +232,7 @@ const ScWriter = styled.span`
   text-align: left;
   margin-left: 20px;
   display: block;
+  letter-spacing: 5px;
 `;
 const ScCategoryPlayers = styled.div`
   text-align: right;

@@ -78,6 +78,7 @@ const HomePage = () => {
 
 const ScCategoriList = styled(Link)`
   color: black;
+
   margin: 50px;
   text-decoration: none;
   position: relative;
@@ -100,6 +101,7 @@ const ScCategoriList = styled(Link)`
   }
 `;
 const ScCategoriSection = styled.section`
+  font-size: 25px;
   margin: 20px 0 20px 0;
   width: 100%;
   text-align: center;
