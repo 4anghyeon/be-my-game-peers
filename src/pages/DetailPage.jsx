@@ -91,7 +91,7 @@ const DetailPage = () => {
     const newComment = {
       commentId: uuid(),
       userId: currentUser && currentUser.displayName,
-      userEamil: currentUser && currentUser.email,
+      userEmail: currentUser && currentUser.email,
       content: comment,
       commentDate: new Date(),
     };
