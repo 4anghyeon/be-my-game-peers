@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
 import {useNavigate} from '../../node_modules/react-router-dom/dist/index';
 import {useAlert} from 'redux/modules/alert/alertHook';
-import {db} from 'shared/firebase';
+import {db} from 'shared/firebase/firebase';
 
 const WritePage = () => {
   const dispatch = useDispatch();

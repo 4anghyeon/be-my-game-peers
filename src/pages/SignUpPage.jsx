@@ -7,7 +7,7 @@ import {
   validationRePassword,
 } from '../shared/helper/validation';
 import {createUserWithEmailAndPassword, getAuth, updateProfile} from 'firebase/auth';
-import {auth} from '../shared/firebase';
+import {auth} from '../shared/firebase/firebase';
 import {useNavigate} from 'react-router-dom';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {useDispatch, useSelector} from 'react-redux';
