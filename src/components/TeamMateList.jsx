@@ -32,7 +32,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         .filter(item => item.category === filterCategory)
         .sort((a, b) => b.postDate.seconds - a.postDate.seconds)
         .slice(startPageIndex, endPageIndex);
-  console.log(getAuth().currentUser.displayName);
+
   // 문자열의 길이가 이상이면 ... 나오게
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
@@ -68,7 +68,13 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
                   {post.category} ({post.currentParticipants} / {getCategoryPlayers(post.category)})
                 </ScCateGory>
                 <ScTitle>{truncate(post.postTitle, 15)}</ScTitle>
-                <ScWriter>{truncate(post.author, 7)}</ScWriter>
+                <ScWriter
+                  isUserLoggedIn={isUserLoggedIn}
+                  userDisplayName={getAuth().currentUser?.displayName}
+                  postAuthor={truncate(post.author, 7)}
+                >
+                  {truncate(post.author, 7)}
+                </ScWriter>
                 <ScPartyTime>
                   <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
                 </ScPartyTime>
@@ -237,9 +243,10 @@ const ScWriter = styled.span`
 
   ${props =>
     props.isUserLoggedIn &&
-    getAuth().currentUser?.displayName &&
+    props.userDisplayName &&
+    props.postAuthor &&
     css`
-      color: ${getAuth().currentUser.displayName === props.desiredValue ? 'red' : 'inherit'};
+      color: ${props.userDisplayName === props.postAuthor ? '#C2D9FF' : 'inherit'};
     `}
 `;
 
