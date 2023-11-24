@@ -3,6 +3,7 @@ import {initializeApp} from 'firebase/app';
 import {getAuth} from 'firebase/auth';
 import {getFirestore} from 'firebase/firestore';
 import {getStorage} from 'firebase/storage';
+import {getDatabase} from 'firebase/database';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -17,6 +18,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  databaseURL: 'https://sparta-bada5-default-rtdb.firebaseio.com',
 };
 
 // Initialize Firebase
@@ -24,3 +26,4 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const realTimeDb = getDatabase(app);

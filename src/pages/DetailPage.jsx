@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
 import {useAlert} from 'redux/modules/alert/alertHook';
 import {hideAlert} from 'redux/modules/alert/alertModule';
+import {sendMessage} from '../shared/firebase/query';
 
 const DetailPage = () => {
   const posts = useSelector(state => state.PostModule);
@@ -60,6 +61,13 @@ const DetailPage = () => {
     }
     setComment('');
     dispatch(addComment({id, newComment}));
+    if (postAuthorEmail !== currentUser.email)
+      sendMessage(
+        postAuthorEmail,
+        `${currentAuthor}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
+        id,
+        'post',
+      );
   };
 
   // 수정 상태 토글
