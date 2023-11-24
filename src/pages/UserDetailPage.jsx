@@ -41,6 +41,8 @@ const UserDetailPage = () => {
         let photoURL = user.profileImg;
         if (photoURL) {
           setProfileImg(photoURL);
+        } else {
+          setProfileImg(avatar);
         }
         setIntroduction(user.introduction);
         setFavoriteGame(user.favoriteGame);

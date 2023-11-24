@@ -83,7 +83,7 @@ const Header = () => {
       <ScLogoContainer onClick={onClickHome}>
         <img src={logo} alt="logo" />
       </ScLogoContainer>
-      <h1>너 내 동료가 돼라</h1>
+      <h1 onClick={onClickHome}>너 내 동료가 돼라</h1>
       <div>
         {pathname !== '/signup' && pathname !== '/login' && (
           <>
@@ -139,7 +139,7 @@ const ScContainer = styled.header`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    cursor: default;
+    cursor: pointer;
   }
 
   & button {

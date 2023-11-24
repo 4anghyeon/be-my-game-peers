@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from '../../node_modules/react-redux/es/export
 import {Link, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
-import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
+import {addComment, deletePost, editPost, fetchData, setData} from 'redux/modules/PostModule';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
@@ -11,7 +11,7 @@ import {useAlert} from 'redux/modules/alert/alertHook';
 import {hideAlert} from 'redux/modules/alert/alertModule';
 
 import {db} from 'shared/firebase/firebase';
-import {collection, query, getDocs, doc, deleteDoc} from 'firebase/firestore';
+import {collection, query, getDocs, doc, deleteDoc, updateDoc} from 'firebase/firestore';
 import {sendMessage} from '../shared/firebase/query';
 
 const DetailPage = () => {
@@ -36,20 +36,20 @@ const DetailPage = () => {
       const q = query(collection(db, 'posts'));
       const querySnapshot = await getDocs(q);
 
-      const initialTodos = [];
+      const initialPosts = [];
       querySnapshot.forEach(doc => {
-        initialTodos.push(doc.data());
+        initialPosts.push({...doc.data(), id: doc.id});
       });
 
-      console.log('test', initialTodos);
-      setPosts(initialTodos);
-      return initialTodos;
+      console.log('test', initialPosts);
+      setPosts(initialPosts);
+      return initialPosts;
     };
     // 수정한 부분!!!!
     fetchData().then(posts => {
       const post = posts.find(post => post.postId === id);
       setSelectedPost(post);
-      setEditedText(post.comments);
+
       setPostAuthor(post.author);
       setPostAuthorEmail(post.authorEmail);
     });
@@ -100,9 +100,12 @@ const DetailPage = () => {
       );
   };
 
-  // 수정 상태 토글
-  const handleEditPost = () => {
-    if (!isEdit) setIsEdit(true);
+  const editPost = async id => {
+    if (!isEdit) {
+      setIsEdit(true);
+      setEditedText(selectedPost.postContent);
+      console.log('성공');
+    }
 
     if (isEdit && selectedPost.postContent.trim() === editedText.trim()) {
       alert.alert('수정내용이 없습니다');
@@ -110,35 +113,27 @@ const DetailPage = () => {
     }
 
     if (isEdit) {
-      alert.confirm(
-        '이대로 수정하시겠습니까?',
-        () => {
-          dispatch(editPost({id, editedText}));
-          setIsEdit(false);
-          dispatch(hideAlert());
-        },
-        () => {
-          setEditedText(selectedPost.postContent);
-          setIsEdit(false);
-          dispatch(hideAlert());
-        },
-      );
+      const postRef = doc(db, 'posts', id);
+      await updateDoc(postRef, {...selectedPost, postContent: editedText});
+      const allData = await fetchData();
+      if (allData) {
+        dispatch(setData(allData));
+      }
     }
   };
 
   // 게시글 삭제
   const deletePost = async id => {
-    const postRef = doc(db, 'posts', id);
-    console.log(id);
-    await deleteDoc(postRef);
+    alert.confirm('정말 삭제하시겠습니까?', async () => {
+      const postRef = doc(db, 'posts', id);
+      console.log(id);
+      await deleteDoc(postRef);
+      const allNewList = await fetchData();
+      dispatch(setData(allNewList));
+      navigate('/');
+      dispatch(hideAlert());
+    });
   };
-  // const HandleDeletePost = () => {
-  //   alert.confirm('정말 삭제하시겠습니까?', () => {
-  //     dispatch(deletePost(id));
-  //     navigate('/');
-  //     dispatch(hideAlert());
-  //   });
-  // };
 
   // 텍스트의 끝으로 커서를 이동 (focus)
   useEffect(() => {
@@ -163,10 +158,9 @@ const DetailPage = () => {
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
-          {/*{currentAuthor === postAuthor ? (*/}
           {currentUser && currentUser.email === postAuthorEmail ? (
             <ScBtnGroup>
-              <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
+              <ScEditBtn onClick={() => editPost(selectedPost.id)}>수정</ScEditBtn>
               <ScDeleteBtn onClick={() => deletePost(selectedPost.id)}>삭제</ScDeleteBtn>
             </ScBtnGroup>
           ) : null}
