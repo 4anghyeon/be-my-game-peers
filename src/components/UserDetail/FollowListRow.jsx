@@ -42,6 +42,7 @@ const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, fol
 
 const ScRow = styled.ul`
   width: 100%;
+  margin: 10px 0 10px 0;
 
   li {
     display: flex;
