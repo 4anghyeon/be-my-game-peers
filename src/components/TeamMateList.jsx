@@ -200,6 +200,7 @@ const ScWirteButton = styled.button`
   background-color: #7752fe;
   color: white;
   font-weight: bold;
+
   &:hover {
     background-color: #8e8ffa;
   }
@@ -218,6 +219,8 @@ const ScNoPostParty = styled.p`
 const ScCateGory = styled.div`
   text-align: left;
   margin-left: 20px;
+  font-family: 'BeaufortforLOL';
+  font-weight: bold;
 `;
 const ScTitle = styled.div`
   text-align: left;

@@ -82,7 +82,7 @@ const ScCategoriList = styled(Link)`
   text-decoration: none;
   position: relative;
   font-weight: bold;
-
+  font-family: 'BeaufortforLOL';
   &::before {
     content: '';
     position: absolute;
@@ -106,8 +106,9 @@ const ScCategoriSection = styled.section`
 `;
 const ScSearchBox = styled.form`
   width: 100%;
-  height: 150px;
+  height: 100px;
   text-align: center;
+  margin-top: 50px;
 `;
 const ScSearchInput = styled.input`
   width: 350px;
@@ -117,7 +118,9 @@ const ScSearchInput = styled.input`
   border-right: none;
   border-bottom: 3px solid black;
   font-size: 20px;
-  font-family: arial;
+  font-family: 'MaplestoryOTFLight';
+
+  font-weight: bold;
 `;
 const ScSearchButton = styled.button`
   width: 80px;
@@ -127,8 +130,9 @@ const ScSearchButton = styled.button`
   border-left: none;
   border-right: none;
   border-bottom: 3px solid black;
+  font-family: 'MaplestoryOTFLight';
   font-size: 20px;
-  font-weight: bold;
+
   color: white;
   background-color: #7752fe;
   cursor: pointer;
@@ -141,6 +145,7 @@ const ScTeammateSearchBox = styled.div`
   width: 800px;
   height: 700px;
   margin: 0 auto;
+  margin-bottom: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
