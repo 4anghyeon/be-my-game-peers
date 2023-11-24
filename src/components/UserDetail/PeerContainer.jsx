@@ -27,7 +27,6 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
       if (profileUser.follower.includes(currentUserEmail)) setIsFollow(true);
       else setIsFollow(false);
     }
-    console.log(profileUser);
   }, [profileUser]);
 
   const onClickFollow = async () => {

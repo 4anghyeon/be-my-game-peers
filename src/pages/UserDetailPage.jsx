@@ -5,14 +5,13 @@ import avatar from 'assets/avatar.png';
 import {useState} from 'react';
 import {getAuth} from 'firebase/auth';
 import {updateUser, findUserByEmail} from 'shared/firebase/query';
-import {useLocation, useParams} from '../../node_modules/react-router-dom/dist/index';
+import {useLocation} from '../../node_modules/react-router-dom/dist/index';
 import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
 import {useNavigate} from 'react-router-dom';
 import uuid from '../../node_modules/react-uuid/uuid';
 import Like from 'assets/like.png';
 import DisLike from 'assets/disLike.png';
-import MyPost from 'pages/MyPostPage';
 import alert from 'assets/alert(purple).png';
 
 const UserDetailPage = () => {
@@ -20,12 +19,48 @@ const UserDetailPage = () => {
   const getUserInfo = getAuth().currentUser.email;
   console.log(getUserInfo);
   const email = pathname.replace('/user/', '');
-
-  const params = useParams();
-
   const [userInfo, setUserInfo] = useState({});
-  console.log(userInfo);
   const navigate = useNavigate();
+  // 닉네임, 한줄 소개, 좋아하는 게임 정보 변경시 사용될 state
+  const [nickname, setNickName] = useState('');
+  const [introduction, setIntroduction] = useState('');
+  const [favoriteGame, setFavoriteGame] = useState('');
+  const [profileImg, setProfileImg] = useState(avatar);
+  const [isEdit, setIsEdit] = useState(false);
+  // 추천 / 비추천 버튼
+  const [likeCount, setLikeCount] = useState(0);
+  const [disLikeCount, setDisLikeCount] = useState(0);
+  const [disableClick, setDisableClick] = useState(false);
+  // 코멘트란
+  const [comments, setComments] = useState([]);
+  const [content, setContent] = useState('');
+
+  useEffect(() => {
+    findUserByEmail(email).then(user => {
+      if (user) {
+        let photoURL = user.profileImg;
+        if (photoURL) {
+          setProfileImg(photoURL);
+        }
+        setIntroduction(user.introduction);
+        setFavoriteGame(user.favoriteGame);
+        setNickName(user.nickname);
+      } else {
+        setProfileImg(avatar);
+      }
+    });
+  }, [userAuth, pathname]);
+
+  useEffect(() => {
+    findUserByEmail(email).then(user => {
+      if (user) {
+        let like = likeCount;
+        if (like) {
+          setLikeCount(like);
+        }
+      }
+    });
+  }, [userAuth, pathname]);
 
   //firebase에 저장된 user 정보 가져오기
   useEffect(() => {
@@ -41,15 +76,6 @@ const UserDetailPage = () => {
         });
     }
   }, [pathname]);
-
-  // 닉네임, 한줄 소개, 좋아하는 게임 정보 변경시 사용될 state
-  const [nickname, setNickName] = useState('');
-  const [introduction, setIntroduction] = useState('');
-  const [favoriteGame, setFavoriteGame] = useState('');
-
-  let [profileImg, setProfileImg] = useState(avatar);
-
-  const [isEdit, setIsEdit] = useState(false);
 
   const EDIT_NICKNAME = event => setNickName(event.target.value);
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
@@ -75,28 +101,8 @@ const UserDetailPage = () => {
     }
   };
 
-  useEffect(() => {
-    findUserByEmail(email).then(user => {
-      if (user) {
-        let photoURL = user.profileImg;
-        if (photoURL) {
-          setProfileImg(photoURL);
-        }
-      } else {
-        setProfileImg(avatar);
-      }
-    });
-  }, [userAuth, pathname]);
-
-  // 추천 / 비추천 버튼
-  const [likeCount, setLikeCount] = useState(0);
-  const [disLikeCount, setDisLikeCount] = useState(0);
-
-  const [disableClick, setDisableClick] = useState(false);
-
   const CLICK_LIKE = () => {
     if (!disableClick) {
-      setLikeCount(likeCount + 1);
       setDisableClick(true);
     }
   };
@@ -106,10 +112,6 @@ const UserDetailPage = () => {
       setDisableClick(true);
     }
   };
-
-  // 코멘트란
-  const [comments, setComments] = useState([]);
-  const [content, setContent] = useState('');
 
   const writeContent = event => setContent(event.target.value);
 
@@ -127,7 +129,7 @@ const UserDetailPage = () => {
 
   // 내 게시물 (필터)
   const checkMyPost = () => {
-    navigate(<MyPost />);
+    navigate(`/myPost`);
   };
 
   return (
@@ -151,7 +153,7 @@ const UserDetailPage = () => {
               {isEdit ? (
                 <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder={userInfo.nickname} />
               ) : (
-                <ScUserName>{userInfo.nickname ? userInfo.nickname : 'Guest'}님</ScUserName>
+                <ScUserName>{userInfo.nickname ? userInfo.nickname : getUserInfo.displayName}님</ScUserName>
               )}
             </div>
             <div className="wrapInput">
@@ -179,7 +181,7 @@ const UserDetailPage = () => {
               {getUserInfo === userInfo.email ? (
                 <div>
                   <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
-                  <ScButton>내 게시물</ScButton>
+                  <ScButton onClick={checkMyPost}>내 게시물</ScButton>
                 </div>
               ) : null}
             </ScEditAndPost>

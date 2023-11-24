@@ -1,6 +1,7 @@
 import {collection, doc, query, where, getDocs, addDoc, updateDoc} from 'firebase/firestore';
-import {db} from './firebase';
+import {db, realTimeDb} from './firebase';
 import {getAuth, updateProfile} from 'firebase/auth';
+import {ref, update, child, push} from 'firebase/database';
 
 const userCollectionRef = collection(db, 'users');
 
@@ -85,4 +86,26 @@ export const updateUserFollowing = async (currentUserEmail, followerEmail, isFol
   }
   await updateDoc(followingUserRef, {following: followingList});
   return followingList;
+};
+
+export const sendMessage = async (email, message, id, type) => {
+  // 댓글을 달 때 게시글 주인에게 메시지 발송
+  const path = `${email.replace(/\./g, '')}/message`;
+  const newMessageKey = push(child(ref(realTimeDb), email.replace(/\./g, ''))).key;
+  const updates = {};
+  updates[`${path}/${newMessageKey}`] = {
+    message,
+    postId: id,
+    type,
+    check: false,
+  };
+  return update(ref(realTimeDb), updates);
+};
+
+export const deleteMessage = async (email, id) => {
+  // 알림 메시지를 읽으면 데이터베이스에서 삭제
+  const path = `${email.replace(/\./g, '')}/message/${id}`;
+  const updates = {};
+  updates[path] = null;
+  return update(ref(realTimeDb), updates);
 };

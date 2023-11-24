@@ -24,7 +24,7 @@ const AppRouter = () => {
           <Route path="login" element={<LoginPage />}></Route>
           {/* 사용자 정보 */}
           <Route path="user/:userid" element={<UserDetailPage />}></Route>
-          <Route path="user/:userid/:id" element={<MyPostPage />}></Route>
+          <Route path="/myPost" element={<MyPostPage />}></Route>
           {/* 게시글 */}
           <Route path="detail/:id" element={<DetailPage />}></Route>
           {/* 글쓰기 */}
