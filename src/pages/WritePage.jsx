@@ -58,7 +58,7 @@ const WritePage = () => {
   }, [inputs.currentParticipants]);
 
   // 게시글 등록
-  const submitForm = async e => {
+  const addPost = async e => {
     e.preventDefault();
     const newPost = {
       postId: uuid(),
@@ -108,7 +108,7 @@ const WritePage = () => {
 
   return (
     <CenterContainer>
-      <ScFormGroup onSubmit={submitForm}>
+      <ScFormGroup onSubmit={addPost}>
         <h1>게시글 작성</h1>
         <ScWriteElementGroup>
           <label htmlFor="postTitle">글제목</label>
