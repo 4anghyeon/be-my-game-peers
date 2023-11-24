@@ -13,7 +13,7 @@ import {getDatabase, ref, onValue, set} from 'firebase/database';
 import {realTimeDb} from '../../../shared/firebase/firebase';
 import bell from 'assets/img/bell.png';
 import newBell from 'assets/img/new-bell.png';
-import Message from './Message';
+import MessageContainer from './MessageContainer';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -95,7 +95,7 @@ const Header = () => {
                 <ScWelcomeMessage>
                   반갑습니다. <strong>{userAuth.displayName ? userAuth.displayName : 'Guest'}</strong> 님
                 </ScWelcomeMessage>
-                <Message
+                <MessageContainer
                   onClickOpenMessageList={onClickOpenMessageList}
                   setShowMessageList={setShowMessageList}
                   showMessageList={showMessageList}
