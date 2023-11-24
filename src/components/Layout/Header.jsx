@@ -8,6 +8,7 @@ import downArrow from 'assets/img/down-arrow.svg';
 import {Button} from '../Common/Common.styled';
 import {useAlert} from '../../redux/modules/alert/alertHook';
 import avatar from 'assets/avatar.png';
+import user from 'assets/user.png';
 
 const Header = () => {
   const {pathname} = useLocation();
@@ -49,6 +50,7 @@ const Header = () => {
     dispatch(changeAuth(null));
     setShowContextMenu(prev => false);
     alert.twinkle('로그아웃 되었습니다.');
+    navigate('/');
   };
 
   // 설정 버튼 클릭시
@@ -169,6 +171,16 @@ const ScProfileMenuButton = styled(Button)`
 
 const ScWelcomeMessage = styled.span`
   margin-right: 20px;
+`;
+
+const ScProfileBtn = styled.button`
+  cursor: pointer;
+  margin-right: 10px;
+  height: 40px;
+  width: 40px;
+  border: 0;
+  background-color: #eee;
+  border-radius: 5px;
 `;
 
 export default Header;

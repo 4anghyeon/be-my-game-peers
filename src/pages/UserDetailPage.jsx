@@ -12,6 +12,8 @@ import {useNavigate} from 'react-router-dom';
 import uuid from '../../node_modules/react-uuid/uuid';
 import Like from 'assets/like.png';
 import DisLike from 'assets/disLike.png';
+import MyPost from 'pages/MyPostPage';
+import NoUser from 'components/UserDetail/NoUser';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
@@ -22,16 +24,21 @@ const UserDetailPage = () => {
   const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
 
-  // firebase에 저장된 user 정보 가져오기
+  //firebase에 저장된 user 정보 가져오기
   useEffect(() => {
-    findUserByEmail(email)
-      .then(user => {
-        setUserInfo(user);
-      })
-      .catch(err => {
-        navigate('/nouser');
-      });
-  }, [pathname]);
+    if (!getUserInfo) {
+      console.log('로그인되지 않았습니다');
+    } else {
+      findUserByEmail(email)
+        .then(user => {
+          setUserInfo(user);
+        })
+        .catch(err => {
+          navigate('/nouser');
+        });
+      //
+    }
+  }, [pathname, navigate, getUserInfo, email]);
 
   // 닉네임, 한줄 소개, 좋아하는 게임 정보 변경시 사용될 state
   const [nickname, setNickName] = useState('');
@@ -117,9 +124,20 @@ const UserDetailPage = () => {
   };
 
   // 내 게시물 (필터)
+  const checkMyPost = () => {
+    navigate(<MyPost />);
+  };
 
   return (
     <>
+      {/* 비 로그인 상태 */}
+      {!getUserInfo && (
+        <CenterVertical>
+          <NoUser />
+        </CenterVertical>
+      )}
+
+      {/* 로그인 상태 */}
       <CenterVertical>
         <ScHr>
           <div className="wrapImage">
@@ -154,7 +172,7 @@ const UserDetailPage = () => {
           </div>
           <ScEditAndPost>
             <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
-            <ScButton>내 게시물</ScButton>
+            <ScButton onClick={checkMyPost}>내 게시물</ScButton>
           </ScEditAndPost>
         </ScHr>
 
@@ -203,9 +221,10 @@ const UserDetailPage = () => {
 };
 
 const ScHr = styled.div`
-  margin-top: 100px;
-  width: 630px;
-  gap: 36px;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   & > .wrapImage {
     width: 600px;
