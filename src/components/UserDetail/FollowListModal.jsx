@@ -13,7 +13,7 @@ import {useLocation} from 'react-router-dom';
 
 const FollowListModal = ({showFollowing, followerList, followingList, setFollowingNumber, setUserInfo}) => {
   const [showingList, setShowingList] = useState([]);
-  const currentEmail = getAuth().currentUser.email;
+  const currentEmail = getAuth().currentUser?.email;
   const {pathname} = useLocation();
   const isMyPage = pathname.replace('/user/', '') === currentEmail;
 
