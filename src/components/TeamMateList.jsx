@@ -28,10 +28,6 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         .slice(startPageIndex, endPageIndex)
     : postparty.filter(item => item.category === filterCategory).slice(startPageIndex, endPageIndex);
 
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  // }, [filterCategory, partyInput, filteredPosts, onSearch]);
-
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
@@ -47,23 +43,27 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
   return (
     <>
       <ScTeammateSearchBox>
-        {currentPageList.map((post, index) => (
-          <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
-            <ScPostBox>
-              <span>{startPageIndex + index + 1}</span>
-              <div>
-                ({post.category}) {truncate(post.postTitle, 5)}
-              </div>
-              <div>
-                {post.currentParticipants} / {getCategoryPlayers(post.category)}
-              </div>
-              <span>{truncate(post.author, 5)}</span>
-              <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
-            </ScPostBox>
-          </ScGameParty>
-        ))}
+        {currentPageList.filter(item => item).length === 0 ? (
+          <NoPostParty>파티구인 구직 글이 없습니다 글을 작성해주세요</NoPostParty>
+        ) : (
+          currentPageList.map((post, index) => (
+            <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
+              <ScPostBox>
+                <span>{startPageIndex + index + 1}</span>
+                <div>
+                  ({post.category}) {truncate(post.postTitle, 5)}
+                </div>
+                <div>
+                  {post.currentParticipants} / {getCategoryPlayers(post.category)}
+                </div>
+                <span>{truncate(post.author, 5)}</span>
+                <time>{moment.unix(post.postDate.seconds).format('yyyy-MM-DD HH:mm')}</time>
+              </ScPostBox>
+            </ScGameParty>
+          ))
+        )}
         <ScPageNation>
-          {totalPage > 1 && <ScPageButton onClick={() => setCurrentPage(currentPage - 1)}>이전</ScPageButton>}
+          {currentPage > 1 && <ScPageButton onClick={() => setCurrentPage(currentPage - 1)}>이전</ScPageButton>}
           {Array.from({length: totalPage}, (_, index) => (
             <ScPageButton key={index} onClick={() => setCurrentPage(index + 1)} isActive={currentPage === index + 1}>
               {index + 1}
@@ -176,5 +176,12 @@ const ScWirteButton = styled.button`
   bottom: 15px; /* 조정이 필요한 위치로 설정 */
   left: 90%;
   transform: translateX(-50%);
+`;
+const NoPostParty = styled.p`
+  top: 50%;
+  color: #190482;
+  font-size: 30px;
+  font-weight: bold;
+  margin-top: 20px;
 `;
 export default TeamMateList;

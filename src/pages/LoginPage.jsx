@@ -56,11 +56,13 @@ const LoginPage = () => {
     } catch (error) {
       console.error(error);
       // 에러가 났다는 뜻은 찾은 유저가 없다는 것...
+      // 새로 생성!
       const newUser = {
         email: result.user.email,
         introduction: '',
         favoriteGame: 0,
         nickname: auth.currentUser.displayName,
+        profileImg: result.user.photoURL,
       };
       await createUser(newUser);
       dispatch(addUser(newUser));

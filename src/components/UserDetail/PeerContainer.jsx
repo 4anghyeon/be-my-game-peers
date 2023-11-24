@@ -67,10 +67,14 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
     <ScContainer>
       <ScFollowerContainer>
         <div onClick={onClickOpenFollowerModal}>
-          <span>팔로워 {followerNumber}</span>
+          <span>
+            <strong>팔로워</strong> {followerNumber}
+          </span>
         </div>
         <div onClick={onClickOpenFollowingModal}>
-          <span>팔로잉 {followingNumber}</span>
+          <span>
+            <strong>팔로잉</strong> {followingNumber}
+          </span>
         </div>
       </ScFollowerContainer>
       {profileUser.email !== getAuth().currentUser.email && (

@@ -45,7 +45,7 @@ const HomePage = () => {
   };
 
   return (
-    <div>
+    <>
       <ScCategoriSection>
         {gameNames.map((gameName, index) => (
           <ScCategoriList key={index} onClick={() => postCategory(gameName)}>
@@ -67,8 +67,7 @@ const HomePage = () => {
           onSearch={onSearch}
         />
       </ScTeammateSearchBox>
-      <Footer />
-    </div>
+    </>
   );
 };
 
