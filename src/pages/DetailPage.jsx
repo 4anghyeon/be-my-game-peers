@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from '../../node_modules/react-redux/es/export
 import {Link, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
-import {addComment, deletePost, editPost} from 'redux/modules/PostModule';
+import {addComment, deletePost, editPost, fetchData, setData} from 'redux/modules/PostModule';
 
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
@@ -13,7 +13,6 @@ import {hideAlert} from 'redux/modules/alert/alertModule';
 import {db} from 'shared/firebase/firebase';
 import {collection, query, getDocs, doc, deleteDoc} from 'firebase/firestore';
 import {sendMessage} from '../shared/firebase/query';
-
 
 const DetailPage = () => {
   // const posts = useSelector(state => state.PostModule);
@@ -37,20 +36,20 @@ const DetailPage = () => {
       const q = query(collection(db, 'posts'));
       const querySnapshot = await getDocs(q);
 
-      const initialTodos = [];
+      const initialPosts = [];
       querySnapshot.forEach(doc => {
-        initialTodos.push(doc.data());
+        initialPosts.push({...doc.data(), id: doc.id});
       });
 
-      console.log('test', initialTodos);
-      setPosts(initialTodos);
-      return initialTodos;
+      console.log('test', initialPosts);
+      setPosts(initialPosts);
+      return initialPosts;
     };
     // 수정한 부분!!!!
     fetchData().then(posts => {
       const post = posts.find(post => post.postId === id);
       setSelectedPost(post);
-      setEditedText(post.comments);
+
       setPostAuthor(post.author);
       setPostAuthorEmail(post.authorEmail);
     });
@@ -95,7 +94,7 @@ const DetailPage = () => {
     if (postAuthorEmail !== currentUser.email)
       sendMessage(
         postAuthorEmail,
-        `${currentAuthor}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
+        `${currentUser.displayName}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
         id,
         'post',
       );
@@ -103,7 +102,10 @@ const DetailPage = () => {
 
   // 수정 상태 토글
   const handleEditPost = () => {
-    if (!isEdit) setIsEdit(true);
+    if (!isEdit) {
+      setIsEdit(true);
+      setEditedText(selectedPost.postContent);
+    }
 
     if (isEdit && selectedPost.postContent.trim() === editedText.trim()) {
       alert.alert('수정내용이 없습니다');
@@ -129,17 +131,16 @@ const DetailPage = () => {
 
   // 게시글 삭제
   const deletePost = async id => {
-    const postRef = doc(db, 'posts', id);
-    console.log(id);
-    await deleteDoc(postRef);
+    alert.confirm('정말 삭제하시겠습니까?', async () => {
+      const postRef = doc(db, 'posts', id);
+      console.log(id);
+      await deleteDoc(postRef);
+      const allNewList = await fetchData();
+      dispatch(setData(allNewList));
+      navigate('/');
+      dispatch(hideAlert());
+    });
   };
-  // const HandleDeletePost = () => {
-  //   alert.confirm('정말 삭제하시겠습니까?', () => {
-  //     dispatch(deletePost(id));
-  //     navigate('/');
-  //     dispatch(hideAlert());
-  //   });
-  // };
 
   // 텍스트의 끝으로 커서를 이동 (focus)
   useEffect(() => {
@@ -164,7 +165,6 @@ const DetailPage = () => {
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
-          {/*{currentAuthor === postAuthor ? (*/}
           {currentUser && currentUser.email === postAuthorEmail ? (
             <ScBtnGroup>
               <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
