@@ -59,7 +59,6 @@ const DetailPage = () => {
   const [editedText, setEditedText] = useState('');
 
   const currentUser = getAuth().currentUser;
-  const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';
 
   // comment input 변경
   const changeCommentText = e => {
@@ -80,7 +79,7 @@ const DetailPage = () => {
     }
     const newComment = {
       commentId: uuid(),
-      userId: getAuth().currentUser.displayName,
+      userId: currentUser && currentUser.displayName,
       content: comment,
       commentDate: new Date(),
     };
@@ -150,19 +149,15 @@ const DetailPage = () => {
       <ScDetailElementGroup>
         <h1>{selectedPost.postTitle}</h1>
         <ScPostDetailGroup>
-          {currentUser ? (
-            <Link to={`/user/${postAuthorEmail}`}>
-              <span>작성자 : {postAuthor}</span>
-            </Link>
-          ) : (
-            <span>작성자 : Guest</span>
-          )}
+          <Link to={`/user/${postAuthorEmail}`}>
+            <span>작성자 : {postAuthor}</span>
+          </Link>
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
           {/*{currentAuthor === postAuthor ? (*/}
-          {currentUser.email === postAuthorEmail ? (
+          {currentUser && currentUser.email === postAuthorEmail ? (
             <ScBtnGroup>
               <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
               <ScDeleteBtn onClick={() => deletePost(selectedPost.id)}>삭제</ScDeleteBtn>
