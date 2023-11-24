@@ -13,11 +13,12 @@ import uuid from '../../node_modules/react-uuid/uuid';
 import Like from 'assets/like.png';
 import DisLike from 'assets/disLike.png';
 import alert from 'assets/alert(purple).png';
+import {storage, auth} from 'shared/firebase/firebase';
+import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
   const getUserInfo = getAuth().currentUser.email;
-  console.log(getUserInfo);
   const email = pathname.replace('/user/', '');
   const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
@@ -25,7 +26,6 @@ const UserDetailPage = () => {
   const [nickname, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [favoriteGame, setFavoriteGame] = useState('');
-  const [profileImg, setProfileImg] = useState(avatar);
   const [isEdit, setIsEdit] = useState(false);
   // 추천 / 비추천 버튼
   const [likeCount, setLikeCount] = useState(0);
@@ -34,11 +34,16 @@ const UserDetailPage = () => {
   // 코멘트란
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState('');
+  // 프로필 이미지 업로드
+  const [profileImg, setProfileImg] = useState('');
+  const [imgFile, setImgfile] = useState(null);
+  console.log(imgFile);
 
   useEffect(() => {
     findUserByEmail(email).then(user => {
       if (user) {
         let photoURL = user.profileImg;
+        console.log(photoURL); // <- undefined
         if (photoURL) {
           setProfileImg(photoURL);
         } else {
@@ -83,23 +88,34 @@ const UserDetailPage = () => {
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
   const EDIT_FAVORITE = event => setFavoriteGame(event.target.value);
 
-  let NEW_USER_INFO = {};
+  let newUserInfo = {};
 
   // 프로필 수정 버튼
   const EDIT_BUTTON = async () => {
     setIsEdit(!isEdit);
-    NEW_USER_INFO = {
-      nickname,
-      introduction,
-      favoriteGame,
-    };
 
     if (isEdit) {
-      setUserInfo(NEW_USER_INFO);
-      await updateUser(email, NEW_USER_INFO);
+      newUserInfo = {
+        nickname,
+        introduction,
+        favoriteGame,
+      };
+      if (imgFile !== null) {
+        const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
+        console.log('imageRef: ', imageRef); // undefined
+        await uploadBytes(imageRef, imgFile);
+
+        const downloadURL = await getDownloadURL(imageRef);
+        console.log(downloadURL);
+
+        newUserInfo.profileImg = downloadURL;
+      }
+      setUserInfo(newUserInfo);
+      await updateUser(email, newUserInfo);
       setNickName('');
       setIntroduction('');
       setFavoriteGame('');
+      setImgfile(null);
     }
   };
 
@@ -134,6 +150,15 @@ const UserDetailPage = () => {
     navigate(`/myPost`);
   };
 
+  // 이미지  업로드
+
+  // 이미지 업로드 input의 onChange
+  const handleChangeImage = event => {
+    setImgfile(event.target.files[0]);
+    const imgUrl = URL.createObjectURL(event.target.files[0]);
+    // setProfileImg(imgUrl);
+  };
+
   return (
     <>
       {getUserInfo === null ? (
@@ -144,51 +169,60 @@ const UserDetailPage = () => {
       ) : (
         <ScContainer>
           <ScHr>
-            <div className="wrapImage">
+            <div div className="wrapImage">
               <ScProfileImg>
-                <img src={profileImg} alt="프로필 이미지" />
-                {isEdit ? <ScUpload>upload</ScUpload> : null}
+                <img src={profileImg ?? `assets/avatar.png`} alt="프로필 이미지" />
+                {isEdit ? (
+                  <>
+                    <label className="signup-profileImg-label" htmlFor="profileImg">
+                      프로필 이미지 변경
+                    </label>
+                    <input
+                      className="signup-profileImg-input"
+                      type="file"
+                      accept="image/*"
+                      id="profileImg"
+                      style={{display: 'none'}}
+                      onChange={handleChangeImage}
+                    />
+                  </>
+                ) : null}
               </ScProfileImg>
-              {isEdit ? null : <PeerContainer profileUser={userInfo} setUserInfo={setUserInfo} />}
-            </div>
-            <div className="wrapInput">
-              {isEdit ? (
-                <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder={userInfo.nickname} />
-              ) : (
-                <ScUserName>{userInfo.nickname ? userInfo.nickname : getUserInfo.displayName}님</ScUserName>
-              )}
-            </div>
-            <div className="wrapInput">
-              <Label>About</Label>
-              {isEdit ? (
-                <Input
-                  type="text"
-                  value={introduction}
-                  onChange={EDIT_INTRODUCTION}
-                  placeholder={userInfo.introduction}
-                />
-              ) : (
-                <ScAbout>{userInfo.introduction}</ScAbout>
-              )}
-            </div>
-            <div className="wrapInput">
-              <Label>Favorite Game</Label>
-              {isEdit ? (
-                <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder={userInfo.favoriteGame} />
-              ) : (
-                <ScAbout>{userInfo.favoriteGame}</ScAbout>
-              )}
-            </div>
-            <ScEditAndPost>
-              {getUserInfo === userInfo.email ? (
+              <div>
                 <div>
-                  <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
-                  <ScButton onClick={checkMyPost}>내 게시물</ScButton>
+                  <ScNickname>{isEdit ? null : `${userInfo.nickname} 님`}</ScNickname>
+                  <ScAbout>{isEdit ? null : `💜 ${userInfo.introduction}`}</ScAbout>
+                  <ScAbout>{isEdit ? null : `💜 LIKE  ${userInfo.favoriteGame}`}</ScAbout>
                 </div>
-              ) : null}
-            </ScEditAndPost>
-          </ScHr>
+                <ScEditAndPost>
+                  {getUserInfo === userInfo.email ? (
+                    <div>
+                      <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
+                      <ScEditButton onClick={checkMyPost}>내 게시물</ScEditButton>
+                    </div>
+                  ) : null}
+                </ScEditAndPost>
+              </div>
+            </div>
+            {isEdit ? null : <PeerContainer profileUser={userInfo} setUserInfo={setUserInfo} />}
+            {isEdit ? (
+              <>
+                <div className="wrapInput">
+                  <Label>Nickname</Label>
+                  <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
+                </div>
+                <div className="wrapInput">
+                  <Label>About</Label>
+                  <Input type="text" value={introduction} onChange={EDIT_INTRODUCTION} placeholder="한줄 소개" />
+                </div>
+                <div className="wrapInput">
+                  <Label>Favorite Game</Label>
 
+                  <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
+                </div>
+              </>
+            ) : null}
+          </ScHr>
           <ScCommentArea>
             <h3 style={{color: 'red'}}>{disLikeCount >= 50 ? '※ 경고 : 위험 유저입니다. ※' : null}</h3>
             <CommentBox>
@@ -236,7 +270,6 @@ const UserDetailPage = () => {
 const ScContainer = styled(CenterVertical)`
   height: 100%;
   margin-bottom: 50px;
-
   .alert {
     width: 50px;
     height: 50px;
@@ -256,12 +289,11 @@ const ScHr = styled.div`
 
   & > .wrapImage {
     width: 600px;
+    height: 300px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 0 6px;
+    justify-content: center;
   }
 
   & > .wrapInput {
@@ -277,21 +309,33 @@ const ScHr = styled.div`
 `;
 
 const ScProfileImg = styled.div`
-  width: 300px;
-  height: 150px;
+  margin: 10px;
+  width: 250px;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   & > img {
     width: 150px;
+    height: 150px;
     border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .signup-profileImg-label {
+    margin: 10px 0;
+    font-weight: bold;
+    font-size: 13px;
+    color: #7752fe;
+    display: inline-block;
+    cursor: pointer;
   }
 `;
 
 const ScEditAndPost = styled.div`
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
+  justify-content: center;
 
   div {
     display: flex;
@@ -310,7 +354,7 @@ const ScEditButton = styled.button`
   cursor: pointer;
   border-radius: 5px;
   width: 80px;
-  height: 40px;
+  height: 25px;
   padding: 0;
 `;
 
@@ -320,21 +364,16 @@ const Label = styled.label`
   font-weight: 700;
 `;
 
-const ScUserName = styled.h2`
-  font-size: 2rem;
+const ScNickname = styled.h3`
+  font-size: 1.2rem;
   font-weight: 700;
+  margin: 10px;
 `;
 
 const ScAbout = styled.p`
-  display: flex;
-  align-items: center;
-  font-size: 1rem;
-  font-weight: 500;
-  background-color: #eee;
-  padding: 6px;
-  border-radius: 10px;
-  width: 630px;
-  height: 40px;
+  font-size: 14px;
+  color: #333;
+  margin: 10px;
 `;
 
 const ScBtnBox = styled.div`
@@ -364,16 +403,6 @@ const ScButton = styled.button`
   }
 `;
 
-const ScUpload = styled.button`
-  border: none;
-  background-color: #eee;
-  color: #333;
-  cursor: pointer;
-  border-radius: 5px;
-  width: 80px;
-  height: 40px;
-`;
-
 const ScCommentArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -383,7 +412,7 @@ const ScCommentArea = styled.div`
 `;
 
 const ScUserComment = styled.h2`
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 `;
 
 const ScForm = styled.form`

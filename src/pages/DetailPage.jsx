@@ -30,36 +30,45 @@ const DetailPage = () => {
   const [postAuthor, setPostAuthor] = useState('');
   const [postAuthorEmail, setPostAuthorEmail] = useState('');
 
-  // 최신 데이터 가져오기
-  useEffect(() => {
-    const fetchData = async () => {
-      const q = query(collection(db, 'posts'));
-      const querySnapshot = await getDocs(q);
-
-      const initialPosts = [];
-      querySnapshot.forEach(doc => {
-        initialPosts.push({...doc.data(), id: doc.id});
-      });
-
-      console.log('test', initialPosts);
-      setPosts(initialPosts);
-      return initialPosts;
-    };
-    // 수정한 부분!!!!
-    fetchData().then(posts => {
-      const post = posts.find(post => post.postId === id);
-      setSelectedPost(post);
-
-      setPostAuthor(post.author);
-      setPostAuthorEmail(post.authorEmail);
-    });
-  }, []);
-
-  // const selectedPost = posts.find(post => post.postId === id);
+  const [commentList, setCommentList] = useState([]);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState('');
   const currentUser = getAuth().currentUser;
+
+  const fetchData = async () => {
+    const q = query(collection(db, 'posts'));
+    const querySnapshot = await getDocs(q);
+
+    const initialPosts = [];
+    querySnapshot.forEach(doc => {
+      initialPosts.push({...doc.data(), id: doc.id});
+    });
+
+    setPosts(initialPosts);
+    return initialPosts;
+  };
+
+  // 최신 데이터 가져오기
+  useEffect(() => {
+    // 수정한 부분!!!!
+    fetchData().then(posts => {
+      const post = posts.find(post => post.postId === id);
+      setSelectedPost(post);
+      setPostAuthor(post.author);
+      setPostAuthorEmail(post.authorEmail);
+      setCommentList(posts.comments);
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchData().then(posts => {
+      const post = posts.find(post => post.postId === id);
+      setSelectedPost(post);
+      setPostAuthor(post.author);
+      setPostAuthorEmail(post.authorEmail);
+    });
+  }, [commentList]);
 
   // comment input 변경
   const changeCommentText = e => {
@@ -72,8 +81,9 @@ const DetailPage = () => {
   };
 
   // comment 등록
-  const HandleSubmitComment = e => {
+  const addComment = async e => {
     e.preventDefault();
+
     if (!currentUser) {
       alert.alert('로그인 후 이용해주세요');
       return;
@@ -89,17 +99,28 @@ const DetailPage = () => {
       alert.alert('댓글 내용을 입력해주세요');
       return;
     }
-    setComment('');
-    dispatch(addComment({id, newComment}));
-    if (postAuthorEmail !== currentUser.email)
+
+    const commentRef = doc(db, 'posts', selectedPost.id);
+    await updateDoc(commentRef, {...selectedPost, comments: [...selectedPost.comments, newComment]});
+    const allData = await fetchData();
+    if (allData) {
+      setCommentList([...selectedPost.comments, newComment]);
+      dispatch(setData(allData));
+    }
+
+    if (postAuthorEmail !== currentUser.email) {
       sendMessage(
         postAuthorEmail,
         `${currentUser.displayName}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
         id,
         'post',
       );
+    }
+
+    setComment('');
   };
 
+  // 게시글 수정
   const editPost = async id => {
     if (!isEdit) {
       setIsEdit(true);
@@ -167,7 +188,7 @@ const DetailPage = () => {
         </ScPostDetailGroup>
 
         <hr />
-        <ScCommentFormGroup onSubmit={HandleSubmitComment}>
+        <ScCommentFormGroup onSubmit={addComment}>
           <Input type="text" placeholder="댓글을 입력해주세요" value={comment} onChange={changeCommentText} />
           <ScRegisterBtn>등록</ScRegisterBtn>
         </ScCommentFormGroup>

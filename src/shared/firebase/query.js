@@ -46,6 +46,7 @@ export const updateUser = async (email, updateInfo) => {
   const userRef = doc(db, 'users', find.id);
 
   // auth 내용 업데이트
+  console.log(updateInfo);
   await updateProfile(getAuth().currentUser, {displayName: updateInfo.nickname, photoURL: updateInfo.profileImg});
 
   // firebase 내용 업데이트
