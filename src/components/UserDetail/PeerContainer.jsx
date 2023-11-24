@@ -77,7 +77,7 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
           </span>
         </div>
       </ScFollowerContainer>
-      {profileUser.email !== getAuth().currentUser?.email && (
+      {getAuth().currentUser && profileUser.email !== getAuth().currentUser.email && (
         <ScFollowerContainer>
           {!isFollow ? (
             <ScFollowButton onClick={onClickFollow}>팔로우</ScFollowButton>
