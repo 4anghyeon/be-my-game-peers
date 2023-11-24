@@ -179,7 +179,8 @@ const ScProfile = styled.div`
   border-radius: 50%;
   border: 1px solid black;
   background-image: url(${({$img}) => $img});
-  background-size: contain;
+  background-size: cover;
+  background-position: center;
 `;
 
 const ScProfileMenuContainer = styled.div`
