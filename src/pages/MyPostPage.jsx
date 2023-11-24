@@ -17,6 +17,13 @@ export default function MyPost() {
 
   // TODO: comments!!
   const comments = useSelector(state => state.PostModule);
+  console.log(currentUserEmail);
+  console.log(
+    posts.reduce((acc, cur) => {
+      console.log(cur.comments);
+      return [...acc, ...cur.comments.filter(c => c.userEmail === currentUserEmail)];
+    }, []),
+  );
 
   const currentUser = auth.currentUser;
   const selectedComments = comments.filter(comment => comment.commentId);
