@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import githubIcon from 'assets/img/github.png';
+import bg from 'assets/img/footer.svg';
 
 const Footer = () => {
   const onClickGitHub = () => {
@@ -30,7 +31,10 @@ const Footer = () => {
 const ScContainer = styled.footer`
   display: flex;
   justify-content: space-around;
-  background-color: rgba(142, 143, 250, 0.8);
+  background-image: url(${() => bg});
+  -o-background-size: 100% 100%;
+  -webkit-background-size: 100% 100%;
+  background-size: cover;
   min-height: 200px;
 
   div {
