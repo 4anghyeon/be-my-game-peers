@@ -20,6 +20,7 @@ const DetailPage = () => {
   const alert = useAlert();
 
   const selectedPost = posts.find(post => post.postId === id);
+  console.log(selectedPost);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost.postContent);
@@ -27,7 +28,9 @@ const DetailPage = () => {
   const currentUser = getAuth().currentUser;
   const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';
   const postAuthor = selectedPost.author;
+  console.log('postAuthor: ', postAuthor);
   const postAuthorEmail = selectedPost.authorEmail;
+  console.log('postAuthorEmail: ', postAuthorEmail);
 
   // comment input 변경
   const changeCommentText = e => {
