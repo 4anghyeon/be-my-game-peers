@@ -19,21 +19,30 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
   const startPageIndex = (currentPage[filterCategory] - 1) * partypage;
   const endPageIndex = startPageIndex + partypage;
 
+  //전체페이지를 저장
   const totalPage = Math.ceil(postparty.filter(item => item.category === filterCategory).length / partypage);
 
+  //지정한 카테고리에서 카테고리와 홈페이지jsx 에 filterCategory와 일치하는 구인글을 보여줌
   const currentPageList = onSearch
     ? filteredPosts
         .filter(item => item.category === filterCategory && item.postTitle.includes(partyInput))
+        .sort((a, b) => b.postDate.seconds - a.postDate.seconds)
         .slice(startPageIndex, endPageIndex)
-    : postparty.filter(item => item.category === filterCategory).slice(startPageIndex, endPageIndex);
+    : postparty
+        .filter(item => item.category === filterCategory)
+        .sort((a, b) => b.postDate.seconds - a.postDate.seconds)
+        .slice(startPageIndex, endPageIndex);
 
+  //페이지네이션 길이. 문자열의 길이가 이상이면 ... 나오게
   const truncate = (str, n) => {
     return str?.length > n ? str.substr(0, n - 1) + '...' : str;
   };
+
   const moveDetailpage = postId => {
     navigate(`/detail/${postId}`);
   };
 
+  //리듀서로 받아온 파티 총 인원을 보여줌
   const getCategoryPlayers = category => {
     const selectedCategory = postm.find(intro => intro.game === category);
     return selectedCategory ? selectedCategory.players : 0;
@@ -50,12 +59,12 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
     <>
       <ScTeammateSearchBox>
         {currentPageList.filter(item => item).length === 0 ? (
-          <NoPostParty>파티구인 구직 글이 없습니다 글을 작성해주세요</NoPostParty>
+          <NoPostParty>파티구인 구직 글이 없습니다. 글을 작성해주세요.</NoPostParty>
         ) : (
           currentPageList.map((post, index) => (
             <ScGameParty key={post.postId} onClick={() => moveDetailpage(post.postId)}>
               <ScPostBox>
-                <span>{startPageIndex + index + 1}</span>
+                <span>{startPageIndex + index + 1}</span> {/* 여기 수정 */}
                 <div>
                   ({post.category}) {truncate(post.postTitle, 5)}
                 </div>
@@ -111,7 +120,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
         {isUserLoggedIn && (
           <ScWirteButton
             onClick={() => {
-              navigate(`/write`);
+              navigate(`/write?category=${filterCategory}`);
             }}
           >
             글쓰기

@@ -4,10 +4,9 @@ import {addPost, fetchData, setData} from 'redux/modules/PostModule';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
 import {collection, addDoc} from 'firebase/firestore';
-
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
-import {useNavigate} from '../../node_modules/react-router-dom/dist/index';
+import {useLocation, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
 import {useAlert} from 'redux/modules/alert/alertHook';
 import {db} from 'shared/firebase/firebase';
 
@@ -19,11 +18,13 @@ const WritePage = () => {
   const alert = useAlert();
   const [needPlayers, setNeedPlayers] = useState(0);
   const [players, setPlayers] = useState(0);
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const filterCategory = queryParams.get('category') || 'LEAGUE OF LEGENDS';
   const [inputs, setInputs] = useState({
     postTitle: '',
     postContent: '',
-    category: 'LEAGUE OF LEGENDS',
+    category: filterCategory,
     currentParticipants: 1,
   });
 
