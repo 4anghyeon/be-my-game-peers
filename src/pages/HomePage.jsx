@@ -9,7 +9,7 @@ import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
 import {useState} from 'react';
-import '../common.css';
+
 const HomePage = () => {
   const categoris = useSelector(state => state.categoriModule);
   const postparty = useSelector(state => state.PostModule);

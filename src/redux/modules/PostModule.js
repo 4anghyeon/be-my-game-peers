@@ -1,5 +1,5 @@
 import {collection, getDocs, query} from 'firebase/firestore';
-import {db} from 'shared/firebase';
+import {db} from 'shared/firebase/firebase';
 
 // action values
 const ADD_POST = 'post/ADD_POST';
