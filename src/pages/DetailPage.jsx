@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
 import {useAlert} from 'redux/modules/alert/alertHook';
 import {hideAlert} from 'redux/modules/alert/alertModule';
+import {sendMessage} from '../shared/firebase/query';
 
 const DetailPage = () => {
   const posts = useSelector(state => state.PostModule);
@@ -29,7 +30,6 @@ const DetailPage = () => {
   const currentAuthor = currentUser ? currentUser.displayName || 'Guest' : 'Guest';
   const postAuthor = selectedPost.author;
   const postAuthorEmail = selectedPost.authorEmail;
-  console.log('postAuthorEmail: ', postAuthorEmail);
 
   // comment input 변경
   const changeCommentText = e => {
@@ -44,18 +44,30 @@ const DetailPage = () => {
   // comment 등록
   const HandleSubmitComment = e => {
     e.preventDefault();
+    if (!currentUser) {
+      alert.alert('로그인 후 이용해주세요');
+      return;
+    }
     const newComment = {
       commentId: uuid(),
       userId: getAuth().currentUser.displayName,
       content: comment,
       commentDate: new Date(),
     };
+
     if (comment.trim().length === 0) {
       alert.alert('댓글 내용을 입력해주세요');
       return;
     }
     setComment('');
     dispatch(addComment({id, newComment}));
+    if (postAuthorEmail !== currentUser.email)
+      sendMessage(
+        postAuthorEmail,
+        `${currentAuthor}님이 ${selectedPost.postTitle} 글에 댓글을 남겼습니다.`,
+        id,
+        'post',
+      );
   };
 
   // 수정 상태 토글
@@ -88,7 +100,7 @@ const DetailPage = () => {
   const HandleDeletePost = () => {
     alert.confirm('정말 삭제하시겠습니까?', () => {
       dispatch(deletePost(id));
-      navigate('/write');
+      navigate('/');
       dispatch(hideAlert());
     });
   };
@@ -120,7 +132,8 @@ const DetailPage = () => {
           {!isEdit && <ScTextarea disabled value={selectedPost.postContent} />}
           <ScNeedPlayersSpan> 필요 인원수 : {selectedPost.needPlayers}</ScNeedPlayersSpan>
 
-          {currentAuthor === postAuthor ? (
+          {/*{currentAuthor === postAuthor ? (*/}
+          {currentUser.email === postAuthorEmail ? (
             <ScBtnGroup>
               <ScEditBtn onClick={handleEditPost}>수정</ScEditBtn>
               <ScDeleteBtn onClick={HandleDeletePost}>삭제</ScDeleteBtn>

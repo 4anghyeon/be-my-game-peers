@@ -38,7 +38,7 @@ const ScModalContainer = styled.section`
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
-  height: 140px;
+  height: fit-content;
   background-color: white;
   border-radius: 15px;
   box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
