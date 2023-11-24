@@ -52,14 +52,19 @@ const Message = ({onClickOpenMessageList, showMessageList, setShowMessageList, c
       ) : (
         <ScBell $img={bell} onClick={onClickOpenMessageList}></ScBell>
       )}
-      <ScMessageContainer>
-        {showMessageList &&
-          messageList.map(row => (
-            <ScMessageRow key={row.id} onClick={onClickMessage.bind(null, row)}>
-              {row.message}
-            </ScMessageRow>
-          ))}
-      </ScMessageContainer>
+      {showMessageList && (
+        <ScMessageContainer>
+          {messageList.length > 0 ? (
+            messageList.map(row => (
+              <ScMessageRow key={row.id} onClick={onClickMessage.bind(null, row)}>
+                {row.message}
+              </ScMessageRow>
+            ))
+          ) : (
+            <ScNoMessage>메시지가 없습니다. 🥺</ScNoMessage>
+          )}
+        </ScMessageContainer>
+      )}
     </>
   );
 };
@@ -98,6 +103,7 @@ const ScMessageContainer = styled.div`
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
   width: fit-content;
   z-index: 200;
+  background: white;
 `;
 
 const ScMessageRow = styled.div`
@@ -112,6 +118,11 @@ const ScMessageRow = styled.div`
   &:hover {
     background: #c2d9ff;
   }
+`;
+
+const ScNoMessage = styled.div`
+  padding: 30px;
+  font-size: 1.2rem;
 `;
 
 export default Message;
