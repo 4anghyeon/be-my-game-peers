@@ -19,6 +19,7 @@ import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 const UserDetailPage = () => {
   const {pathname} = useLocation();
   const getUserInfo = getAuth().currentUser.email;
+  const getUser = getAuth().currentUser;
   const email = pathname.replace('/user/', '');
   const [userInfo, setUserInfo] = useState({});
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const UserDetailPage = () => {
   const [disableClick, setDisableClick] = useState(false);
   // 코멘트란
   const [comments, setComments] = useState([]);
+  console.log(comments);
   const [content, setContent] = useState('');
   // 프로필 이미지 업로드
   const [profileImg, setProfileImg] = useState('');
@@ -137,7 +139,7 @@ const UserDetailPage = () => {
     event.preventDefault();
     const newComments = {
       id: userInfo.id,
-      nickname: userInfo.nickname,
+      nickname: getUser.displayName,
       content,
     };
 
