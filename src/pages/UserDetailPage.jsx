@@ -51,7 +51,6 @@ const UserDetailPage = () => {
     findUserByEmail(email).then(user => {
       if (user) {
         let photoURL = user.profileImg;
-        console.log(photoURL); // <- undefined
         if (photoURL) {
           setProfileImg(photoURL);
         } else {
@@ -80,7 +79,7 @@ const UserDetailPage = () => {
   //firebase에 저장된 user 정보 가져오기
   useEffect(() => {
     if (currentUserEmail === null) {
-      console.log('로그인 해주세요');
+      navigate('/nouser');
     } else {
       findUserByEmail(email)
         .then(user => {
@@ -192,7 +191,7 @@ const UserDetailPage = () => {
       ) : (
         <ScContainer>
           <ScHr>
-            <div div className="wrapImage">
+            <div className="wrapImage">
               <ScProfileImg>
                 <img src={profileImg ?? `assets/avatar.png`} alt="프로필 이미지" />
                 {isEdit ? (

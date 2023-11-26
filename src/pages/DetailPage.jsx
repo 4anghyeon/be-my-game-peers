@@ -249,6 +249,14 @@ const ScPostDetailGroup = styled.div`
     margin-bottom: 10px;
     text-align: right;
   }
+
+  a {
+    color: black;
+  }
+
+  a:hover {
+    color: #8e8ffa;
+  }
 `;
 
 const ScTextarea = styled.textarea`
