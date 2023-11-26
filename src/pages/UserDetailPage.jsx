@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {CenterVertical, Input} from 'components/Common/Common.styled';
 import avatar from 'assets/avatar.png';
 import {getAuth} from 'firebase/auth';
-import {findUserByEmail, updateUser} from 'shared/firebase/query';
+import {findUserByEmail, updateAuthorAllPost, updateUser} from 'shared/firebase/query';
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
 import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
@@ -15,7 +15,9 @@ import alert from 'assets/alert(purple).png';
 import {auth, storage} from 'shared/firebase/firebase';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {useDispatch, useSelector} from 'react-redux';
-import {setData} from '../redux/modules/PostModule';
+import {fetchData, setData} from '../redux/modules/PostModule';
+import {useAlert} from '../redux/modules/alert/alertHook';
+import {hideLoading, showLoading} from '../shared/helper/common';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
@@ -42,6 +44,7 @@ const UserDetailPage = () => {
   // posts
   const posts = useSelector(state => state.PostModule);
 
+  const alert = useAlert();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -95,47 +98,47 @@ const UserDetailPage = () => {
 
   // 프로필 수정 버튼
   const EDIT_BUTTON = async () => {
-    setIsEdit(!isEdit);
-
     if (isEdit) {
-      const newUserInfo = {
-        nickname,
-        introduction,
-        favoriteGame,
-        follower: userInfo.follower,
-        following: userInfo.following,
-        email: userInfo.email,
-      };
-      if (imgFile !== null) {
-        const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
-        await uploadBytes(imageRef, imgFile);
+      showLoading(document.getElementById('root'));
+      try {
+        const newUserInfo = {
+          nickname,
+          introduction,
+          favoriteGame,
+          follower: userInfo.follower,
+          following: userInfo.following,
+          email: userInfo.email,
+        };
+        // 프로필 이미지 업롣,
+        if (imgFile !== null) {
+          const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
+          await uploadBytes(imageRef, imgFile);
 
-        newUserInfo.profileImg = await getDownloadURL(imageRef);
+          newUserInfo.profileImg = await getDownloadURL(imageRef);
+        }
+
+        setUserInfo(newUserInfo);
+        await updateUser(email, newUserInfo);
+
+        // 닉네임이 바뀌면 모든 글 닉네임 변경!
+
+        // 닉네임이 바뀌면 모든 글 닉네임 변경!
+        await updateAuthorAllPost(userInfo.nickname, newUserInfo.nickname, currentUserEmail);
+        alert.alert('수정 되었습니다!');
+
+        // 데이터 새로 불러옴
+        const allData = await fetchData();
+        if (allData) {
+          dispatch(setData(allData));
+        }
+      } catch (err) {
+        alert.alert('⚠️ 오류가 발생했습니다.');
+      } finally {
+        hideLoading(document.getElementById('root'));
+        setIsEdit(false);
       }
-      setUserInfo(newUserInfo);
-      await updateUser(email, newUserInfo);
-      setNickName('');
-      setIntroduction('');
-      setFavoriteGame('');
-      setImgfile(null);
-
-      // 닉네임이 바뀌면 모든 글 닉네임 변경!
-      if (userInfo.nickname !== newUserInfo.nickname) {
-        const newPosts = posts.map(post => {
-          if (post.authorEmail === currentUserEmail) {
-            post.author = newUserInfo.nickname;
-            post.comments = post.comments.map(comment => {
-              if (comment.userEmail === currentUserEmail) {
-                comment.userId = nickname;
-              }
-              return comment;
-            });
-          }
-          return post;
-        });
-
-        dispatch(setData(newPosts));
-      }
+    } else {
+      setIsEdit(true);
     }
   };
 
@@ -217,7 +220,7 @@ const UserDetailPage = () => {
                 <ScEditAndPost>
                   {currentUserEmail === userInfo.email ? (
                     <div>
-                      <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
+                      <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? '저장' : '수정'}</ScEditButton>
                       <ScEditButton onClick={checkMyPost}>내 게시물</ScEditButton>
                     </div>
                   ) : null}

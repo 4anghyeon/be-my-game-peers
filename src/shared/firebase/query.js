@@ -2,8 +2,10 @@ import {collection, doc, query, where, getDocs, addDoc, updateDoc} from 'firebas
 import {db, realTimeDb} from './firebase';
 import {getAuth, updateProfile} from 'firebase/auth';
 import {ref, update, child, push} from 'firebase/database';
+import {fetchData} from '../../redux/modules/PostModule';
 
 const userCollectionRef = collection(db, 'users');
+const postCollectionRef = collection(db, 'posts');
 
 export const findUserByEmail = async email => {
   // firestore의 user정보에서 email이 같은 유저를 찾음
@@ -109,4 +111,22 @@ export const deleteMessage = async (email, id) => {
   const updates = {};
   updates[path] = null;
   return update(ref(realTimeDb), updates);
+};
+
+export const updateAuthorAllPost = async (beforeName, afterName, userEmail) => {
+  const q = query(postCollectionRef);
+  const querySnapShot = await getDocs(q);
+  const updatePromiseList = [];
+
+  querySnapShot.forEach(snapshot => {
+    const data = snapshot.data();
+    if (data.authorEmail === userEmail) {
+      const newComments = data.comments?.filter(c => c.userEmail === userEmail).map(c => ({...c, userId: afterName}));
+      const newData = {...data, author: afterName, comments: newComments};
+      const postRef = doc(db, 'posts', snapshot.id);
+      updatePromiseList.push(new Promise(updateDoc.bind(null, postRef, newData)));
+    }
+  });
+
+  Promise.all(updatePromiseList);
 };
