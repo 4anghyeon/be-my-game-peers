@@ -69,9 +69,9 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
                 </ScCateGory>
                 <ScTitle>{truncate(post.postTitle, 15)}</ScTitle>
                 <ScWriter
-                  isUserLoggedIn={isUserLoggedIn}
-                  userDisplayName={getAuth().currentUser?.displayName}
-                  postAuthor={truncate(post.author, 7)}
+                  $isUserLoggedIn={isUserLoggedIn}
+                  $userDisplayName={getAuth().currentUser?.displayName}
+                  $postAuthor={truncate(post.author, 7)}
                 >
                   {truncate(post.author, 7)}
                 </ScWriter>
@@ -242,11 +242,11 @@ const ScWriter = styled.span`
   letter-spacing: 5px;
 
   ${props =>
-    props.isUserLoggedIn &&
-    props.userDisplayName &&
-    props.postAuthor &&
+    props.$isUserLoggedIn &&
+    props.$userDisplayName &&
+    props.$postAuthor &&
     css`
-      color: ${props.userDisplayName === props.postAuthor ? '#C2D9FF' : 'inherit'};
+      color: ${props.$userDisplayName === props.$postAuthor ? '#C2D9FF' : 'inherit'};
     `}
 `;
 
