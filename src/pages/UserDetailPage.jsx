@@ -14,7 +14,7 @@ import {
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
 import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
-import {useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import uuid from '../../node_modules/react-uuid/uuid';
 import Like from 'assets/like.png';
 import DisLike from 'assets/disLike.png';
@@ -284,7 +284,9 @@ const UserDetailPage = () => {
                 {reviews.map(comment => {
                   return (
                     <ScList key={comment.id} className="content">
-                      <h3 className="ToYou">{comment.nickname}</h3>
+                      <h3 className="ToYou">
+                        <Link to={`/user/${comment.authorEmail}`}>{comment.nickname}</Link>
+                      </h3>
                       <p className="comment-body">{comment.content}</p>
                       {comment.authorEmail === currentUserEmail && (
                         <ScDeleteButton onClick={onClickDeleteReview.bind(null, comment.id)}>삭제</ScDeleteButton>
@@ -490,6 +492,11 @@ const ScWrapList = styled.ul`
   width: 700px;
   padding: 6px;
   gap: 12px;
+
+  a {
+    text-decoration: none;
+    color: black;
+  }
 `;
 
 const ScList = styled.li`
