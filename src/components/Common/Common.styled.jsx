@@ -23,6 +23,7 @@ export const Button = styled.button`
   color: white;
   cursor: pointer;
   border-radius: 5px;
+  font-family: 'MaplestoryOTFLight', serif !important;
 `;
 
 export const Input = styled.input`
