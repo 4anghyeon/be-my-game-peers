@@ -113,7 +113,7 @@ export const deleteMessage = async (email, id) => {
 };
 
 // 모든 게시글, 댓글의 글쓴이 이름을 바꿈
-export const updateAuthorAllPost = async (beforeName, afterName, userEmail) => {
+export const updateAuthorAllPost = async (afterName, userEmail) => {
   const q = query(postCollectionRef);
   const querySnapShot = await getDocs(q);
   const updatePromiseList = [];
@@ -157,4 +157,22 @@ export const addReview = async newReview => {
 export const deleteReview = async id => {
   const reviewRef = doc(db, 'reviews', id);
   await deleteDoc(reviewRef);
+};
+
+// 모든 사용자 리뷰의 글쓴이 이름을 바꿈
+export const updateAuthorAllReview = async (afterName, userEmail) => {
+  const q = query(reviewCollectionRef);
+  const querySnapShot = await getDocs(q);
+  const updatePromiseList = [];
+
+  querySnapShot.forEach(snapshot => {
+    const data = snapshot.data();
+    if (data.authorEmail === userEmail) {
+      const newReview = {...data, nickname: afterName};
+      const reviewRef = doc(db, 'reviews', snapshot.id);
+      updatePromiseList.push(new Promise(updateDoc.bind(null, reviewRef, newReview)));
+    }
+  });
+
+  Promise.all(updatePromiseList);
 };
