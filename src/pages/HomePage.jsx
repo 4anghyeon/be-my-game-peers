@@ -1,14 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {useSelector, useDispatch} from 'react-redux';
-import Header from 'components/Layout/Header/Header';
-import Footer from 'components/Layout/Footer';
-import PostModule from 'redux/modules/PostModule';
-import categori, {seartchCategori} from 'redux/modules/categoriModule';
+import {useSelector} from 'react-redux';
 import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
-import {useState} from 'react';
 import GameCardContainer from '../components/Home/GameCardContainer';
 
 const HomePage = () => {
@@ -27,10 +22,6 @@ const HomePage = () => {
   };
 
   const isUserLoggedIn = getAuth().currentUser;
-
-  useEffect(() => {
-    console.log(getAuth().currentUser);
-  }, []);
 
   //카테고리안에서 제목이름과 비슷한것들만 필터되게
   const SearchParties = event => {
