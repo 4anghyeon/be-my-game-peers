@@ -226,16 +226,25 @@ const DetailPage = () => {
           <ScRegisterBtn>등록</ScRegisterBtn>
         </ScCommentFormGroup>
         <SCCommentGroup>
-          {selectedPost.comments &&
+          {selectedPost.comments.length > 0 ? (
             selectedPost.comments.map(item => (
               <div key={item.commentId}>
                 <span>
                   <Link to={`/user/${item.userEmail}`}>{item.userId}</Link>
                 </span>
-                <p>{item.content}</p>
-                <ScDeleteButton onClick={() => deleteComment(item.commentId, selectedPost.id)}>삭제</ScDeleteButton>
+
+                <ScCommentContent $editable={currentUser && currentUser.email === item.userEmail}>
+                  {item.content}
+                </ScCommentContent>
+
+                {currentUser && currentUser.email === item.userEmail && (
+                  <ScDeleteButton onClick={() => deleteComment(item.commentId, selectedPost.id)}>삭제</ScDeleteButton>
+                )}
               </div>
-            ))}
+            ))
+          ) : (
+            <p>'등록된 댓글이 없습니다 댓글을 등록해주세요'</p>
+          )}
         </SCCommentGroup>
         <ScMoveToHomeBtn onClick={moveToHome}>
           <Menu strokeWidth={2.5} />
@@ -260,9 +269,9 @@ const ScDetailElementGroup = styled.div`
   justify-content: center;
   align-items: center;
   gap: 20px;
-  padding: 30px;
+  padding: 50px 30px;
   width: 70%;
-  height: 80%;
+  height: 90%;
 
   hr {
     border: 1px solid lightgrey;
@@ -278,10 +287,9 @@ const ScDetailElementGroup = styled.div`
 const ScPostDetailGroup = styled.div`
   background-color: #eee;
   width: 100%;
+  height: 100%;
   padding: 20px;
   border-radius: 10px;
-  min-height: 40%;
-  position: relative;
 
   span {
     display: inline-block;
@@ -312,16 +320,14 @@ const ScTextarea = styled.textarea`
   height: 60%;
   border: none;
   border-radius: 5px;
-  margin-bottom: 10px;
   padding: 15px;
   resize: none;
 `;
 
 const ScBtnGroup = styled.div`
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
   text-align: right;
+  margin: 10px 0 10px 0;
+  padding-bottom: 30px;
 `;
 
 const ScEditBtn = styled(Button)`
@@ -364,14 +370,16 @@ const ScRegisterBtn = styled(Button)`
 const SCCommentGroup = styled.div`
   display: flex;
   flex-direction: column;
+
+  align-items: center;
   gap: 10px;
   width: 100%;
+  min-height: 30%;
   overflow-y: auto;
   margin: 0 10px;
 
   div {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     width: 100%;
   }
@@ -379,22 +387,26 @@ const SCCommentGroup = styled.div`
   span {
     display: inline-block;
     text-align: center;
-    width: 10%;
-  }
-
-  p {
-    width: 80%;
-    background-color: #eee;
-    padding: 10px;
-    border-radius: 10px;
-    max-height: 100px;
-    overflow: auto;
-    margin-right: 10px;
+    width: 25%;
   }
 
   a {
     color: #7752fe;
   }
+
+  p {
+    text-align: center;
+  }
+`;
+
+const ScCommentContent = styled.p`
+  width: ${props => (props.$editable ? '100%' : '125%')};
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 10px;
+  max-height: 100px;
+  overflow: auto;
+  margin-right: 10px;
 `;
 
 const ScDeleteButton = styled(Button)`
@@ -402,7 +414,7 @@ const ScDeleteButton = styled(Button)`
   margin-right: 10px;
   background-color: #ff8787;
   color: white;
-  width: 10%;
+  width: 20%;
 `;
 
 const ScMoveToHomeBtn = styled(Button)`
