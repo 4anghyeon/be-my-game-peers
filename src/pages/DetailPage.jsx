@@ -126,6 +126,17 @@ const DetailPage = () => {
     setComment('');
   };
 
+  // comment 삭제
+  const deleteComment = async (commentId, selectedPostId) => {
+    const commentRef = doc(db, 'posts', selectedPostId);
+    const updateComment = selectedPost.comments.filter(comment => comment.commentId !== commentId);
+    await updateDoc(commentRef, {...selectedPost, comments: updateComment});
+    setCommentList(updateComment);
+    setIsEdit(false);
+    setEditedText(editedText);
+    alert.alert('삭제되었습니다');
+  };
+
   // 게시글 수정
   const editPost = async id => {
     // 수정상태이고 수정 사항이 없으면
@@ -217,9 +228,12 @@ const DetailPage = () => {
         <SCCommentGroup>
           {selectedPost.comments &&
             selectedPost.comments.map(item => (
-              <div key={item.postId}>
-                <span>{item.userId}</span>
+              <div key={item.commentId}>
+                <Link to={`/user/${item.userEmail}`}>
+                  <span>{item.userId}</span>
+                </Link>
                 <p>{item.content}</p>
+                <button onClick={() => deleteComment(item.commentId, selectedPost.id)}>❌</button>
               </div>
             ))}
         </SCCommentGroup>
@@ -303,17 +317,13 @@ const ScTextarea = styled.textarea`
   padding: 15px;
   resize: none;
 
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-  ::-webkit-scrollbar-button {
+  .scrollbar-button {
     background: #ccc;
   }
-  ::-webkit-scrollbar-track-piece {
+  .scrollbar-track-piece {
     background: darkgrey;
   }
-  ::-webkit-scrollbar-thumb {
+  .scrollbar-thumb {
     background: white;
   }
 `;
