@@ -106,7 +106,6 @@ const ScContainer = styled.section`
   justify-content: space-between;
   align-items: center;
   width: 200px;
-  height: 100px;
 `;
 
 const ScFollowerContainer = styled.div`

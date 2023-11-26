@@ -294,16 +294,16 @@ const UserDetailPage = () => {
                 })}
               </ScWrapList>
             </CommentBox>
-            <ScBtnBox>
-              <ScButton onClick={CLICK_LIKE}>
-                <img src={Like} alt="추천" />
-                <span>{likeCount}</span>
-              </ScButton>
-              <ScButton onClick={CLICK_DISLIKE}>
-                <img src={DisLike} alt="비추천" />
-                <span>{disLikeCount}</span>
-              </ScButton>
-            </ScBtnBox>
+            {/*<ScBtnBox>*/}
+            {/*  <ScButton onClick={CLICK_LIKE}>*/}
+            {/*    <img src={Like} alt="추천" />*/}
+            {/*    <span>{likeCount}</span>*/}
+            {/*  </ScButton>*/}
+            {/*  <ScButton onClick={CLICK_DISLIKE}>*/}
+            {/*    <img src={DisLike} alt="비추천" />*/}
+            {/*    <span>{disLikeCount}</span>*/}
+            {/*  </ScButton>*/}
+            {/*</ScBtnBox>*/}
           </ScCommentArea>
         </ScContainer>
       )}
