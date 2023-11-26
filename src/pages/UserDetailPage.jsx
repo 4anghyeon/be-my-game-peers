@@ -96,7 +96,13 @@ const UserDetailPage = () => {
       });
   };
 
-  const EDIT_NICKNAME = event => setNickName(event.target.value);
+  const EDIT_NICKNAME = event => {
+    if (event.target.value.trim().length > 6) {
+      customAlert.alert('닉네임은 6자까지만 가능합니다');
+      return;
+    }
+    setNickName(event.target.value);
+  };
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
   const EDIT_FAVORITE = event => setFavoriteGame(event.target.value);
 
@@ -113,7 +119,7 @@ const UserDetailPage = () => {
           following: userInfo.following,
           email: userInfo.email,
         };
-        // 프로필 이미지 업롣,
+        // 프로필 이미지 업로드,
         if (imgFile !== null) {
           const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
           await uploadBytes(imageRef, imgFile);
@@ -123,8 +129,6 @@ const UserDetailPage = () => {
 
         setUserInfo(newUserInfo);
         await updateUser(email, newUserInfo);
-
-        // 닉네임이 바뀌면 모든 글 닉네임 변경!
 
         // 닉네임이 바뀌면 모든 글 닉네임 변경!
         await updateAuthorAllPost(userInfo.nickname, newUserInfo.nickname, currentUserEmail);
@@ -485,8 +489,9 @@ const CommentBox = styled.div`
 
 const ScWrapList = styled.ul`
   display: flex;
-  justify-content: flex-start;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 700px;
   padding: 6px;
   gap: 12px;
@@ -494,9 +499,10 @@ const ScWrapList = styled.ul`
 
 const ScList = styled.li`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  width: 600px;
+  padding: 10px;
+  width: 100%;
   height: 40px;
   border-radius: 5px;
   gap: 12px;
@@ -505,9 +511,10 @@ const ScList = styled.li`
     color: #333;
     font-size: 14px;
     font-weight: 500;
-    width: 100px;
+    width: 10%;
     height: 40px;
     display: flex;
+    justify-content: center;
     align-items: center;
     padding: 4px;
   }

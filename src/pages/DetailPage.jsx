@@ -229,11 +229,11 @@ const DetailPage = () => {
           {selectedPost.comments &&
             selectedPost.comments.map(item => (
               <div key={item.commentId}>
-                <Link to={`/user/${item.userEmail}`}>
-                  <span>{item.userId}</span>
-                </Link>
+                <span>
+                  <Link to={`/user/${item.userEmail}`}>{item.userId}</Link>
+                </span>
                 <p>{item.content}</p>
-                <button onClick={() => deleteComment(item.commentId, selectedPost.id)}>❌</button>
+                <ScDeleteButton onClick={() => deleteComment(item.commentId, selectedPost.id)}>삭제</ScDeleteButton>
               </div>
             ))}
         </SCCommentGroup>
@@ -289,7 +289,6 @@ const ScPostDetailGroup = styled.div`
   }
 
   a {
-    text-decoration: none;
     color: #7752fe;
   }
 `;
@@ -316,16 +315,6 @@ const ScTextarea = styled.textarea`
   margin-bottom: 10px;
   padding: 15px;
   resize: none;
-
-  .scrollbar-button {
-    background: #ccc;
-  }
-  .scrollbar-track-piece {
-    background: darkgrey;
-  }
-  .scrollbar-thumb {
-    background: white;
-  }
 `;
 
 const ScBtnGroup = styled.div`
@@ -378,6 +367,7 @@ const SCCommentGroup = styled.div`
   gap: 10px;
   width: 100%;
   overflow-y: auto;
+  margin: 0 10px;
 
   div {
     display: flex;
@@ -389,7 +379,7 @@ const SCCommentGroup = styled.div`
   span {
     display: inline-block;
     text-align: center;
-    width: 18%;
+    width: 10%;
   }
 
   p {
@@ -401,6 +391,18 @@ const SCCommentGroup = styled.div`
     overflow: auto;
     margin-right: 10px;
   }
+
+  a {
+    color: #7752fe;
+  }
+`;
+
+const ScDeleteButton = styled(Button)`
+  padding: 10px;
+  margin-right: 10px;
+  background-color: #ff8787;
+  color: white;
+  width: 10%;
 `;
 
 const ScMoveToHomeBtn = styled(Button)`
