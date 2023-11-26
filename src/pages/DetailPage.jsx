@@ -126,6 +126,17 @@ const DetailPage = () => {
     setComment('');
   };
 
+  // comment 삭제
+  const deleteComment = async (commentId, selectedPostId) => {
+    const commentRef = doc(db, 'posts', selectedPostId);
+    const updateComment = selectedPost.comments.filter(comment => comment.commentId !== commentId);
+    await updateDoc(commentRef, {...selectedPost, comments: updateComment});
+    setCommentList(updateComment);
+    setIsEdit(false);
+    setEditedText(editedText);
+    alert.alert('삭제되었습니다');
+  };
+
   // 게시글 수정
   const editPost = async id => {
     // 수정상태이고 수정 사항이 없으면
@@ -217,9 +228,12 @@ const DetailPage = () => {
         <SCCommentGroup>
           {selectedPost.comments &&
             selectedPost.comments.map(item => (
-              <div key={item.postId}>
-                <span>{item.userId}</span>
+              <div key={item.commentId}>
+                <span>
+                  <Link to={`/user/${item.userEmail}`}>{item.userId}</Link>
+                </span>
                 <p>{item.content}</p>
+                <ScDeleteButton onClick={() => deleteComment(item.commentId, selectedPost.id)}>삭제</ScDeleteButton>
               </div>
             ))}
         </SCCommentGroup>
@@ -275,7 +289,6 @@ const ScPostDetailGroup = styled.div`
   }
 
   a {
-    text-decoration: none;
     color: #7752fe;
   }
 `;
@@ -302,20 +315,6 @@ const ScTextarea = styled.textarea`
   margin-bottom: 10px;
   padding: 15px;
   resize: none;
-
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-  ::-webkit-scrollbar-button {
-    background: #ccc;
-  }
-  ::-webkit-scrollbar-track-piece {
-    background: darkgrey;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: white;
-  }
 `;
 
 const ScBtnGroup = styled.div`
@@ -368,6 +367,7 @@ const SCCommentGroup = styled.div`
   gap: 10px;
   width: 100%;
   overflow-y: auto;
+  margin: 0 10px;
 
   div {
     display: flex;
@@ -379,7 +379,7 @@ const SCCommentGroup = styled.div`
   span {
     display: inline-block;
     text-align: center;
-    width: 18%;
+    width: 10%;
   }
 
   p {
@@ -391,6 +391,18 @@ const SCCommentGroup = styled.div`
     overflow: auto;
     margin-right: 10px;
   }
+
+  a {
+    color: #7752fe;
+  }
+`;
+
+const ScDeleteButton = styled(Button)`
+  padding: 10px;
+  margin-right: 10px;
+  background-color: #ff8787;
+  color: white;
+  width: 10%;
 `;
 
 const ScMoveToHomeBtn = styled(Button)`
