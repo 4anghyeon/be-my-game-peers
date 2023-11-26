@@ -9,23 +9,24 @@ import {
   findAllReviewByUserId,
   findUserByEmail,
   updateAuthorAllPost,
+  updateAuthorAllReview,
   updateUser,
 } from 'shared/firebase/query';
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
-import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
-import {useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import uuid from '../../node_modules/react-uuid/uuid';
 import Like from 'assets/like.png';
 import DisLike from 'assets/disLike.png';
 import alert from 'assets/alert(purple).png';
 import {auth, storage} from 'shared/firebase/firebase';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {fetchData, setData} from '../redux/modules/PostModule';
 import {useAlert} from '../redux/modules/alert/alertHook';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {hideAlert} from '../redux/modules/alert/alertModule';
+import {changeAuth} from '../redux/modules/userAuth';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
@@ -50,6 +51,7 @@ const UserDetailPage = () => {
   const [profileImg, setProfileImg] = useState('');
   const [imgFile, setImgfile] = useState(null);
 
+  const userAuth = useSelector(state => state.userAuth);
   const customAlert = useAlert();
   const dispatch = useDispatch();
 
@@ -96,7 +98,13 @@ const UserDetailPage = () => {
       });
   };
 
-  const EDIT_NICKNAME = event => setNickName(event.target.value);
+  const EDIT_NICKNAME = event => {
+    if (event.target.value.trim().length > 6) {
+      customAlert.alert('닉네임은 6자까지만 가능합니다');
+      return;
+    }
+    setNickName(event.target.value);
+  };
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
   const EDIT_FAVORITE = event => setFavoriteGame(event.target.value);
 
@@ -113,7 +121,7 @@ const UserDetailPage = () => {
           following: userInfo.following,
           email: userInfo.email,
         };
-        // 프로필 이미지 업롣,
+        // 프로필 이미지 업로드,
         if (imgFile !== null) {
           const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
           await uploadBytes(imageRef, imgFile);
@@ -126,9 +134,14 @@ const UserDetailPage = () => {
 
         // 닉네임이 바뀌면 모든 글 닉네임 변경!
 
-        // 닉네임이 바뀌면 모든 글 닉네임 변경!
-        await updateAuthorAllPost(userInfo.nickname, newUserInfo.nickname, currentUserEmail);
+        if (userInfo.nickname !== newUserInfo.nickname) {
+          await updateAuthorAllPost(newUserInfo.nickname, currentUserEmail);
+          await updateAuthorAllReview(newUserInfo.nickname, currentUserEmail);
+          dispatch(changeAuth(newUserInfo));
+        }
         customAlert.alert('수정 되었습니다!');
+
+        // 닉네임이 바뀌면 유저 평가도의 이름도 변경!
 
         // 데이터 새로 불러옴
         const allData = await fetchData();
@@ -136,6 +149,7 @@ const UserDetailPage = () => {
           dispatch(setData(allData));
         }
       } catch (err) {
+        console.error(err);
         customAlert.alert('⚠️ 오류가 발생했습니다.');
       } finally {
         hideLoading(document.getElementById('root'));
@@ -284,7 +298,9 @@ const UserDetailPage = () => {
                 {reviews.map(comment => {
                   return (
                     <ScList key={comment.id} className="content">
-                      <h3 className="ToYou">{comment.nickname}</h3>
+                      <h3 className="ToYou">
+                        <Link to={`/user/${comment.authorEmail}`}>{comment.nickname}</Link>
+                      </h3>
                       <p className="comment-body">{comment.content}</p>
                       {comment.authorEmail === currentUserEmail && (
                         <ScDeleteButton onClick={onClickDeleteReview.bind(null, comment.id)}>삭제</ScDeleteButton>
@@ -294,16 +310,16 @@ const UserDetailPage = () => {
                 })}
               </ScWrapList>
             </CommentBox>
-            <ScBtnBox>
-              <ScButton onClick={CLICK_LIKE}>
-                <img src={Like} alt="추천" />
-                <span>{likeCount}</span>
-              </ScButton>
-              <ScButton onClick={CLICK_DISLIKE}>
-                <img src={DisLike} alt="비추천" />
-                <span>{disLikeCount}</span>
-              </ScButton>
-            </ScBtnBox>
+            {/*<ScBtnBox>*/}
+            {/*  <ScButton onClick={CLICK_LIKE}>*/}
+            {/*    <img src={Like} alt="추천" />*/}
+            {/*    <span>{likeCount}</span>*/}
+            {/*  </ScButton>*/}
+            {/*  <ScButton onClick={CLICK_DISLIKE}>*/}
+            {/*    <img src={DisLike} alt="비추천" />*/}
+            {/*    <span>{disLikeCount}</span>*/}
+            {/*  </ScButton>*/}
+            {/*</ScBtnBox>*/}
           </ScCommentArea>
         </ScContainer>
       )}
@@ -485,18 +501,25 @@ const CommentBox = styled.div`
 
 const ScWrapList = styled.ul`
   display: flex;
-  justify-content: flex-start;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 700px;
   padding: 6px;
   gap: 12px;
+
+  a {
+    text-decoration: none;
+    color: black;
+  }
 `;
 
 const ScList = styled.li`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  width: 600px;
+  padding: 10px;
+  width: 100%;
   height: 40px;
   border-radius: 5px;
   gap: 12px;
@@ -505,9 +528,10 @@ const ScList = styled.li`
     color: #333;
     font-size: 14px;
     font-weight: 500;
-    width: 100px;
+    width: 10%;
     height: 40px;
     display: flex;
+    justify-content: center;
     align-items: center;
     padding: 4px;
   }

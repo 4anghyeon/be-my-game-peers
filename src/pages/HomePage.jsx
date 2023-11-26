@@ -1,43 +1,67 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Link} from '../../node_modules/react-router-dom/dist/index';
 import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
 import GameCardContainer from '../components/Home/GameCardContainer';
+import {fetchData, setData} from '../redux/modules/PostModule';
+import {RefreshDouble} from 'iconoir-react';
 
 const HomePage = () => {
-  const categoris = useSelector(state => state.categoriModule);
-  const postparty = useSelector(state => state.PostModule);
+  const categories = useSelector(state => state.categoriModule);
+  const postParty = useSelector(state => state.PostModule);
+  const dispatch = useDispatch();
 
-  const gameNames = categoris.map(category => category.game);
+  const gameNames = categories.map(category => category.game);
 
-  const [filterCategory, setfilterCategory] = useState('LEAGUE OF LEGENDS');
-  const [partyInput, setpartyInput] = useState('');
-  const [filteredPosts, setFilteredPosts] = useState(postparty);
+  const [filterCategory, setFilterCategory] = useState('LEAGUE OF LEGENDS');
+  const [partyInput, setPartyInput] = useState('');
+  const [filteredPosts, setFilteredPosts] = useState(postParty);
   const [onSearch, setOnSearch] = useState(false);
   const postCategory = selectCategory => {
-    setfilterCategory(selectCategory);
+    setFilterCategory(selectCategory);
     setOnSearch(false);
   };
 
   const isUserLoggedIn = getAuth().currentUser;
+  let remainSeconds = 10;
+  const remainSecondsRef = useRef(null);
 
   //카테고리안에서 제목이름과 비슷한것들만 필터되게
   const SearchParties = event => {
     event.preventDefault();
-    const searchResult = postparty.filter(
+    const searchResult = postParty.filter(
       item => item.postTitle.includes(partyInput) && item.category === filterCategory,
     );
     setFilteredPosts(searchResult);
     setOnSearch(true);
 
-    setpartyInput(``);
+    setPartyInput(``);
   };
 
-  const Inputsearching = event => {
-    setpartyInput(event.target.value);
+  const inputSearching = event => {
+    setPartyInput(event.target.value);
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (remainSeconds === 0) {
+        fetchData().then(data => {
+          dispatch(setData(data));
+          setFilteredPosts(
+            data.filter(item => item.postTitle.includes(partyInput) && item.category === filterCategory),
+          );
+        });
+        remainSeconds = 10;
+      } else remainSeconds -= 1;
+      remainSecondsRef.current.innerText = remainSeconds;
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <>
@@ -50,10 +74,15 @@ const HomePage = () => {
       </ScCategoriSection>
       <GameCardContainer category={filterCategory} />
       <ScSearchBox>
-        <ScSearchInput placeholder="제목을 입력하세요" value={partyInput} onChange={Inputsearching} />
+        <ScSearchInput placeholder="제목을 입력하세요" value={partyInput} onChange={inputSearching} />
         <ScSearchButton onClick={SearchParties}>검색</ScSearchButton>
       </ScSearchBox>
-
+      <ScRefreshBox>
+        <span>
+          <span ref={remainSecondsRef}>{remainSeconds}</span>초 후에 새로고침 합니다.
+        </span>
+        <RefreshDouble>🔄</RefreshDouble>
+      </ScRefreshBox>
       <ScTeammateSearchBox>
         <TeamMateList
           filterCategory={filterCategory}
@@ -142,6 +171,29 @@ const ScTeammateSearchBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const ScRefreshBox = styled.div`
+  display: flex;
+  align-items: center;
+
+  span {
+    margin-right: 10px;
+  }
+
+  & button {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    background-color: white;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  & button:hover {
+    font-size: 1.3rem;
+  }
 `;
 
 export default HomePage;
