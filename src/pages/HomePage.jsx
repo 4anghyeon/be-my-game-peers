@@ -28,10 +28,6 @@ const HomePage = () => {
 
   const isUserLoggedIn = getAuth().currentUser;
 
-  useEffect(() => {
-    console.log(getAuth().currentUser);
-  }, []);
-
   //카테고리안에서 제목이름과 비슷한것들만 필터되게
   const SearchParties = event => {
     event.preventDefault();

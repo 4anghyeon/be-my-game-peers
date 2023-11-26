@@ -21,9 +21,9 @@ const Footer = () => {
         <span>권영준</span>
         <span>이희원</span>
       </ScHorizonContainer>
-      <ScVerticalContainer>
+      <ScImg>
         <img src={githubIcon} alt="github" onClick={onClickGitHub} />
-      </ScVerticalContainer>
+      </ScImg>
     </ScContainer>
   );
 };
@@ -31,6 +31,7 @@ const Footer = () => {
 const ScContainer = styled.footer`
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
   background-image: url(${() => bg});
   -o-background-size: 100% 100%;
   -webkit-background-size: 100% 100%;
@@ -70,9 +71,12 @@ const ScVerticalContainer = styled.div`
   span:not(:last-child) {
     margin-bottom: 20px;
   }
+`;
 
+const ScImg = styled.div`
   img {
     width: 50px;
+    height: 50px;
     cursor: pointer;
   }
 `;

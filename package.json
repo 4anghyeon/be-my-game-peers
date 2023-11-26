@@ -5,6 +5,7 @@
   "dependencies": {
     "firebase": "^10.6.0",
     "global": "^4.4.0",
+    "iconoir-react": "^7.0.3",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

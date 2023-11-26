@@ -150,6 +150,7 @@ const ScTeammateSearchBox = styled.div`
 const ScGameParty = styled.div`
   width: 700px;
   height: 100px;
+  padding: 10px 0;
   background-color: white;
   border: 2px solid #7752fe;
   border-radius: 5px;
@@ -246,7 +247,7 @@ const ScWriter = styled.span`
     props.userDisplayName &&
     props.postAuthor &&
     css`
-      color: ${props.userDisplayName === props.postAuthor ? '#C2D9FF' : 'inherit'};
+      color: ${props.userDisplayName === props.postAuthor ? '#a68efd' : 'inherit'};
     `}
 `;
 
