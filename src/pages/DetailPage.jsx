@@ -27,6 +27,7 @@ const DetailPage = () => {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState({
     postTitle: '',
+    postDate: '',
     comments: [],
   });
   const [postAuthor, setPostAuthor] = useState('');
@@ -35,7 +36,7 @@ const DetailPage = () => {
   const [commentList, setCommentList] = useState([]);
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
-  const [editedText, setEditedText] = useState(selectedPost.postContent);
+  const [editedText, setEditedText] = useState(selectedPost?.postContent);
   const currentUser = getAuth().currentUser;
 
   const fetchData = async () => {
@@ -53,22 +54,29 @@ const DetailPage = () => {
 
   // 최신 데이터 가져오기
   useEffect(() => {
+    console.log(currentUser);
     fetchData().then(posts => {
       const post = posts.find(post => post.postId === id);
-      setSelectedPost(post);
-      setPostAuthor(post.author);
-      setPostAuthorEmail(post.authorEmail);
-      setCommentList(posts.comments);
+      if (post) {
+        setSelectedPost(post);
+        setPostAuthor(post.author);
+        setPostAuthorEmail(post.authorEmail);
+        setCommentList(posts.comments);
+      } else {
+        navigate('/nodetail');
+      }
     });
   }, []);
 
   useEffect(() => {
     fetchData().then(posts => {
       const post = posts.find(post => post.postId === id);
-      setSelectedPost(post);
-      setPostAuthor(post.author);
-      setPostAuthorEmail(post.authorEmail);
-      setEditedText(post.postContent);
+      if (post) {
+        setSelectedPost(post);
+        setPostAuthor(post.author);
+        setPostAuthorEmail(post.authorEmail);
+        setEditedText(post.postContent);
+      }
     });
   }, [commentList]);
 
@@ -194,7 +202,7 @@ const DetailPage = () => {
   return (
     <ScVerticalContainer>
       <ScDetailElementGroup>
-        <h1>{selectedPost.postTitle}</h1>
+        <h1>{selectedPost?.postTitle}</h1>
         <ScPostDetailGroup>
           <ScPostDetailHeader>
             <ScAuthorAndDateGroup>
@@ -202,10 +210,11 @@ const DetailPage = () => {
                 <span>{postAuthor} </span>
               </Link>
               <time>
-                &#183; {moment.unix(selectedPost.postDate && selectedPost.postDate.seconds).format('yyyy-MM-DD HH:mm')}
+                &#183;{' '}
+                {moment.unix(selectedPost?.postDate && selectedPost?.postDate.seconds).format('yyyy-MM-DD HH:mm')}
               </time>
             </ScAuthorAndDateGroup>
-            <span> 필요 인원수 : {selectedPost.needPlayers}</span>
+            <span> 필요 인원수 : {selectedPost?.needPlayers}</span>
           </ScPostDetailHeader>
           {isEdit && <ScTextarea value={editedText} onChange={changeContentText} ref={textAreaRef} />}
           {!isEdit && <ScTextarea disabled value={editedText} />}
@@ -219,15 +228,15 @@ const DetailPage = () => {
         <hr />
         <ScCommentTitle>
           <MessageText />
-          <span>댓글 ({selectedPost.comments && selectedPost.comments.length})</span>
+          <span>댓글 ({selectedPost?.comments && selectedPost?.comments.length})</span>
         </ScCommentTitle>
         <ScCommentFormGroup onSubmit={addComment}>
           <Input type="text" placeholder="댓글을 입력해주세요" value={comment} onChange={changeCommentText} />
           <ScRegisterBtn>등록</ScRegisterBtn>
         </ScCommentFormGroup>
         <SCCommentGroup>
-          {selectedPost.comments.length > 0 ? (
-            selectedPost.comments.map(item => (
+          {selectedPost?.comments.length > 0 ? (
+            selectedPost?.comments.map(item => (
               <div key={item.commentId}>
                 <span>
                   <Link to={`/user/${item.userEmail}`}>{item.userId}</Link>
