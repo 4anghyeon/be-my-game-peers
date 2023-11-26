@@ -236,7 +236,7 @@ const ScTitle = styled.div`
   margin-top: 10px;
 
   span {
-    color: #ffa8a8;
+    color: #495057;
     font-size: 20px;
   }
 `;
