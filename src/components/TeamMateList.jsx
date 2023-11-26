@@ -66,7 +66,9 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
               <ScCateGory>
                 {post.category} ({post.currentParticipants} / {getCategoryPlayers(post.category)})
               </ScCateGory>
-              <ScTitle>{truncate(post.postTitle, 15)}</ScTitle>
+              <ScTitle>
+                {truncate(post.postTitle, 15)} <span>[{post.comments.length}]</span>
+              </ScTitle>
               <ScWriter
                 $isUserLoggedIn={isUserLoggedIn}
                 $userDisplayName={getAuth().currentUser?.displayName === post.author}
@@ -232,6 +234,11 @@ const ScTitle = styled.div`
   font-size: 25px;
   margin-left: 20px;
   margin-top: 10px;
+
+  span {
+    color: #ffa8a8;
+    font-size: 20px;
+  }
 `;
 const ScWriter = styled.span`
   text-align: right;
