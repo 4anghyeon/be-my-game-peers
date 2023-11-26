@@ -1,9 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {CenterVertical, Input} from 'components/Common/Common.styled';
+import {Button, CenterVertical, Input} from 'components/Common/Common.styled';
 import avatar from 'assets/avatar.png';
 import {getAuth} from 'firebase/auth';
-import {findUserByEmail, updateUser} from 'shared/firebase/query';
+import {
+  addReview,
+  deleteReview,
+  findAllReviewByUserId,
+  findUserByEmail,
+  updateAuthorAllPost,
+  updateUser,
+} from 'shared/firebase/query';
 import {useLocation} from '../../node_modules/react-router-dom/dist/index';
 import userAuth from 'redux/modules/userAuth';
 import PeerContainer from '../components/UserDetail/PeerContainer';
@@ -14,8 +21,11 @@ import DisLike from 'assets/disLike.png';
 import alert from 'assets/alert(purple).png';
 import {auth, storage} from 'shared/firebase/firebase';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
-import {useDispatch, useSelector} from 'react-redux';
-import {setData} from '../redux/modules/PostModule';
+import {useDispatch} from 'react-redux';
+import {fetchData, setData} from '../redux/modules/PostModule';
+import {useAlert} from '../redux/modules/alert/alertHook';
+import {hideLoading, showLoading} from '../shared/helper/common';
+import {hideAlert} from '../redux/modules/alert/alertModule';
 
 const UserDetailPage = () => {
   const {pathname} = useLocation();
@@ -33,61 +43,58 @@ const UserDetailPage = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [disLikeCount, setDisLikeCount] = useState(0);
   const [disableClick, setDisableClick] = useState(false);
-  // 코멘트란
-  const [comments, setComments] = useState([]);
+  // 사용자 평가
+  const [reviews, setReviews] = useState([]);
   const [content, setContent] = useState('');
   // 프로필 이미지 업로드
   const [profileImg, setProfileImg] = useState('');
   const [imgFile, setImgfile] = useState(null);
-  // posts
-  const posts = useSelector(state => state.PostModule);
 
+  const customAlert = useAlert();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    findUserByEmail(email).then(user => {
-      if (user) {
-        let photoURL = user.profileImg;
-        console.log(photoURL); // <- undefined
-        if (photoURL) {
-          setProfileImg(photoURL);
+    findUserByEmail(email)
+      .then(user => {
+        if (user) {
+          setUserInfo(user);
+          let photoURL = user.profileImg;
+          if (photoURL) {
+            setProfileImg(photoURL);
+          } else {
+            setProfileImg(avatar);
+          }
+          setIntroduction(user.introduction);
+          setFavoriteGame(user.favoriteGame);
+          setNickName(user.nickname);
+
+          // 유저에 대한 후기 읽어오기
+          readReview(user.id);
+
+          // 좋아요 개수
+          let like = likeCount;
+          if (like) {
+            setLikeCount(like);
+          }
         } else {
           setProfileImg(avatar);
         }
-        setIntroduction(user.introduction);
-        setFavoriteGame(user.favoriteGame);
-        setNickName(user.nickname);
-      } else {
-        setProfileImg(avatar);
-      }
-    });
+      })
+      .catch(err => {
+        navigate('/nouser');
+      });
   }, [userAuth, pathname]);
 
-  useEffect(() => {
-    findUserByEmail(email).then(user => {
-      if (user) {
-        let like = likeCount;
-        if (like) {
-          setLikeCount(like);
-        }
-      }
-    });
-  }, [userAuth, pathname]);
-
-  //firebase에 저장된 user 정보 가져오기
-  useEffect(() => {
-    if (currentUserEmail === null) {
-      console.log('로그인 해주세요');
-    } else {
-      findUserByEmail(email)
-        .then(user => {
-          setUserInfo(user);
-        })
-        .catch(err => {
-          navigate('/nouser');
-        });
-    }
-  }, [pathname]);
+  const readReview = async id => {
+    await findAllReviewByUserId(id)
+      .then(data => {
+        setReviews(data);
+      })
+      .catch(err => {
+        // no review
+        setReviews([]);
+      });
+  };
 
   const EDIT_NICKNAME = event => setNickName(event.target.value);
   const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
@@ -95,47 +102,47 @@ const UserDetailPage = () => {
 
   // 프로필 수정 버튼
   const EDIT_BUTTON = async () => {
-    setIsEdit(!isEdit);
-
     if (isEdit) {
-      const newUserInfo = {
-        nickname,
-        introduction,
-        favoriteGame,
-        follower: userInfo.follower,
-        following: userInfo.following,
-        email: userInfo.email,
-      };
-      if (imgFile !== null) {
-        const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
-        await uploadBytes(imageRef, imgFile);
+      showLoading(document.getElementById('root'));
+      try {
+        const newUserInfo = {
+          nickname,
+          introduction,
+          favoriteGame,
+          follower: userInfo.follower,
+          following: userInfo.following,
+          email: userInfo.email,
+        };
+        // 프로필 이미지 업롣,
+        if (imgFile !== null) {
+          const imageRef = ref(storage, `${auth.currentUser.uid}/${imgFile.name}`);
+          await uploadBytes(imageRef, imgFile);
 
-        newUserInfo.profileImg = await getDownloadURL(imageRef);
+          newUserInfo.profileImg = await getDownloadURL(imageRef);
+        }
+
+        setUserInfo(newUserInfo);
+        await updateUser(email, newUserInfo);
+
+        // 닉네임이 바뀌면 모든 글 닉네임 변경!
+
+        // 닉네임이 바뀌면 모든 글 닉네임 변경!
+        await updateAuthorAllPost(userInfo.nickname, newUserInfo.nickname, currentUserEmail);
+        customAlert.alert('수정 되었습니다!');
+
+        // 데이터 새로 불러옴
+        const allData = await fetchData();
+        if (allData) {
+          dispatch(setData(allData));
+        }
+      } catch (err) {
+        customAlert.alert('⚠️ 오류가 발생했습니다.');
+      } finally {
+        hideLoading(document.getElementById('root'));
+        setIsEdit(false);
       }
-      setUserInfo(newUserInfo);
-      await updateUser(email, newUserInfo);
-      setNickName('');
-      setIntroduction('');
-      setFavoriteGame('');
-      setImgfile(null);
-
-      // 닉네임이 바뀌면 모든 글 닉네임 변경!
-      if (userInfo.nickname !== newUserInfo.nickname) {
-        const newPosts = posts.map(post => {
-          if (post.authorEmail === currentUserEmail) {
-            post.author = newUserInfo.nickname;
-            post.comments = post.comments.map(comment => {
-              if (comment.userEmail === currentUserEmail) {
-                comment.userId = nickname;
-              }
-              return comment;
-            });
-          }
-          return post;
-        });
-
-        dispatch(setData(newPosts));
-      }
+    } else {
+      setIsEdit(true);
     }
   };
 
@@ -153,16 +160,19 @@ const UserDetailPage = () => {
 
   const writeContent = event => setContent(event.target.value);
 
-  const sendComment = event => {
+  const sendReview = event => {
     event.preventDefault();
-    const newComments = {
-      id: userInfo.id,
+    const newReview = {
+      userId: userInfo.id,
+      authorEmail: getUser.email,
       nickname: getUser.displayName,
       content,
     };
 
-    setComments([...comments, newComments]);
     setContent('');
+    addReview(newReview).then(() => {
+      readReview(userInfo.id);
+    });
   };
 
   // 내 게시물 (필터)
@@ -179,6 +189,16 @@ const UserDetailPage = () => {
     setProfileImg(imgUrl);
   };
 
+  const onClickDeleteReview = id => {
+    customAlert.confirm('해당 평가를 삭제하시겠습니까?', async () => {
+      await deleteReview(id).then(() => {
+        customAlert.alert('삭제 되었습니다!');
+        dispatch(hideAlert());
+      });
+      await readReview(userInfo.id);
+    });
+  };
+
   return (
     <>
       {currentUserEmail === null ? (
@@ -189,7 +209,7 @@ const UserDetailPage = () => {
       ) : (
         <ScContainer>
           <ScHr>
-            <div div className="wrapImage">
+            <div className="wrapImage">
               <ScProfileImg>
                 <img src={profileImg ?? `assets/avatar.png`} alt="프로필 이미지" />
                 {isEdit ? (
@@ -217,7 +237,7 @@ const UserDetailPage = () => {
                 <ScEditAndPost>
                   {currentUserEmail === userInfo.email ? (
                     <div>
-                      <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? 'save' : 'edit'}</ScEditButton>
+                      <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? '저장' : '수정'}</ScEditButton>
                       <ScEditButton onClick={checkMyPost}>내 게시물</ScEditButton>
                     </div>
                   ) : null}
@@ -249,7 +269,7 @@ const UserDetailPage = () => {
               <ScUserComment>
                 {userInfo.nickname ? userInfo.nickname : 'Guest'}님과의 게임 후기를 남겨주세요!!
               </ScUserComment>
-              <ScForm onSubmit={sendComment}>
+              <ScForm onSubmit={sendReview}>
                 <ScInput
                   type="text"
                   value={content}
@@ -257,30 +277,33 @@ const UserDetailPage = () => {
                   placeholder="예쁜 언어를 사용해주세요❤️"
                   required
                 />
-                <ScButton type="submit">send</ScButton>
+                <ScButton type="submit">작성</ScButton>
               </ScForm>
               <ScWrapList className="comment-list">
-                {comments.length === 0 ? <h3>현재 작성된 후기가 없습니다.</h3> : null}
-                {comments.map(comment => {
+                {reviews.length === 0 ? <h3>현재 작성된 후기가 없습니다.</h3> : null}
+                {reviews.map(comment => {
                   return (
-                    <ScList key={uuid()} className="content">
+                    <ScList key={comment.id} className="content">
                       <h3 className="ToYou">{comment.nickname}</h3>
                       <p className="comment-body">{comment.content}</p>
+                      {comment.authorEmail === currentUserEmail && (
+                        <ScDeleteButton onClick={onClickDeleteReview.bind(null, comment.id)}>삭제</ScDeleteButton>
+                      )}
                     </ScList>
                   );
                 })}
               </ScWrapList>
             </CommentBox>
-            <ScBtnBox>
-              <ScButton onClick={CLICK_LIKE}>
-                <img src={Like} alt="추천" />
-                <span>{likeCount}</span>
-              </ScButton>
-              <ScButton onClick={CLICK_DISLIKE}>
-                <img src={DisLike} alt="비추천" />
-                <span>{disLikeCount}</span>
-              </ScButton>
-            </ScBtnBox>
+            {/*<ScBtnBox>*/}
+            {/*  <ScButton onClick={CLICK_LIKE}>*/}
+            {/*    <img src={Like} alt="추천" />*/}
+            {/*    <span>{likeCount}</span>*/}
+            {/*  </ScButton>*/}
+            {/*  <ScButton onClick={CLICK_DISLIKE}>*/}
+            {/*    <img src={DisLike} alt="비추천" />*/}
+            {/*    <span>{disLikeCount}</span>*/}
+            {/*  </ScButton>*/}
+            {/*</ScBtnBox>*/}
           </ScCommentArea>
         </ScContainer>
       )}
@@ -404,15 +427,11 @@ const ScBtnBox = styled.div`
   justify-content: center;
 `;
 
-const ScButton = styled.button`
+const ScButton = styled(Button)`
   border: none;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  background-color: #7752fe;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
   width: 80px;
   height: 40px;
   padding: 6px;
@@ -421,6 +440,11 @@ const ScButton = styled.button`
     width: 25px;
     height: 25px;
   }
+`;
+
+const ScDeleteButton = styled(Button)`
+  background-color: #ff8787 !important;
+  color: white !important;
 `;
 
 const ScCommentArea = styled.div`
@@ -448,6 +472,7 @@ const ScInput = styled.input`
   padding: 15px;
   border: 1px solid lightgrey;
   border-radius: 5px;
+  height: 40px;
 `;
 
 const CommentBox = styled.div`

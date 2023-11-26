@@ -27,7 +27,7 @@ const ScContent = styled.section`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  min-height: calc(100vh - 240px);
+  min-height: calc(100vh - 50px);
 `;
 
 export default Layout;
