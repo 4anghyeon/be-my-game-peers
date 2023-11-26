@@ -55,7 +55,7 @@ export default function MyPost() {
       <ScWrapper className="myComment">
         <h3>내가 쓴 댓글 ({comments.length})</h3>
         {comments.length === 0 ? (
-          `${currentUserEmail.displayName}님이 작성한 댓글이 없습니다.`
+          `${currentUser.displayName}님이 작성한 댓글이 없습니다.`
         ) : (
           <MyPostListContainer list={comments} />
         )}
@@ -73,5 +73,6 @@ const ScWrapper = styled.div`
   h3 {
     color: #7752fe;
     font-size: 1.2rem;
+    margin-bottom: 10px;
   }
 `;
