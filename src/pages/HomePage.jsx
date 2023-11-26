@@ -6,6 +6,7 @@ import TeamMateList from 'components/TeamMateList';
 import {getAuth} from 'firebase/auth';
 import GameCardContainer from '../components/Home/GameCardContainer';
 import {fetchData, setData} from '../redux/modules/PostModule';
+import {RefreshDouble} from 'iconoir-react';
 
 const HomePage = () => {
   const categories = useSelector(state => state.categoriModule);
@@ -26,7 +27,6 @@ const HomePage = () => {
   const isUserLoggedIn = getAuth().currentUser;
   let remainSeconds = 10;
   const remainSecondsRef = useRef(null);
-
 
   //카테고리안에서 제목이름과 비슷한것들만 필터되게
   const SearchParties = event => {
@@ -81,7 +81,7 @@ const HomePage = () => {
         <span>
           <span ref={remainSecondsRef}>{remainSeconds}</span>초 후에 새로고침 합니다.
         </span>
-        <button>🔄</button>
+        <RefreshDouble>🔄</RefreshDouble>
       </ScRefreshBox>
       <ScTeammateSearchBox>
         <TeamMateList
