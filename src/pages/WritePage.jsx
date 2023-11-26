@@ -166,6 +166,7 @@ const WritePage = () => {
 };
 
 const ScFormGroup = styled.form`
+  background-color: #fff;
   box-shadow: rgba(0, 0, 0, 0.16) 0 1px 4px;
   display: flex;
   flex-direction: column;
@@ -202,6 +203,7 @@ const ScTextarea = styled.textarea`
   height: 200px;
   border: 1px solid lightgrey;
   border-radius: 5px;
+  margin-bottom: 20px;
   padding: 15px;
   resize: none;
 `;

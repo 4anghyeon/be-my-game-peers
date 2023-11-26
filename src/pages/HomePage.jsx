@@ -27,6 +27,7 @@ const HomePage = () => {
   let remainSeconds = 10;
   const remainSecondsRef = useRef(null);
 
+
   //카테고리안에서 제목이름과 비슷한것들만 필터되게
   const SearchParties = event => {
     event.preventDefault();
