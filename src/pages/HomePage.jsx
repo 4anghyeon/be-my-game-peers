@@ -121,7 +121,7 @@ const ScCategoriList = styled(Link)`
   }
 `;
 const ScCategoriSection = styled.section`
-  font-size: 25px;
+  font-size: 2vw;
   margin: 20px 0 20px 0;
   width: 100%;
   text-align: center;

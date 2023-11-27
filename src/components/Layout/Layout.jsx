@@ -6,19 +6,38 @@ import styled from 'styled-components';
 
 const Layout = () => {
   return (
-    <ScMain>
-      <Header />
-      <ScContent>
-        <Outlet />
-      </ScContent>
-      <Footer />
-    </ScMain>
+    <>
+      <ScNoMobile>
+        <ScContent>
+          <h1>모바일 환경을 지원하지 않습니다.</h1>
+          <h1>데스크탑으로 접속해 주세요.</h1>
+        </ScContent>
+      </ScNoMobile>
+      <ScMain>
+        <Header />
+        <ScContent>
+          <Outlet />
+        </ScContent>
+        <Footer />
+      </ScMain>
+    </>
   );
 };
 
 const ScMain = styled.main`
-  width: 100%;
-  height: 100vh;
+  @media screen and (max-width: 760px) {
+    width: 100%;
+    height: 100vh;
+    display: none;
+  }
+`;
+
+const ScNoMobile = styled.main`
+  @media screen and (min-width: 760px) {
+    width: 100%;
+    height: 100vh;
+    display: none;
+  }
 `;
 
 const ScContent = styled.section`
