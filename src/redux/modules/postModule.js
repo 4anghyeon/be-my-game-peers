@@ -62,7 +62,7 @@ export const setData = payload => {
 
 // reducer: 'state에 변화를 일으키는' 함수
 // input: state와 action
-const PostModule = (state = initialState, action) => {
+const postModule = (state = initialState, action) => {
   switch (action.type) {
     case ADD_POST:
       return [...state, action.payload];
@@ -87,4 +87,4 @@ const PostModule = (state = initialState, action) => {
   }
 };
 
-export default PostModule;
+export default postModule;

@@ -1,5 +1,5 @@
 import {createGlobalStyle} from 'styled-components';
-import bg from 'assets/img/bg.svg';
+import bg from 'assets/img/background/bg.svg';
 
 export const GlobalStyle = createGlobalStyle`
   /* http://meyerweb.com/eric/tools/css/reset/

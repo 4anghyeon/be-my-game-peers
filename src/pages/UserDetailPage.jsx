@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {Button, CenterVertical, Input} from 'components/Common/Common.styled';
-import avatar from 'assets/avatar.png';
+import avatar from 'assets/img/icon/avatar.png';
 import {getAuth} from 'firebase/auth';
 import {
   addReview,
@@ -12,17 +12,14 @@ import {
   updateAuthorAllReview,
   updateUser,
 } from 'shared/firebase/query';
-import {useLocation} from '../../node_modules/react-router-dom/dist/index';
+import {useLocation} from 'react-router-dom';
 import PeerContainer from '../components/UserDetail/PeerContainer';
 import {Link, useNavigate} from 'react-router-dom';
-import uuid from '../../node_modules/react-uuid/uuid';
-import Like from 'assets/like.png';
-import DisLike from 'assets/disLike.png';
-import alert from 'assets/alert(purple).png';
+import alert from 'assets/img/icon/alert(purple).png';
 import {auth, storage} from 'shared/firebase/firebase';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchData, setData} from '../redux/modules/PostModule';
+import {fetchData, setData} from '../redux/modules/postModule';
 import {useAlert} from '../redux/modules/alert/alertHook';
 import {hideLoading, showLoading} from '../shared/helper/common';
 import {hideAlert} from '../redux/modules/alert/alertModule';
@@ -98,18 +95,18 @@ const UserDetailPage = () => {
       });
   };
 
-  const EDIT_NICKNAME = event => {
+  const editNickname = event => {
     if (event.target.value.trim().length > 6) {
       customAlert.alert('닉네임은 6자까지만 가능합니다');
       return;
     }
     setNickName(event.target.value);
   };
-  const EDIT_INTRODUCTION = event => setIntroduction(event.target.value);
-  const EDIT_FAVORITE = event => setFavoriteGame(event.target.value);
+  const editIntroduction = event => setIntroduction(event.target.value);
+  const editFavorite = event => setFavoriteGame(event.target.value);
 
   // 프로필 수정 버튼
-  const EDIT_BUTTON = async () => {
+  const editButton = async () => {
     if (isEdit) {
       showLoading(document.getElementById('root'));
       try {
@@ -157,18 +154,6 @@ const UserDetailPage = () => {
       }
     } else {
       setIsEdit(true);
-    }
-  };
-
-  const CLICK_LIKE = () => {
-    if (!disableClick) {
-      setDisableClick(true);
-    }
-  };
-  const CLICK_DISLIKE = () => {
-    if (!disableClick) {
-      setDisLikeCount(disLikeCount + 1);
-      setDisableClick(true);
     }
   };
 
@@ -251,7 +236,7 @@ const UserDetailPage = () => {
                 <ScEditAndPost>
                   {currentUserEmail === userInfo.email ? (
                     <div>
-                      <ScEditButton onClick={EDIT_BUTTON}>{isEdit ? '저장' : '수정'}</ScEditButton>
+                      <ScEditButton onClick={editButton}>{isEdit ? '저장' : '수정'}</ScEditButton>
                       <ScEditButton onClick={checkMyPost}>내 게시물</ScEditButton>
                     </div>
                   ) : null}
@@ -263,16 +248,16 @@ const UserDetailPage = () => {
               <>
                 <div className="wrapInput">
                   <Label>Nickname</Label>
-                  <Input type="text" value={nickname} onChange={EDIT_NICKNAME} placeholder="닉네임" />
+                  <Input type="text" value={nickname} onChange={editNickname} placeholder="닉네임" />
                 </div>
                 <div className="wrapInput">
                   <Label>About</Label>
-                  <Input type="text" value={introduction} onChange={EDIT_INTRODUCTION} placeholder="한줄 소개" />
+                  <Input type="text" value={introduction} onChange={editIntroduction} placeholder="한줄 소개" />
                 </div>
                 <div className="wrapInput">
                   <Label>Favorite Game</Label>
 
-                  <Input type="text" value={favoriteGame} onChange={EDIT_FAVORITE} placeholder="좋아하는 게임" />
+                  <Input type="text" value={favoriteGame} onChange={editFavorite} placeholder="좋아하는 게임" />
                 </div>
               </>
             ) : null}

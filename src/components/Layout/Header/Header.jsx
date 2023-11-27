@@ -4,10 +4,10 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {getAuth, signOut} from 'firebase/auth';
 import {useDispatch, useSelector} from 'react-redux';
 import {changeAuth} from '../../../redux/modules/userAuth';
-import downArrow from 'assets/img/down-arrow.svg';
+import downArrow from 'assets/img/icon/down-arrow.svg';
 import {Button} from '../../Common/Common.styled';
 import {useAlert} from '../../../redux/modules/alert/alertHook';
-import avatar from 'assets/avatar.png';
+import avatar from 'assets/img/icon/avatar.png';
 import logo from 'assets/img/logo.png';
 import MessageContainer from './MessageContainer';
 
@@ -189,7 +189,9 @@ const ScProfileMenuContainer = styled.div`
   top: 50px;
   right: 0;
   background-color: #fff;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 `;
 
 const ScProfileMenuButton = styled(Button)`

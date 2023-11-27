@@ -30,6 +30,14 @@ const SignUpPage = () => {
   const categories = useSelector(state => state.categoriModule);
   const alert = useAlert();
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // 로그인되어 있으면 다시 메인으로..
+    if (getAuth().currentUser) navigate('/');
+  }, []);
+
   // form의 전체 validation 여부를 결정하는 state
   const [validation, setValidation] = useState({
     email: {
@@ -50,14 +58,6 @@ const SignUpPage = () => {
       message: '닉네임을 2자 이상 입력해주세요.',
     },
   });
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    // 로그인되어 있으면 다시 메인으로..
-    if (getAuth().currentUser) navigate('/');
-  }, []);
 
   // input 변화시 항목마다 validation!
   const handleInputChange = e => {

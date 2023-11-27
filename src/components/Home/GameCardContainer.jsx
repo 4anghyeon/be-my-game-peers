@@ -22,7 +22,6 @@ const blink = keyframes`
 `;
 const GameCardContainer = ({category}) => {
   let img = '';
-  const categoryLetters = category.split('');
   switch (category) {
     case 'LEAGUE OF LEGENDS':
       img = lolImage;
@@ -69,7 +68,9 @@ const ScCategoryName = styled.div`
   margin: 0 auto;
   transform: translateX(-50%) translateY(80%);
   letter-spacing: 10px;
-  animation: ${fadeIn} 0.8s ease-in-out forwards, ${blink} 1.5s infinite;
+  animation:
+    ${fadeIn} 0.8s ease-in-out forwards,
+    ${blink} 1.5s infinite;
 `;
 
 export default GameCardContainer;

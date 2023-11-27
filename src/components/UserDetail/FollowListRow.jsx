@@ -5,7 +5,7 @@ import {getAuth} from 'firebase/auth';
 import {useNavigate} from 'react-router-dom';
 import {hideModal} from '../../redux/modules/modal/modalModule';
 import {useDispatch} from 'react-redux';
-import avatar from 'assets/avatar.png';
+import avatar from 'assets/img/icon/avatar.png';
 
 const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, followingList, myFollowingList}) => {
   const isFollow = myFollowingList?.includes(user.email);

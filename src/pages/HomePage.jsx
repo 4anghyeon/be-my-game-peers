@@ -2,51 +2,29 @@ import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {useDispatch, useSelector} from 'react-redux';
 import {Link} from '../../node_modules/react-router-dom/dist/index';
-import TeamMateList from 'components/TeamMateList';
+import TeamMateList from 'components/Home/TeamMateList';
 import {getAuth} from 'firebase/auth';
 import GameCardContainer from '../components/Home/GameCardContainer';
-import {fetchData, setData} from '../redux/modules/PostModule';
+import {fetchData, setData} from '../redux/modules/postModule';
 import {RefreshDouble} from 'iconoir-react';
 
 const HomePage = () => {
   const categories = useSelector(state => state.categoriModule);
-  const postParty = useSelector(state => state.PostModule);
-  const dispatch = useDispatch();
-
-  const gameNames = categories.map(category => category.game);
+  const postParty = useSelector(state => state.postModule);
 
   const [filterCategory, setFilterCategory] = useState('LEAGUE OF LEGENDS');
   const [partyInput, setPartyInput] = useState('');
   const [filteredPosts, setFilteredPosts] = useState(postParty);
   const [onSearch, setOnSearch] = useState(false);
-  const postCategory = selectCategory => {
-    setFilterCategory(selectCategory);
-    setOnSearch(false);
-  };
+
+  const dispatch = useDispatch();
+
+  const remainSecondsRef = useRef(null);
+
+  const gameNames = categories.map(category => category.game);
 
   const isUserLoggedIn = getAuth().currentUser;
   let remainSeconds = 10;
-  const remainSecondsRef = useRef(null);
-
-  //카테고리안에서 제목이름과 비슷한것들만 필터되게
-  const SearchParties = event => {
-    event.preventDefault();
-    if (partyInput.trim() !== '') {
-      const searchResult = postParty.filter(
-        item => item.postTitle.includes(partyInput) && item.category === filterCategory,
-      );
-      setFilteredPosts(searchResult);
-      setOnSearch(true);
-    } else {
-      setFilteredPosts(postParty);
-      setOnSearch(false);
-    }
-    setPartyInput('');
-  };
-
-  const inputSearching = event => {
-    setPartyInput(event.target.value);
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,6 +48,31 @@ const HomePage = () => {
     };
   }, [onSearch, partyInput, filterCategory]);
 
+  const postCategory = selectCategory => {
+    setFilterCategory(selectCategory);
+    setOnSearch(false);
+  };
+
+  //카테고리안에서 제목이름과 비슷한것들만 필터되게
+  const searchParties = event => {
+    event.preventDefault();
+    if (partyInput.trim() !== '') {
+      const searchResult = postParty.filter(
+        item => item.postTitle.includes(partyInput) && item.category === filterCategory,
+      );
+      setFilteredPosts(searchResult);
+      setOnSearch(true);
+    } else {
+      setFilteredPosts(postParty);
+      setOnSearch(false);
+    }
+    setPartyInput('');
+  };
+
+  const inputSearching = event => {
+    setPartyInput(event.target.value);
+  };
+
   return (
     <>
       <ScCategoriSection>
@@ -82,7 +85,7 @@ const HomePage = () => {
       <GameCardContainer category={filterCategory} />
       <ScSearchBox>
         <ScSearchInput placeholder="제목을 입력하세요" value={partyInput} onChange={inputSearching} />
-        <ScSearchButton onClick={SearchParties}>검색</ScSearchButton>
+        <ScSearchButton onClick={searchParties}>검색</ScSearchButton>
       </ScSearchBox>
       <ScRefreshBox>
         <span>

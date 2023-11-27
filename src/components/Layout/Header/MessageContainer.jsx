@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import newBell from '../../../assets/img/new-bell.png';
-import bell from '../../../assets/img/bell.png';
+import newBell from '../../../assets/img/icon/new-bell.png';
+import bell from '../../../assets/img/icon/bell.png';
 import styled from 'styled-components';
 import {onValue, ref} from 'firebase/database';
 import {realTimeDb} from '../../../shared/firebase/firebase';
@@ -98,7 +98,9 @@ const ScMessageContainer = styled.div`
   position: absolute;
   top: 50px;
   right: 0;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
   width: fit-content;
   z-index: 200;
   padding: 10px;

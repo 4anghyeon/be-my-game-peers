@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch} from '../../node_modules/react-redux/es/exports';
-import {Link, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
+import {useDispatch} from 'react-redux';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
-import {setData} from 'redux/modules/PostModule';
+import {fetchData, setData} from 'redux/modules/postModule';
 import {MessageText, Menu} from 'iconoir-react';
 import moment from 'moment';
 
@@ -13,17 +13,10 @@ import {useAlert} from 'redux/modules/alert/alertHook';
 import {hideAlert} from 'redux/modules/alert/alertModule';
 
 import {db} from 'shared/firebase/firebase';
-import {collection, query, getDocs, doc, deleteDoc, updateDoc} from 'firebase/firestore';
+import {doc, deleteDoc, updateDoc} from 'firebase/firestore';
 import {sendMessage} from '../shared/firebase/query';
 
 const DetailPage = () => {
-  const dispatch = useDispatch();
-  const params = useParams();
-  const navigate = useNavigate();
-  const {id} = params;
-  const textAreaRef = useRef();
-  const alert = useAlert();
-
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState({
     postTitle: '',
@@ -37,24 +30,35 @@ const DetailPage = () => {
   const [comment, setComment] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState(selectedPost?.postContent);
+
+  const dispatch = useDispatch();
+
+  const params = useParams();
+  const {id} = params;
+
+  const navigate = useNavigate();
+
+  const textAreaRef = useRef();
+
+  const alert = useAlert();
+
   const currentUser = getAuth().currentUser;
 
-  const fetchData = async () => {
-    const q = query(collection(db, 'posts'));
-    const querySnapshot = await getDocs(q);
-
-    const initialPosts = [];
-    querySnapshot.forEach(doc => {
-      initialPosts.push({...doc.data(), id: doc.id});
-    });
-
-    setPosts(initialPosts);
-    return initialPosts;
-  };
+  // 텍스트의 끝으로 커서를 이동 (focus)
+  useEffect(() => {
+    if (isEdit) {
+      const textArea = textAreaRef.current;
+      if (textArea) {
+        textArea.focus();
+        textArea.setSelectionRange(textArea.value.length, textArea.value.length);
+      }
+    }
+  }, [isEdit]);
 
   // 최신 데이터 가져오기
   useEffect(() => {
     fetchData().then(posts => {
+      setPosts(posts);
       const post = posts.find(post => post.postId === id);
       if (post) {
         setSelectedPost(post);
@@ -69,6 +73,7 @@ const DetailPage = () => {
 
   useEffect(() => {
     fetchData().then(posts => {
+      setPosts(posts);
       const post = posts.find(post => post.postId === id);
       if (post) {
         setSelectedPost(post);
@@ -181,17 +186,6 @@ const DetailPage = () => {
       dispatch(hideAlert());
     });
   };
-
-  // 텍스트의 끝으로 커서를 이동 (focus)
-  useEffect(() => {
-    if (isEdit) {
-      const textArea = textAreaRef.current;
-      if (textArea) {
-        textArea.focus();
-        textArea.setSelectionRange(textArea.value.length, textArea.value.length);
-      }
-    }
-  }, [isEdit]);
 
   // 목록(=홈)으로 이동
   const moveToHome = () => {

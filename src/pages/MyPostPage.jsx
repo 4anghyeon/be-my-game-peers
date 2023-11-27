@@ -5,16 +5,19 @@ import {useSelector} from 'react-redux';
 import {auth} from '../shared/firebase/firebase';
 import {useNavigate} from 'react-router-dom';
 import {useAlert} from '../redux/modules/alert/alertHook';
-import moment from 'moment/moment';
 import MyPostListContainer from '../components/UserDetail/MyPostListContainer';
 
 export default function MyPost() {
+  const posts = useSelector(state => state.postModule);
+
   const [currentUserEmail, setCurrentUserEmail] = useState('');
   const [selectedPost, setSelectedPost] = useState([]);
+
   const alert = useAlert();
 
   const navigate = useNavigate();
-  const posts = useSelector(state => state.PostModule);
+
+  const currentUser = auth.currentUser;
 
   const comments = posts.reduce((acc, cur) => {
     const filtered = cur.comments
@@ -31,8 +34,6 @@ export default function MyPost() {
     if (filtered.length > 0) return [...acc, ...filtered];
     return acc;
   }, []);
-
-  const currentUser = auth.currentUser;
 
   useEffect(() => {
     if (!currentUser) {

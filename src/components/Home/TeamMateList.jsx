@@ -4,23 +4,31 @@ import styled, {css} from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import moment from 'moment';
 import {getAuth} from 'firebase/auth';
+
+const PARTY_PAGE = 5;
+
 const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput, onSearch}) => {
-  const postparty = useSelector(state => state.PostModule);
-
+  const postparty = useSelector(state => state.postModule);
   const postm = useSelector(state => state.categoriModule);
-
-  const navigate = useNavigate();
-
-  const partypage = 5;
-
   // 각 카테고리에 대한 현재 페이지를 저장하는 상태
   const [currentPage, setCurrentPage] = useState({});
 
-  const startPageIndex = (currentPage[filterCategory] - 1) * partypage;
-  const endPageIndex = startPageIndex + partypage;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentPage[filterCategory]) {
+      setCurrentPage(prev => ({
+        ...prev,
+        [filterCategory]: 1,
+      }));
+    }
+  }, [filterCategory]);
+
+  const startPageIndex = (currentPage[filterCategory] - 1) * PARTY_PAGE;
+  const endPageIndex = startPageIndex + PARTY_PAGE;
 
   //전체페이지를 저장
-  const totalPage = Math.ceil(postparty.filter(item => item.category === filterCategory).length / partypage);
+  const totalPage = Math.ceil(postparty.filter(item => item.category === filterCategory).length / PARTY_PAGE);
 
   //지정한 카테고리에서 카테고리와 홈페이지jsx 에 filterCategory와 일치하는 구인글을 보여줌
   const currentPageList = onSearch
@@ -47,14 +55,7 @@ const TeamMateList = ({filterCategory, isUserLoggedIn, filteredPosts, partyInput
     const selectedCategory = postm.find(intro => intro.game === category);
     return selectedCategory ? selectedCategory.players : 0;
   };
-  useEffect(() => {
-    if (!currentPage[filterCategory]) {
-      setCurrentPage(prev => ({
-        ...prev,
-        [filterCategory]: 1,
-      }));
-    }
-  }, [filterCategory]);
+
   return (
     <ScTeammateSearchBox>
       {currentPageList.filter(item => item).length === 0 ? (

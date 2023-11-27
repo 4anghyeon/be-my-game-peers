@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import githubIcon from 'assets/img/github.png';
-import bg from 'assets/img/footer.svg';
+import githubIcon from 'assets/img/icon/github.png';
+import bg from 'assets/img/background/footer.svg';
 
 const Footer = () => {
   const onClickGitHub = () => {

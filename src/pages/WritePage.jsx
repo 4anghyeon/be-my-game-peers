@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from '../../node_modules/react-redux/es/exports';
-import {addPost, fetchData, setData} from 'redux/modules/PostModule';
+import {useDispatch, useSelector} from 'react-redux';
+import {fetchData, setData} from 'redux/modules/postModule';
 import {getAuth} from 'firebase/auth';
 import {v4 as uuid} from 'uuid';
 import {collection, addDoc} from 'firebase/firestore';
 import styled from 'styled-components';
 import CenterContainer, {Button, Input} from 'components/Common/Common.styled';
-import {useLocation, useNavigate, useParams} from '../../node_modules/react-router-dom/dist/index';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {useAlert} from 'redux/modules/alert/alertHook';
 import {db} from 'shared/firebase/firebase';
 

@@ -6,18 +6,18 @@ import {signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup
 import {auth} from '../shared/firebase/firebase';
 import {useDispatch} from 'react-redux';
 import {changeAuth} from '../redux/modules/userAuth';
-import googleIcon from '../assets/img/google-icon.png';
+import googleIcon from '../assets/img/icon/google-icon.png';
 import {createUser, findUserByEmail} from '../shared/firebase/query';
 import {addUser} from '../redux/modules/users';
 import {Button, Input} from '../components/Common/Common.styled';
 
 const LoginPage = () => {
+  const [emailValidationMessage, setEmailValidationMessage] = useState('');
+
   const navigate = useNavigate();
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const dispatch = useDispatch();
-
-  const [emailValidationMessage, setEmailValidationMessage] = useState('');
 
   const onClickSignUpButton = () => {
     navigate('/signup');
