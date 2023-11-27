@@ -11,7 +11,15 @@ import {getAuth} from 'firebase/auth';
 import FollowListRow from './FollowListRow';
 import {useLocation} from 'react-router-dom';
 
-const FollowListModal = ({showFollowing, followerList, followingList, setFollowingNumber, setUserInfo}) => {
+const FollowListModal = ({
+  showFollowing,
+  followerList,
+  followingList,
+  myFollowingList,
+  setMyFollowingList,
+  setFollowingNumber,
+  setUserInfo,
+}) => {
   const [showingList, setShowingList] = useState([]);
   const currentEmail = getAuth().currentUser?.email;
   const {pathname} = useLocation();
@@ -36,7 +44,7 @@ const FollowListModal = ({showFollowing, followerList, followingList, setFollowi
 
     // 본인 목록에서도 팔로우 끊음
     await updateUserFollowing(currentEmail, email, false).then(data => {
-      setShowingList(data);
+      setMyFollowingList(data);
     });
     if (isMyPage) {
       setFollowingNumber(prev => --prev);
@@ -47,7 +55,8 @@ const FollowListModal = ({showFollowing, followerList, followingList, setFollowi
 
   const onClickFollow = async email => {
     // 본인 팔로잉 목록에 추가
-    await updateUserFollowing(currentEmail, email, true);
+    const newFollowingList = await updateUserFollowing(currentEmail, email, true);
+    setMyFollowingList(newFollowingList);
 
     // 상대방 팔로워 목록에 추가
     await updateUserFollower(currentEmail, email, true);
@@ -61,7 +70,7 @@ const FollowListModal = ({showFollowing, followerList, followingList, setFollowi
 
   return (
     <>
-      {showingList &&
+      {showingList.length > 0 &&
         createPortal(
           <Modal>
             {showingList.map(v => (
@@ -71,6 +80,7 @@ const FollowListModal = ({showFollowing, followerList, followingList, setFollowi
                 currentEmail={currentEmail}
                 onClickFollowing={onClickFollowing}
                 onClickFollow={onClickFollow}
+                myFollowingList={myFollowingList}
                 followingList={followingList}
               />
             ))}

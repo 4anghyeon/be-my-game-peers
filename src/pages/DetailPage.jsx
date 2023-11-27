@@ -54,7 +54,6 @@ const DetailPage = () => {
 
   // 최신 데이터 가져오기
   useEffect(() => {
-    console.log(currentUser);
     fetchData().then(posts => {
       const post = posts.find(post => post.postId === id);
       if (post) {

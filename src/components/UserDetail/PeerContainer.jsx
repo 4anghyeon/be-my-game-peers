@@ -13,6 +13,7 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
   const [followingNumber, setFollowingNumber] = useState(0);
   const [isFollow, setIsFollow] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
+  const [myFollowingList, setMyFollowingList] = useState([]);
   const dispatch = useDispatch();
 
   // 로그인한 유저의 이메일
@@ -29,6 +30,14 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
       else setIsFollow(false);
     }
   }, [profileUser]);
+
+  useEffect(() => {
+    findUserByEmail(currentUserEmail).then(data => {
+      if (data) {
+        setMyFollowingList(data.following);
+      }
+    });
+  }, []);
 
   const onClickFollow = async () => {
     setFollowerNumber(prev => ++prev);
@@ -93,6 +102,8 @@ const PeerContainer = ({profileUser, setUserInfo}) => {
         showFollowing={showFollowing}
         followerList={profileUser.follower}
         followingList={profileUser.following}
+        myFollowingList={myFollowingList}
+        setMyFollowingList={setMyFollowingList}
         setFollowingNumber={setFollowingNumber}
         setUserInfo={setUserInfo}
       />

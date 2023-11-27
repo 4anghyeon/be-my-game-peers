@@ -7,8 +7,8 @@ import {hideModal} from '../../redux/modules/modal/modalModule';
 import {useDispatch} from 'react-redux';
 import avatar from 'assets/avatar.png';
 
-const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, followingList}) => {
-  const isFollow = followingList?.includes(user.email);
+const FollowListRow = ({user, currentEmail, onClickFollowing, onClickFollow, followingList, myFollowingList}) => {
+  const isFollow = myFollowingList?.includes(user.email);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
