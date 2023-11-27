@@ -403,7 +403,7 @@ const SCCommentGroup = styled.div`
   }
 
   p {
-    text-align: center;
+    padding-left: 15px;
   }
 `;
 
