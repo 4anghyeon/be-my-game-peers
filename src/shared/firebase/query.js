@@ -120,9 +120,16 @@ export const updateAuthorAllPost = async (afterName, userEmail) => {
 
   querySnapShot.forEach(snapshot => {
     const data = snapshot.data();
+    console.log(data);
+
     if (data.authorEmail === userEmail) {
+      const newData = {...data, author: afterName};
+      const postRef = doc(db, 'posts', snapshot.id);
+      updatePromiseList.push(new Promise(updateDoc.bind(null, postRef, newData)));
+    }
+    if (data.comments.find(c => c.userEmail === userEmail)) {
       const newComments = data.comments?.filter(c => c.userEmail === userEmail).map(c => ({...c, userId: afterName}));
-      const newData = {...data, author: afterName, comments: newComments};
+      const newData = {...data, comments: newComments};
       const postRef = doc(db, 'posts', snapshot.id);
       updatePromiseList.push(new Promise(updateDoc.bind(null, postRef, newData)));
     }
