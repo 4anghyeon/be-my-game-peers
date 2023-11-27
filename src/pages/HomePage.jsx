@@ -31,13 +31,17 @@ const HomePage = () => {
   //카테고리안에서 제목이름과 비슷한것들만 필터되게
   const SearchParties = event => {
     event.preventDefault();
-    const searchResult = postParty.filter(
-      item => item.postTitle.includes(partyInput) && item.category === filterCategory,
-    );
-    setFilteredPosts(searchResult);
-    setOnSearch(true);
-
-    setPartyInput(``);
+    if (partyInput.trim() !== '') {
+      const searchResult = postParty.filter(
+        item => item.postTitle.includes(partyInput) && item.category === filterCategory,
+      );
+      setFilteredPosts(searchResult);
+      setOnSearch(true);
+    } else {
+      setFilteredPosts(postParty);
+      setOnSearch(false);
+    }
+    setPartyInput('');
   };
 
   const inputSearching = event => {
@@ -54,14 +58,17 @@ const HomePage = () => {
           );
         });
         remainSeconds = 10;
-      } else remainSeconds -= 1;
-      remainSecondsRef.current.innerText = remainSeconds;
+        setOnSearch(false); // 검색 중이 아닌 경우에도 새로고침 후에 검색 중이 아님을 설정
+      } else {
+        remainSeconds -= 1;
+        remainSecondsRef.current.innerText = remainSeconds;
+      }
     }, 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [onSearch, partyInput, filterCategory]);
 
   return (
     <>
