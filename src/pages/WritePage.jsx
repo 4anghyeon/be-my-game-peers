@@ -46,6 +46,7 @@ const WritePage = () => {
     });
     if (selectedCategory) {
       setPlayers(selectedCategory.players);
+      setNeedPlayers(selectedCategory.players - inputs.currentParticipants);
     }
   }, [inputs.category]);
 
